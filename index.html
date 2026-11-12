@@ -60,6 +60,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-
 #objBox{position:absolute;top:8px;left:8px;z-index:3;pointer-events:none;background:var(--hud);color:var(--hudink);border-left:3px solid #f0c24e;border-radius:6px;padding:7px 11px;font-size:12.5px;line-height:1.45;max-width:min(240px,38%);display:none}
 #fpsBox{position:absolute;right:8px;bottom:60px;z-index:3;pointer-events:none;background:var(--hud);color:var(--hudink);border-radius:6px;padding:5px 9px;font:600 11px/1.45 ui-monospace,Menlo,Consolas,monospace;white-space:pre;display:none;border-left:3px solid #38bdf8}
 #objBox b{color:#f0c24e;font-weight:800}
+.stat.low{background:#a8201a;color:#fff}.stat.low b{color:#fff}
 #objBox span{color:#9fe0a8}
 #terrTip{position:absolute;right:8px;bottom:8px;z-index:3;pointer-events:none;background:var(--hud);color:var(--hudink);border-radius:6px;padding:5px 10px;font-size:12px;max-width:min(420px,60%);display:none;border-left:3px solid #6fd07b}
 #modeHint{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--hud);color:var(--hudink);padding:6px 14px;border-radius:999px;font-size:12.5px;display:none;z-index:4;pointer-events:none;border:1px solid #f0c24e}
@@ -144,46 +145,49 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
 .help{font-size:13.5px;color:var(--muted);line-height:1.6;padding-left:18px;margin:6px 0 0}
 .help b{color:var(--ink)}
 /* Kho Khí Tài Vũ Trang 3D */
-.arsenal-box{margin-top:14px;background:linear-gradient(180deg,rgba(18,25,38,.94) 0%,rgba(10,15,24,.98) 100%);border:1px solid rgba(240,194,78,.35);border-radius:14px;padding:14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:12px}
-.arsenal-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:1px solid rgba(255,255,255,.09);padding-bottom:10px}
+.arsenal-box{margin-top:14px;background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.arsenal-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:1px solid var(--line);padding-bottom:10px}
 .arsenal-title{display:flex;align-items:center;gap:10px}
-.arsenal-flag{width:40px;height:26px;border-radius:4px;border:1px solid rgba(255,255,255,.25);box-shadow:0 2px 6px rgba(0,0,0,.35);flex:none;object-fit:cover}
-.arsenal-title h4{margin:0;font-size:15.5px;font-weight:800;color:var(--gold);letter-spacing:-.01em}
+.arsenal-flag{width:40px;height:26px;border-radius:4px;border:1px solid var(--line);flex:none;object-fit:cover}
+.arsenal-title h4{margin:0;font-size:15.5px;font-weight:800;color:var(--lacquer);letter-spacing:-.01em}
 .arsenal-title p{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:1.4}
-.arsenal-power{display:inline-flex;align-items:center;gap:6px;background:rgba(168,32,26,.3);border:1px solid rgba(240,194,78,.45);padding:5px 11px;border-radius:8px;font-size:12px;color:var(--hudink)}
-.arsenal-power b{color:#ffde59}
+.arsenal-power{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--line);padding:5px 11px;border-radius:8px;font-size:12px;color:var(--muted)}
+.arsenal-power b{color:var(--lacquer)}
 .arsenal-body{display:grid;grid-template-columns:1.05fr 1fr;gap:14px;align-items:stretch}
-.arsenal-view-wrap{position:relative;background:radial-gradient(circle at 50% 40%,#1a2a40 0%,#080e18 80%);border-radius:12px;border:1px solid rgba(56,189,248,.3);overflow:hidden;min-height:290px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:inset 0 0 35px rgba(0,0,0,.65);user-select:none;touch-action:none}
+.arsenal-view-wrap{--a3d-bg1:#fbf6ea;--a3d-bg2:#e7dbc1;position:relative;background:radial-gradient(circle at 50% 38%,var(--a3d-bg1) 0%,var(--a3d-bg2) 85%);border-radius:12px;border:1px solid var(--line);overflow:hidden;min-height:290px;display:flex;flex-direction:column;justify-content:center;align-items:center;user-select:none;touch-action:none}
 #arsenalCanvas{width:100%;height:290px;display:block;cursor:grab}
 #arsenalCanvas:active{cursor:grabbing}
 .arsenal-hud-top{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
-.arsenal-cur-badge{background:rgba(15,23,42,.88);border:1px solid rgba(240,194,78,.45);padding:4px 10px;border-radius:7px;backdrop-filter:blur(4px)}
-.arsenal-cur-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:.01em}
-.arsenal-cur-role{font-size:11px;font-weight:600;color:#38bdf8}
+.arsenal-cur-badge{background:var(--chip);border:1px solid var(--line);padding:4px 10px;border-radius:7px}
+.arsenal-cur-name{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:.01em}
+.arsenal-cur-role{font-size:11px;font-weight:600;color:var(--muted)}
 .arsenal-view-btns{display:flex;gap:6px;pointer-events:auto}
-.a3d-btn{background:rgba(15,23,42,.85);color:var(--hudink);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 8px;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s ease}
-.a3d-btn:hover{border-color:var(--gold);color:var(--gold)}
-.a3d-btn.on{background:#a8201a;border-color:var(--gold);color:#fff}
-.arsenal-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:rgba(255,255,255,.7);padding:3px 12px;border-radius:999px;font-size:11px;pointer-events:none;white-space:nowrap}
-.arsenal-detail{display:flex;flex-direction:column;gap:10px}
-.arsenal-tabs{display:flex;flex-wrap:wrap;gap:5px;max-height:130px;overflow-y:auto;padding-right:2px;scrollbar-width:thin}
-.arsenal-tab{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);color:var(--hudink);padding:5px 9px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s ease;user-select:none;text-align:left}
-.arsenal-tab:hover{border-color:var(--gold)}
-.arsenal-tab.on{background:#a8201a;border-color:var(--gold);color:#fff;box-shadow:0 0 10px rgba(240,194,78,.35)}
-.arsenal-tab .tab-icon{font-size:13px}
-.arsenal-tab .tab-name{font-weight:700}
-.arsenal-tab .tab-role{font-size:10px;opacity:.75}
-.arsenal-specs{background:rgba(15,23,42,.65);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:11px 13px;display:flex;flex-direction:column;gap:8px;flex:1}
-.arsenal-desc{font-size:12.5px;line-height:1.45;color:var(--ink)}
+.a3d-btn{background:var(--btn);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;transition:background .15s ease}
+.a3d-btn:hover{background:var(--btnh)}
+.a3d-btn.on{background:var(--lacquer);border-color:var(--lacquer);color:#fff}
+.arsenal-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:3px 12px;border-radius:999px;font-size:11px;pointer-events:none;white-space:nowrap;max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis}
+.arsenal-detail{display:flex;flex-direction:column;gap:10px;min-width:0}
+.arsenal-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;max-height:176px;overflow-y:auto;padding-right:4px;scrollbar-width:thin}
+.arsenal-tab{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:7px;align-items:center;background:var(--btn);border:1px solid var(--line);color:var(--ink);padding:5px 8px;border-radius:8px;font:inherit;font-size:12px;cursor:pointer;transition:background .12s ease,border-color .12s ease;user-select:none;text-align:left;min-width:0}
+.arsenal-tab:hover{background:var(--btnh)}
+.arsenal-tab.on{background:var(--lacquer);border-color:var(--lacquer);color:#fff}
+.arsenal-tab .tab-icon{font-size:15px;grid-row:1 / 3}
+.arsenal-tab .tab-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arsenal-tab .tab-role{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arsenal-tab.on .tab-role{color:rgba(255,255,255,.85)}
+.arsenal-specs{background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:11px 13px;display:flex;flex-direction:column;gap:8px;flex:1}
+.arsenal-desc{font-size:12.5px;line-height:1.5;color:var(--ink)}
 .arsenal-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
-.stat-row{display:grid;grid-template-columns:56px 1fr 34px;align-items:center;gap:6px;font-size:11.5px}
+.stat-row{display:grid;grid-template-columns:56px 1fr 38px;align-items:center;gap:6px;font-size:11.5px}
 .stat-lbl{color:var(--muted);font-weight:600}
-.stat-bar{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.stat-bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
 .stat-bar em{display:block;height:100%;border-radius:3px}
-.stat-val{text-align:right;font-weight:700;font-family:monospace}
+.stat-val{text-align:right;font-weight:700;font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
 .arsenal-meta-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-.arsenal-meta-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 7px;font-size:11.5px;color:var(--muted)}
-.arsenal-meta-chip b{color:var(--gold)}
+.arsenal-meta-chip{display:inline-flex;align-items:center;gap:4px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:3px 7px;font-size:11.5px;color:var(--muted)}
+.arsenal-meta-chip b{color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .arsenal-view-wrap{--a3d-bg1:#3a2a20;--a3d-bg2:#160f0b}}
+:root[data-theme="dark"] .arsenal-view-wrap{--a3d-bg1:#3a2a20;--a3d-bg2:#160f0b}
 @media (max-width:760px), (max-height:520px){
   .mobile-only{display:flex!important}
   #main{flex-direction:column}
@@ -215,6 +219,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
     <div class="stats">
       <span class="stat" title="Ngân sách và thu nhập mỗi giây">💰 <b id="credits">0</b> <i id="income"></i></span>
       <span class="stat" title="Quân số hiện có trên giới hạn">🪖 <b id="pop">0</b></span>
+      <span class="stat" id="pwrStat" title="Điện: đang dùng / đang cấp. Thiếu điện thì xây dựng, sản xuất và vũ khí công trình chậm lại">⚡ <b id="pwr">0/0</b></span>
       <span class="stat" title="Số điểm đang giữ trên tổng số">🚩 <b id="cityCount">0</b></span>
       <span class="stat" title="Thời gian trận đánh">⏱ <span id="clock">0:00</span></span>
       <span class="stat" title="Đợt tấn công kế tiếp của địch">⚠ <span id="wave">–</span></span>
@@ -244,6 +249,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
         <button class="cb" id="patrolBtn" title="Đi tuần: tuần tra qua lại giữa các điểm">🔄 <span class="lb">Đi tuần</span> <kbd>T</kbd></button>
         <button class="cb" id="queueBtn" title="Nối lệnh: di chuyển theo thứ tự các điểm">⛓ <span class="lb">Nối lệnh</span> <kbd>Shift</kbd></button>
         <button class="cb" id="stopBtn" title="Dừng">✋ <span class="lb">Dừng</span> <kbd>S</kbd></button>
+        <button class="cb" id="unloadBtn" title="Thả quân khỏi xe thiết giáp chở quân đang chọn">🚪 <span class="lb">Thả quân</span> <kbd>U</kbd></button>
         <button class="cb" id="allBtn" title="Chọn toàn quân">👥 <span class="lb">Toàn quân</span> <kbd>Q</kbd></button>
         <button class="cb" id="boxBtn" title="Kéo để chọn vùng (màn hình cảm ứng)">⬚ <span class="lb">Chọn vùng</span></button>
         <button class="cb" id="deselBtn" title="Bỏ chọn">✖ <span class="lb">Bỏ chọn</span></button>
@@ -584,8 +590,41 @@ function loadMap(id){
   HMAX=N*8+64;hI=new Int32Array(HMAX);hF=new Float32Array(HMAX);vis=new Uint8Array(N);expl=new Uint8Array(N);HV=new Float32Array((GW+1)*(GH+1));
   CITY_DEF=MAP.cities;fogC=null;
   mc.width=150;mc.height=Math.round(150*H/W);mc.style.aspectRatio=W+'/'+H;
-  buildTerrain();buildHeights();buildAttrs();renderBg();
+  buildTerrain();buildHeights();buildAttrs();buildDeposits();renderBg();
   if(renderer)buildWorld3D();
+}
+/* Điểm tài nguyên: quặng vàng và mỏ dầu, sinh cố định theo bản đồ (cùng bản đồ luôn cùng vị trí, không cần lưu).
+   Mỗi thành phố xuất phát có sẵn một vàng + một dầu gần đó; thành phố lớn có một điểm; còn lại rải ngẫu nhiên, thêm vài điểm ở vùng hoang để tranh chấp. */
+let DEPS=[],depCell=null;
+function buildDeposits(){
+  DEPS=[];depCell=new Int16Array(N);
+  let seed=7;for(const ch of MAP.id)seed=(seed*31+ch.charCodeAt(0))%2147483647;const R=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+  const cps=CITY_DEF.map(c=>P(c[1],c[2]));
+  const free=(cx,cy)=>{
+    for(let y=cy-1;y<=cy+2;y++)for(let x=cx-1;x<=cx+2;x++){if(x<0||y<0||x>=GW||y>=GH)return false;const i=y*GW+x;
+      if(depCell[i])return false;if(x>=cx&&x<cx+2&&y>=cy&&y<cy+2&&(terr[i]!==1||tRoad[i]||tSlope[i]>.32))return false;}
+    const px=(cx+1)*CELL,py=(cy+1)*CELL;
+    for(const c of cps)if(hyp(c[0]-px,c[1]-py)<95)return false;
+    for(const d of DEPS)if(hyp(d.x-px,d.y-py)<150)return false;
+    for(const br of BRIDGES)if(segDist(px,py,[br.x1,br.y1,br.x2,br.y2])<50)return false;
+    return true;};
+  const put=(k,x0,y0,r0,r1)=>{for(let t=0;t<60;t++){const a=R()*TAU,r=r0+R()*(r1-r0),cx=Math.floor((x0+Math.cos(a)*r)/CELL)-1,cy=Math.floor((y0+Math.sin(a)*r)/CELL)-1;
+      if(free(cx,cy)){const d={k,cx,cy,x:(cx+1)*CELL,y:(cy+1)*CELL};DEPS.push(d);for(let y=cy;y<cy+2;y++)for(let x=cx;x<cx+2;x++)depCell[y*GW+x]=DEPS.length;return true;}}return false;};
+  const starts=new Set(MAP.starts||[]);
+  CITY_DEF.forEach((c,i)=>{const [x,y]=cps[i];
+    if(starts.has(c[0])){put('gold',x,y,130,200);put('oil',x,y,130,210);}
+    else if(c[3])put(i%2?'oil':'gold',x,y,120,220);
+    else if(R()<.45)put(R()<.5?'gold':'oil',x,y,110,220);});
+  const extra=Math.max(3,Math.round(N/14000));
+  for(let k=0;k<extra;k++)for(let t=0;t<40;t++){const x=R()*W,y=R()*H;let far=true;for(const c of cps)if(hyp(c[0]-x,c[1]-y)<300){far=false;break;}if(far&&put(k%2?'oil':'gold',x,y,0,40))break;}
+}
+const depOf=b=>b&&BT[b.type].dep?DEPS.find(d=>d.cx===b.cx&&d.cy===b.cy):null;
+/* Ô đặt công trình dưới con trỏ; công trình khai thác tự hút vào điểm tài nguyên trống gần nhất. */
+function placeCell(type,wx,wy){
+  const d=BT[type],s=d.size;
+  if(d.dep){let best=null,bd=110;for(const q of DEPS){if(q.k!==d.dep||occ[q.cy*GW+q.cx])continue;const dd=hyp(q.x-wx,q.y-wy);if(dd<bd){bd=dd;best=q;}}
+    return best?{cx:best.cx,cy:best.cy}:{cx:Math.round(wx/CELL-s/2),cy:Math.round(wy/CELL-s/2)};}
+  return{cx:Math.round(wx/CELL-s/2),cy:Math.round(wy/CELL-s/2)};
 }
 
 /* ================= A* ================= */
@@ -639,6 +678,9 @@ const ROLES={
   aainf:{...LB,cat:'inf',cost:200,time:6,hp:60,spd:.56,rng:140,dmg:20,cd:58,air:true,ground:false,wpn:'sam',sight:190,tip:'Tên lửa phòng không vác vai: chỉ bắn máy bay và trực thăng.'},
   eng:{...LB,cat:'inf',cost:300,time:6,hp:80,spd:.62,rng:0,dmg:0,cd:999,air:false,ground:false,wpn:'mg',tip:'Không bắn; tự sửa xe, lính và công trình của ta ở gần.'},
   sap:{...LB,cat:'inf',cost:260,time:7,hp:70,spd:.88,rng:26,dmg:52,cd:50,air:false,ground:true,wpn:'satchel',sight:190,tip:'Đặc công: chạy nhanh, áp sát đánh bộc phá, cực mạnh với công trình.'},
+  snp:{...LB,cat:'inf',cost:280,time:7,hp:55,spd:.55,rng:178,dmg:46,cd:118,air:false,ground:true,wpn:'snipe',sight:235,tip:'Bắn tỉa: tầm bắn rất xa, hạ bộ binh chỉ sau một hai phát, gần như vô hại với xe bọc thép.'},
+  mor:{...LB,cat:'inf',cost:300,time:8,hp:60,spd:.5,rng:205,dmg:26,cd:125,air:false,ground:true,wpn:'arty',splash:30,spread:16,sight:170,tip:'Súng cối: bắn cầu vồng vượt đồi núi, sát thương lan, mạnh với bộ binh và công trình.'},
+  apc:{...LV,cat:'veh',cost:360,time:7,hp:260,spd:1.18,rng:84,dmg:6,cd:12,air:false,ground:true,r:9,sight:185,wpn:'mg',cap:5,tip:'Xe thiết giáp chở quân: chở tối đa 5 lính bộ. Chọn lính rồi chạm vào xe để lên xe; chọn xe rồi bấm Thả quân (U) để xuống.'},
   ifv:{...LV,cat:'veh',cost:420,time:8,hp:220,spd:1.05,rng:92,dmg:9,cd:11,air:true,ground:true,r:9,sight:190,wpn:'auto',tip:'Xe chiến đấu bộ binh: pháo tự động bắn nhanh, mạnh với bộ binh và trực thăng.'},
   mbt:{...LV,cat:'veh',cost:600,time:11,hp:380,spd:.82,rng:98,dmg:32,cd:58,air:false,ground:true,sight:170,wpn:'shell',tip:'Xe tăng chủ lực: giáp dày, mũi nhọn tấn công mặt đất.'},
   arty:{...LV,cat:'veh',cost:750,time:13,hp:170,spd:.55,rng:235,dmg:60,cd:150,air:false,ground:true,sight:245,wpn:'arty',splash:42,tip:'Pháo tự hành: bắn rất xa, sát thương lan, yếu khi bị áp sát.'},
@@ -652,59 +694,66 @@ const ROLES={
   sub:{cat:'air',cost:1050,time:16,hp:480,spd:.85,rng:190,dmg:46,cd:75,cls:'sea',armor:'ship',from:'shipyard',air:false,ground:true,r:12,sight:210,wpn:'torpedo',splash:18,tip:'Tàu ngầm: lặn tàng hình dưới nước, phóng ngư lôi và tên lửa diệt hạm cực mạnh. Bị phát hiện bởi tàu chiến, trực thăng và drone.'}
 };
 const NATIONS={
-  vn:{name:'Việt Nam',camo:['#5f7a3a','#42592b','#8fa860'],inf:{u:'#56713a',h:'#4a6436',p:'#3d4a2a',hat:'pith'},jet:'#8f9fa8',hull:'#8f979c',power:'Tên lửa bờ Bastion-P (Oniks)',
+  vn:{name:'Việt Nam',camo:['#5f7a3a','#42592b','#8fa860'],inf:{u:'#4f6a37',h:'#4a6436',p:'#3d4a2a',hat:'pith',cam:null,flag:'vn'},jet:'#8f9fa8',hull:'#8f979c',power:'Tên lửa bờ Bastion-P (Oniks)',
     trait:'Bộ binh rẻ và bền, Đặc công bộc phá, địa đạo chuyển quân, drone BXL Kamikaze và tàu ngầm Kilo 636MV Lữ đoàn 189.',
     st:{tank:'round',drums:1,ifv:'bmp',arty:'spg',mlrs:'truck',aa:'shilka',heli:'transport',jet:'flanker',ship:{L:.92,mast:'lat',tubes:1}},
-    u:{inf:{n:'Bộ binh STV-380',cost:85,hp:82},at:{n:'Tổ B-41'},aainf:{n:'Tổ tên lửa Igla'},eng:{n:'Công binh'},sap:{n:'Đặc công'},ifv:{n:'BMP-1',cost:380,dmg:11,cd:16,rng:86},mbt:{n:'T-90S'},arty:{n:'2S3 Akatsiya'},
+    u:{inf:{n:'Bộ binh STV-380',cost:85,hp:82},snp:{n:'Bắn tỉa SVD'},mor:{n:'Cối 82mm'},apc:{n:'BTR-60PB'},at:{n:'Tổ B-41'},aainf:{n:'Tổ tên lửa Igla'},eng:{n:'Công binh'},sap:{n:'Đặc công'},ifv:{n:'BMP-1',cost:380,dmg:11,cd:16,rng:86},mbt:{n:'T-90S'},arty:{n:'2S3 Akatsiya'},
       mlrs:{n:'EXTRA (tầm xa)',burst:6,dmg:36,rng:320,cost:950},aa:{n:'ZSU-23-4 Shilka'},scout:{n:'VT-Patrol',cost:300},ucav:{n:'BXL Kamikaze',cost:420,hp:70,dmg:26,spd:1.3},heli:{n:'Mi-171 vũ trang',hp:280,spd:1.35,dmg:13},jet:{n:'Su-30MK2'},ship:{n:'Hộ vệ hạm Gepard 3.9',hp:500,spd:1.05,cost:950},sub:{n:'Tàu ngầm Kilo 636MV',cost:1050,hp:480,dmg:46,rng:190}}},
-  ru:{name:'Nga',camo:['#586b46','#3b4a31','#7d8d5e'],inf:{u:'#5a6748',h:'#4c5a3e',p:'#3f4a34'},jet:'#7f93a6',hull:'#6f777e',power:'Tên lửa siêu vượt âm Oreshnik',
+  ru:{name:'Nga',camo:['#586b46','#3b4a31','#7d8d5e'],inf:{u:'#5d6b49',h:'#55623f',p:'#4a5640',hat:'ratnik',cam:['#8a8a64','#3a4430','#2a2a22'],pat:'digi',flag:'ru'},jet:'#7f93a6',hull:'#6f777e',power:'Tên lửa siêu vượt âm Oreshnik',
     trait:'Thiết giáp rẻ, pháo binh mạnh, siêu tên lửa Oreshnik, TOS-1A nhiệt áp, Ka-52, drone ZALA Lancet và tàu ngầm Kilo 636.3.',
     st:{tank:'round',drums:1,ifv:'bmp3',arty:'spg',mlrs:'tos',aa:'pantsir',heli:'coax',jet:'flanker',ship:{L:1.05,mast:'pyr'}},
-    u:{inf:{n:'Bộ binh Ratnik'},at:{n:'Tổ Kornet',rng:118},aainf:{n:'Tổ Igla-S'},eng:{n:'Công binh'},ifv:{n:'BMP-3',dmg:11},mbt:{n:'T-90M Proryv',cost:560,hp:400},arty:{n:'2S19 Msta-S',dmg:66},
+    u:{inf:{n:'Bộ binh Ratnik'},snp:{n:'Bắn tỉa SV-98'},mor:{n:'Cối 2B14 Podnos'},apc:{n:'BTR-82A'},at:{n:'Tổ Kornet',rng:118},aainf:{n:'Tổ Igla-S'},eng:{n:'Công binh'},ifv:{n:'BMP-3',dmg:11},mbt:{n:'T-90M Proryv',cost:560,hp:400},arty:{n:'2S19 Msta-S',dmg:66},
       mlrs:{n:'TOS-1A Solntsepyok',rng:160,dmg:62,splash:56,burst:4,spread:30,hp:320,cost:950},aa:{n:'Pantsir-S1',rng:182},scout:{n:'Orlan-10',cost:320},ucav:{n:'ZALA Lancet',rng:180,dmg:24,splash:28},heli:{n:'Ka-52 Alligator',hp:250,dmg:17},jet:{n:'Su-35S',hp:195},ship:{n:'Khinh hạm Đô đốc Gorshkov'},sub:{n:'Tàu ngầm Kilo 636.3',cost:1000,hp:500,dmg:48,rng:200}}},
-  us:{name:'Hoa Kỳ',camo:['#b3a078','#8a7a58','#d4c49c'],inf:{u:'#a8966e',h:'#9a8a66',p:'#8a7a58'},jet:'#8d949a',hull:'#9aa3ab',power:'Tên lửa Tomahawk',sight:1.15,
+  us:{name:'Hoa Kỳ',camo:['#b3a078','#8a7a58','#d4c49c'],inf:{u:'#a8986e',h:'#a39272',p:'#9a8c68',hat:'ach',cam:['#7a7050','#5d6040','#c4b48a'],pat:'wood',flag:'us'},jet:'#8d949a',hull:'#9aa3ab',power:'Tên lửa Tomahawk',sight:1.15,
     trait:'Đắt nhưng mạnh: Abrams giáp dày, F-35, Apache, MQ-9 Reaper trinh sát hỏa lực và tàu ngầm hạt nhân Virginia. Nhìn xa hơn 15%.',
     st:{tank:'abrams',ifv:'bradley',arty:'spg',mlrs:'himars',aa:'shorad',heli:'attack',radome:1,jet:'f35',ship:{L:1.22,mast:'pyr',k:'burke'}},
-    u:{inf:{n:'Bộ binh M4A1',cost:120,hp:86},at:{n:'Tổ Javelin',cost:260,dmg:32},aainf:{n:'Tổ Stinger'},eng:{n:'Công binh'},ifv:{n:'M2 Bradley',cost:460,hp:255},mbt:{n:'M1A2 Abrams',cost:720,hp:460,dmg:34,spd:.78},arty:{n:'M109A7 Paladin'},
+    u:{inf:{n:'Bộ binh M4A1',cost:120,hp:86},snp:{n:'Bắn tỉa M2010'},mor:{n:'Cối M252'},apc:{n:'M1126 Stryker'},at:{n:'Tổ Javelin',cost:260,dmg:32},aainf:{n:'Tổ Stinger'},eng:{n:'Công binh'},ifv:{n:'M2 Bradley',cost:460,hp:255},mbt:{n:'M1A2 Abrams',cost:720,hp:460,dmg:34,spd:.78},arty:{n:'M109A7 Paladin'},
       mlrs:{n:'M142 HIMARS',rng:320,cost:1000,spd:.9},aa:{n:'M-SHORAD Stryker',spd:1.05},scout:{n:'MQ-1C Gray Eagle',cost:420,sight:360},ucav:{n:'MQ-9 Reaper',cost:600,hp:120,dmg:24},heli:{n:'AH-64E Apache',dmg:18,cost:900},jet:{n:'F-35A Lightning II',cost:1100,hp:200,dmg:30,sight:300},ship:{n:'Khu trục hạm Arleigh Burke',cost:1200,hp:680,dmg:42},sub:{n:'Tàu ngầm hạt nhân Virginia',cost:1300,hp:620,dmg:52,rng:220,spd:1.05}}},
-  cn:{name:'Trung Quốc',camo:['#66785c','#47583f','#8ea07e'],inf:{u:'#5c7064',h:'#4f6256',p:'#465648'},jet:'#9aa2a8',hull:'#a3abb1',power:'Tên lửa DF-15',time:.85,
+  cn:{name:'Trung Quốc',camo:['#66785c','#47583f','#8ea07e'],inf:{u:'#566b4a',h:'#4f6246',p:'#4a5c42',hat:'qgf',cam:['#3e4e36','#7b8a62','#2f3b2a'],pat:'digi',flag:'cn'},jet:'#9aa2a8',hull:'#a3abb1',power:'Tên lửa DF-15',time:.85,
     trait:'Sản xuất nhanh hơn 15%, pháo phản lực PHL-03 tầm xa, drone Wing Loong-2 và tàu ngầm Type 039A Yuan.',
     st:{tank:'wedge',ifv:'bmp3',arty:'spg',mlrs:'truck12',aa:'pgz',heli:'attack',jet:'flanker',ship:{L:1.06,mast:'pyr'}},
-    u:{inf:{n:'Bộ binh QBZ-191'},at:{n:'Tổ HJ-12'},aainf:{n:'Tổ QW-2'},eng:{n:'Công binh'},ifv:{n:'ZBD-04A'},mbt:{n:'Type 99A',hp:390},arty:{n:'PLZ-05'},mlrs:{n:'PHL-03',rng:300},aa:{n:'PGZ-09'},scout:{n:'Wing Loong-1',cost:330},ucav:{n:'Wing Loong-2',burst:2,dmg:16,spread:20},heli:{n:'Z-10'},jet:{n:'J-16'},ship:{n:'Khinh hạm Type 054A'},sub:{n:'Tàu ngầm Type 039A Yuan',cost:980,hp:460,dmg:42,rng:185}}},
-  fr:{name:'Pháp',camo:['#6d6b50','#504b3a','#8c8669'],inf:{u:'#66684e',h:'#585a44',p:'#4c4a3a'},jet:'#8e959b',hull:'#98a0a6',power:'Tên lửa SCALP-EG',
+    u:{inf:{n:'Bộ binh QBZ-191'},snp:{n:'Bắn tỉa QBU-88'},mor:{n:'Cối PP-87'},apc:{n:'ZSL-92'},at:{n:'Tổ HJ-12'},aainf:{n:'Tổ QW-2'},eng:{n:'Công binh'},ifv:{n:'ZBD-04A'},mbt:{n:'Type 99A',hp:390},arty:{n:'PLZ-05'},mlrs:{n:'PHL-03',rng:300},aa:{n:'PGZ-09'},scout:{n:'Wing Loong-1',cost:330},ucav:{n:'Wing Loong-2',burst:2,dmg:16,spread:20},heli:{n:'Z-10'},jet:{n:'J-16'},ship:{n:'Khinh hạm Type 054A'},sub:{n:'Tàu ngầm Type 039A Yuan',cost:980,hp:460,dmg:42,rng:185}}},
+  fr:{name:'Pháp',camo:['#6d6b50','#504b3a','#8c8669'],inf:{u:'#6a6a48',h:'#5f6044',p:'#5a5a42',hat:'spectra',cam:['#4e4a34','#7d6a46','#2f2e24'],pat:'wood',flag:'fr'},jet:'#8e959b',hull:'#98a0a6',power:'Tên lửa SCALP-EG',
     trait:'Cơ động bánh lốp: VBCI và pháo CAESAR chạy nhanh, Leclerc nhanh nhất, drone nEUROn siêu tốc và tàu ngầm hạt nhân Suffren.',
     st:{tank:'leclerc',ifv:'wheeled',arty:'truckgun',mlrs:'m270',aa:'crotale',heli:'attack',jet:'delta',ship:{L:1.1,mast:'pyr'}},
-    u:{inf:{n:'Bộ binh HK416F'},at:{n:'Tổ Akeron MP',rng:114},aainf:{n:'Tổ Mistral'},eng:{n:'Công binh'},ifv:{n:'VBCI',spd:1.3},mbt:{n:'Leclerc',cost:660,hp:400,spd:.96},arty:{n:'CAESAR',spd:.92,rng:250,hp:140},mlrs:{n:'LRU'},aa:{n:'Crotale NG',rng:176},scout:{n:'Patroller'},ucav:{n:'nEUROn',spd:2.0,rng:145,cost:520},heli:{n:'Tigre HAD',spd:1.78},jet:{n:'Rafale',hp:190},ship:{n:'Khinh hạm FREMM'},sub:{n:'Tàu ngầm hạt nhân Suffren',cost:1200,hp:540,dmg:48,rng:210,spd:1.1}}},
-  th:{name:'Thái Lan',camo:['#5a6e48','#3f5034','#84966c'],inf:{u:'#55683f',h:'#475838',p:'#3c4a30'},jet:'#8b949c',hull:'#9aa2a8',power:'Rocket dẫn đường DTI-1G',
+    u:{inf:{n:'Bộ binh HK416F'},snp:{n:'Bắn tỉa FR-F2'},mor:{n:'Cối LLR 81mm'},apc:{n:'VAB'},at:{n:'Tổ Akeron MP',rng:114},aainf:{n:'Tổ Mistral'},eng:{n:'Công binh'},ifv:{n:'VBCI',spd:1.3},mbt:{n:'Leclerc',cost:660,hp:400,spd:.96},arty:{n:'CAESAR',spd:.92,rng:250,hp:140},mlrs:{n:'LRU'},aa:{n:'Crotale NG',rng:176},scout:{n:'Patroller'},ucav:{n:'nEUROn',spd:2.0,rng:145,cost:520},heli:{n:'Tigre HAD',spd:1.78},jet:{n:'Rafale',hp:190},ship:{n:'Khinh hạm FREMM'},sub:{n:'Tàu ngầm hạt nhân Suffren',cost:1200,hp:540,dmg:48,rng:210,spd:1.1}}},
+  th:{name:'Thái Lan',camo:['#5a6e48','#3f5034','#84966c'],inf:{u:'#4f6a3c',h:'#47593a',p:'#455a36',hat:'pasgt',cam:['#7a6a48','#2f3a26','#6c8250'],pat:'digi',flag:'th'},jet:'#8b949c',hull:'#9aa2a8',power:'Rocket dẫn đường DTI-1G',
     trait:'Quân đội cân đối, nhiều xe bánh lốp cơ động: BTR-3E1, pháo ATMOS, tiêm kích Gripen, drone KB-5E và tàu ngầm S26T.',
-    st:{tank:'wedge',ifv:'wheeled',arty:'truckgun',mlrs:'truck12',aa:'crotale',heli:'attack',jet:'delta',ship:{L:1,mast:'pyr'}},
-    u:{inf:{n:'Bộ binh TAR-21'},at:{n:'Tổ Carl Gustaf',rng:100,cost:200},aainf:{n:'Tổ Starstreak',rng:146},eng:{n:'Công binh'},sap:{n:'Đặc công',spd:.95},ifv:{n:'BTR-3E1',spd:1.25,hp:205},mbt:{n:'VT-4',cost:620,hp:385},arty:{n:'ATMOS 2000',spd:.9,hp:145,rng:240},
+    st:{tank:'wedge',ifv:'wheeled',apc:'track',arty:'truckgun',mlrs:'truck12',aa:'crotale',heli:'attack',jet:'delta',ship:{L:1,mast:'pyr'}},
+    u:{inf:{n:'Bộ binh TAR-21'},snp:{n:'Bắn tỉa M24'},mor:{n:'Cối M29 81mm'},apc:{n:'M113A3'},at:{n:'Tổ Carl Gustaf',rng:100,cost:200},aainf:{n:'Tổ Starstreak',rng:146},eng:{n:'Công binh'},sap:{n:'Đặc công',spd:.95},ifv:{n:'BTR-3E1',spd:1.25,hp:205},mbt:{n:'VT-4',cost:620,hp:385},arty:{n:'ATMOS 2000',spd:.9,hp:145,rng:240},
       mlrs:{n:'DTI-1',rng:300,burst:4,dmg:40,splash:44},aa:{n:'VL MICA',rng:178},scout:{n:'Hermes 450',cost:330},ucav:{n:'KB-5E',cost:460,rng:170,dmg:20},heli:{n:'AH-1F Cobra',cost:800,hp:200},jet:{n:'JAS 39 Gripen',cost:880,hp:170},ship:{n:'Khinh hạm Bhumibol Adulyadej'},sub:{n:'Tàu ngầm S26T',cost:950,hp:440,dmg:40,rng:180}}},
-  my:{name:'Malaysia',camo:['#5d6b3f','#44502e','#8a9662'],inf:{u:'#586a3c',h:'#4a5a34',p:'#3f4a2c'},jet:'#7f8f9c',hull:'#8f989e',power:'Không kích Su-30MKM',
+  my:{name:'Malaysia',camo:['#5d6b3f','#44502e','#8a9662'],inf:{u:'#4c5d3a',h:'#47553a',p:'#43523a',hat:'pasgt',cam:['#7c7a55','#2e3b2a','#5d6b7a'],pat:'digi',flag:'my'},jet:'#7f8f9c',hull:'#8f989e',power:'Không kích Su-30MKM',
     trait:'Xe tăng PT-91M rẻ, xe AV8 Gempita cơ động, pháo phản lực ASTROS II, Su-30MKM, drone ANKA-S và tàu ngầm Scorpène.',
-    st:{tank:'round',ifv:'wheeled',arty:'truckgun',mlrs:'himars',aa:'crotale',heli:'attack',jet:'flanker',ship:{L:.95,mast:'lat',tubes:1}},
-    u:{inf:{n:'Bộ binh M4'},at:{n:'Tổ Metis-M'},aainf:{n:'Tổ Igla'},eng:{n:'Công binh'},ifv:{n:'AV8 Gempita',spd:1.2,hp:230,cost:440},mbt:{n:'PT-91M Pendekar',cost:570,hp:370},arty:{n:'Pháo G5 kéo xe',spd:.8,hp:130,rng:245,cost:700},
+    st:{tank:'round',ifv:'wheeled',apc:'track',arty:'truckgun',mlrs:'himars',aa:'crotale',heli:'attack',jet:'flanker',ship:{L:.95,mast:'lat',tubes:1}},
+    u:{inf:{n:'Bộ binh M4'},snp:{n:'Bắn tỉa AW'},mor:{n:'Cối 81mm'},apc:{n:'ACV-300 Adnan'},at:{n:'Tổ Metis-M'},aainf:{n:'Tổ Igla'},eng:{n:'Công binh'},ifv:{n:'AV8 Gempita',spd:1.2,hp:230,cost:440},mbt:{n:'PT-91M Pendekar',cost:570,hp:370},arty:{n:'Pháo G5 kéo xe',spd:.8,hp:130,rng:245,cost:700},
       mlrs:{n:'ASTROS II',rng:295},aa:{n:'Jernas',rng:160},scout:{n:'ANKA-S',sight:340,spd:1.6},ucav:{n:'CW-25 Armed',rng:150,dmg:20},heli:{n:'MD 530G',cost:650,hp:150,spd:1.8,dmg:11,scale:.82},jet:{n:'Su-30MKM',hp:190,cost:980},ship:{n:'Khinh hạm Lekiu',hp:520,cost:960},sub:{n:'Tàu ngầm Scorpène',cost:1050,hp:460,dmg:44,rng:190}}},
-  kh:{name:'Campuchia',camo:['#66703f','#4a542e','#929c66'],inf:{u:'#5f6a3c',h:'#505a34',p:'#434c2c'},jet:'#8a9488',hull:'#8a9296',power:'Pháo phản lực PHL-03',
+  kh:{name:'Campuchia',camo:['#66703f','#4a542e','#929c66'],inf:{u:'#5b6a3a',h:'#505a34',p:'#4c5734',hat:'pasgt',cam:['#7a5f3a','#2f3324','#83915a'],pat:'wood',flag:'kh'},jet:'#8a9488',hull:'#8a9296',power:'Pháo phản lực PHL-03',
     trait:'Quân đội giá rẻ và đông: T-55, BMP-1, drone dòng CH và xuồng ngầm chiến thuật giá rẻ.',
     st:{tank:'round',drums:1,ifv:'bmp',arty:'truckgun',mlrs:'truck',aa:'crotale',heli:'transport',jet:'delta',ship:{L:.7,mast:'lat'}},
-    u:{inf:{n:'Bộ binh Type 56',cost:80,hp:72},at:{n:'Tổ RPG-7',cost:180,rng:96},aainf:{n:'Tổ FN-6',cost:180},eng:{n:'Công binh',cost:260},ifv:{n:'BMP-1',cost:350,dmg:11,cd:16,rng:86,hp:205},mbt:{n:'T-55AM2',cost:470,hp:320,dmg:27,rng:92},
+    u:{inf:{n:'Bộ binh Type 56',cost:80,hp:72},snp:{n:'Bắn tỉa SVD'},mor:{n:'Cối 82mm'},apc:{n:'BTR-60PB'},at:{n:'Tổ RPG-7',cost:180,rng:96},aainf:{n:'Tổ FN-6',cost:180},eng:{n:'Công binh',cost:260},ifv:{n:'BMP-1',cost:350,dmg:11,cd:16,rng:86,hp:205},mbt:{n:'T-55AM2',cost:470,hp:320,dmg:27,rng:92},
       arty:{n:'SH-1',spd:.85,hp:140,cost:680},mlrs:{n:'RM-70',burst:8,dmg:26,cost:820},aa:{n:'KS-1C',rng:170,cost:560},scout:{n:'CH-3',cost:280,hp:65,sight:280},ucav:{n:'CH-4',cost:400,hp:75,dmg:18,rng:140},heli:{n:'Mi-17 vũ trang',hp:260,spd:1.35,dmg:12,cost:760},
       jet:{n:'L-39 Albatros',cost:700,hp:130,dmg:18,spd:2.1,scale:.82},ship:{n:'Tàu tuần tra Stenka',cost:650,hp:330,dmg:24,rng:140,spd:1.15},sub:{n:'Xuồng ngầm chiến thuật',cost:550,hp:260,dmg:26,spd:1.1,rng:130}}}
 };
-const NAT_ORDER=['vn','th','my','kh','ru','us','cn','fr'],RORDER=['inf','at','aainf','eng','sap','ifv','mbt','arty','mlrs','aa','scout','ucav','heli','jet','ship','sub'];
+const NAT_ORDER=['vn','th','my','kh','ru','us','cn','fr'],RORDER=['inf','at','aainf','eng','sap','snp','mor','apc','ifv','mbt','arty','mlrs','aa','scout','ucav','heli','jet','ship','sub'];
 const UT={lander:{name:'Tàu đổ bộ',role:'lander',model:'lander',cost:0,time:0,hp:420,spd:.8,rng:0,dmg:0,cd:999,cls:'sea',armor:'ship',from:'shipyard',air:false,ground:false,r:14,sight:120,wpn:'mg',nat:'vn'}};
 for(const k of NAT_ORDER){const NA=NATIONS[k];for(const r in NA.u){const m=NA.u[r],d={...ROLES[r],...m,name:m.n,role:r,model:r,nat:k};delete d.n;if(NA.time)d.time=+(d.time*NA.time).toFixed(1);if(NA.sight)d.sight=Math.round(d.sight*NA.sight);UT[k+'_'+r]=d;}}
 for(const k in UT){const d=UT[k];d.mv=d.cls==='land'&&d.armor==='veh'?'veh':d.cls;}
 const BT={
-  hq:{name:'Sở chỉ huy',cost:0,time:0,hp:5000,size:3,tip:'Trung tâm chỉ huy. Mất Sở chỉ huy là thua.'},
-  mine:{name:'Trạm tiếp tế',cost:600,time:9,hp:650,size:2,req:'hq',tip:'Tăng ngân sách thêm 7 mỗi giây.'},
-  barracks:{name:'Doanh trại',cost:400,time:7,hp:850,size:2,req:'hq',tip:'Huấn luyện bộ binh. Mở khóa Xưởng cơ giới, Lô cốt và Xưởng đóng tàu.'},
-  factory:{name:'Xưởng cơ giới',cost:1000,time:12,hp:1300,size:3,req:'barracks',tip:'Sản xuất xe tăng, xe bọc thép, pháo và phòng không. Mở khóa Sân bay.'},
-  tower:{name:'Lô cốt phòng thủ',cost:650,time:8,hp:750,size:2,req:'barracks',rng:165,dmg:22,cd:42,air:true,ground:true,wpn:'tower',tip:'Pháo phòng thủ cố định, bắn cả mục tiêu mặt đất lẫn trên không.'},
-  airfield:{name:'Sân bay',cost:1200,time:14,hp:1100,size:3,req:'factory',tip:'Xuất kích drone, trực thăng và tiêm kích.'},
-  shipyard:{name:'Xưởng đóng tàu',cost:1000,time:12,hp:1200,size:2,req:'barracks',coast:true,tip:'Phải đặt sát sông hoặc biển. Đóng tàu chiến và tàu ngầm.'},
-  tunnel:{name:'Cửa địa đạo',cost:450,time:7,hp:700,size:2,req:'barracks',tip:'Xây từ 2 cửa: chọn quân bộ rồi chạm vào một cửa để chui hầm tới đó.'}
+  hq:{name:'Sở chỉ huy',pwOut:10,cost:0,time:0,hp:5000,size:3,tip:'Trung tâm chỉ huy. Mất Sở chỉ huy là thua.'},
+  mine:{name:'Trạm tiếp tế',cost:600,pw:2,time:9,hp:650,size:2,req:'hq',tip:'Tăng ngân sách thêm 7 mỗi giây.'},
+  barracks:{name:'Doanh trại',cost:400,pw:2,time:7,hp:850,size:2,req:'hq',tip:'Huấn luyện bộ binh. Mở khóa Xưởng cơ giới, Lô cốt và Xưởng đóng tàu.'},
+  factory:{name:'Xưởng cơ giới',cost:1000,pw:6,time:12,hp:1300,size:3,req:'barracks',tip:'Sản xuất xe tăng, xe bọc thép, pháo và phòng không. Mở khóa Sân bay.'},
+  tower:{name:'Lô cốt phòng thủ',cost:650,pw:4,time:8,hp:750,size:2,req:'barracks',rng:165,dmg:22,cd:42,air:true,ground:true,wpn:'tower',tip:'Pháo phòng thủ cố định, bắn cả mục tiêu mặt đất lẫn trên không.'},
+  airfield:{name:'Sân bay',cost:1200,pw:6,time:14,hp:1100,size:3,req:'factory',tip:'Xuất kích drone, trực thăng và tiêm kích.'},
+  shipyard:{name:'Xưởng đóng tàu',cost:1000,pw:5,time:12,hp:1200,size:2,req:'barracks',coast:true,tip:'Phải đặt sát sông hoặc biển. Đóng tàu chiến và tàu ngầm.'},
+  gold:{name:'Mỏ vàng',cost:800,time:10,hp:700,size:2,req:'hq',dep:'gold',pw:3,tip:'Khai thác vàng: +12 ngân sách mỗi giây. Chỉ đặt được lên điểm quặng vàng (chấm vàng trên bản đồ).'},
+  oil:{name:'Giếng dầu',cost:700,time:9,hp:600,size:2,req:'barracks',dep:'oil',pw:3,tip:'Khai thác dầu: +9 ngân sách mỗi giây và mỗi giếng tăng 10% tốc độ sản xuất xe, máy bay, tàu (tối đa 3 giếng). Chỉ đặt lên điểm dầu (chấm đen).'},
+  power:{name:'Nhà máy điện',cost:500,time:8,hp:800,size:2,req:'hq',pwOut:25,tip:'Cấp 25 điện. Thiếu điện thì xây dựng, sản xuất và vũ khí công trình chậm lại, radar ngừng hoạt động.'},
+  pylon:{name:'Trụ điện cao thế',cost:120,time:3,hp:280,size:1,req:'power',tip:'Kéo lưới điện đi xa: mở rộng vùng được phép xây dựng, dùng để vươn tới mỏ vàng và giếng dầu ở xa.'},
+  radar:{name:'Trạm radar',cost:600,time:9,hp:520,size:2,req:'barracks',pw:5,tip:'Khi đủ điện, nhìn thấy mọi thứ trong bán kính rất rộng quanh trạm.'},
+  sam:{name:'Tên lửa phòng không tầm xa',cost:1400,time:16,hp:900,size:2,req:'factory',pw:6,rng:420,dmg:58,cd:110,air:true,ground:false,wpn:'lsam',tip:'Trận địa tên lửa phòng không tầm rất xa, chỉ bắn máy bay, trực thăng và drone.'},
+  coastal:{name:'Tên lửa bờ biển',cost:1200,time:14,hp:850,size:2,req:'shipyard',pw:5,coast:true,rng:390,dmg:72,cd:150,air:false,ground:true,only:'sea',wpn:'aship',tip:'Trận địa tên lửa diệt hạm đặt sát bờ, chỉ bắn tàu chiến và tàu ngầm nổi.'},
+  tunnel:{name:'Cửa địa đạo',cost:450,pw:1,time:7,hp:700,size:2,req:'barracks',tip:'Xây từ 2 cửa: chọn quân bộ rồi chạm vào một cửa để chui hầm tới đó.'}
 };
 const DM={
   mg:{inf:1.5,veh:.3,air:.6,ship:.2,bld:.25}, mg2:{inf:1.4,veh:.75,air:.6,ship:.5,bld:.45},
@@ -713,9 +762,16 @@ const DM={
   flak:{inf:0,veh:0,air:2.2,ship:0,bld:0}, aam:{inf:.4,veh:.6,air:2,ship:.6,bld:.4}, sam:{inf:0,veh:0,air:2.4,ship:0,bld:0},
   auto:{inf:1.3,veh:.75,air:.9,ship:.4,bld:.4}, satchel:{inf:1,veh:1.3,air:0,ship:.6,bld:3.2},
   guided:{inf:.5,veh:1.8,air:0,ship:1.2,bld:1},
+  snipe:{inf:1.7,veh:.12,air:0,ship:.08,bld:.08}, lsam:{inf:0,veh:0,air:2.3,ship:0,bld:0}, aship:{inf:.2,veh:.4,air:0,ship:2.6,bld:.5},
   torpedo:{inf:.1,veh:.9,air:0,ship:2.5,bld:1.3},
   stomp:{inf:1.6,veh:.9,air:0,ship:.3,bld:1.3}, bolt:{inf:1.2,veh:1.1,air:1.3,ship:1,bld:.8}
 };
+/* Tên khí tài công trình theo từng quốc gia (hiện sau tên chung). */
+const NB={
+  sam:{vn:'S-300PMU1',ru:'S-400 Triumf',us:'MIM-104 Patriot',cn:'HQ-9B',fr:'SAMP/T',th:'SPADA 2000',my:'KS-1A',kh:'KS-1C'},
+  coastal:{vn:'4K44 Redut',ru:'K-300P Bastion',us:'NMESIS',cn:'YJ-62',fr:'Exocet MM40',th:'Harpoon bờ biển',my:'NSM bờ biển',kh:'C-704 bờ biển'},
+  radar:{vn:'P-18M',ru:'Nebo-M',us:'AN/TPY-2',cn:'JY-27A',fr:'Ground Master 400',th:'Giraffe AMB',my:'GM400',kh:'JY-11'}};
+const bName=(type,nat)=>BT[type].name+(NB[type]&&NB[type][nat]?' '+NB[type][nat]:'');
 const CATS=['barracks','factory','airfield','shipyard','temple'];
 const TC={1:{m:'#e0302a',l:'#ffd23f',d:'#6d0f0b'},2:{m:'#7b5cff',l:'#c9bcff',d:'#2b1a73'},3:{m:'#e08a1e',l:'#ffe2a8',d:'#6b3b05'},4:{m:'#17b3a3',l:'#c9fff6',d:'#06524b'}};
 const tname=t=>{const n=NATIONS[G.teams[t].nat].name;let dup=0;for(const k in G.teams)if(G.teams[k].nat===G.teams[t].nat)dup++;return dup>1?n+(+t===1?' (bạn)':' ('+['','','tím','cam','lục'][t]+')'):n;};
@@ -747,6 +803,16 @@ const ICON={
   aa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="14" width="16" height="5" rx="2.5"/><path d="M8 14l8-10M12 14l8-10M6 14v-2h9v2"/></svg>',
   jet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M21 12L3 5l4 7-4 7z"/></svg>',
   elephant:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19v-7a6 6 0 016-6h4a5 5 0 015 5v8M16 19v-4M9 19v-3M5 12c-2 0-3 2-2 4"/></svg>',
+  gold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l3-6h4l3 6zM12 18l3-6h4l3 6zM8 12l3-6h4l3 6"/></svg>',
+  oil:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21l5-18 5 18M8.5 15h7M10 9h4M12 3v3"/><path d="M19 13c0 1.7-1.3 3-2 3s-2-1.3-2-3 2-4 2-4 2 2.3 2 4z"/></svg>',
+  power:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg>',
+  pylon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L7 22M12 2l5 20M5 7h14M6 12h12M9 12l6 6M15 12l-6 6"/></svg>',
+  radar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0116 0M8 12a4 4 0 018 0"/><path d="M12 12l5-6M12 12v9M8 21h8"/></svg>',
+  sam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M6 20l3-5h8l2 5"/><path d="M9 15l8-11M12 15l7-9"/><path d="M17 4l1.5-.5L18 5"/></svg>',
+  coastal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0"/><path d="M5 16h10l2-4H7zM9 12l8-8M17 4h2v2"/></svg>',
+  snp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>',
+  mor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20l6-14M5 21h10M14 6l2-2M9 20l-3 1M11 14l4 6"/></svg>',
+  apc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l2-6h14l4 6z"/><path d="M8 10V8h6v2M14 9h5"/><circle cx="6" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
   hero:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .7-4.5 4.2 1.2 6L12 16.6 6.7 19.5l1.2-6L3.4 9.3l6-.7z"/></svg>'
 };
 
@@ -757,7 +823,7 @@ let dpr=Math.min(2,window.devicePixelRatio||1),vw=300,vh=300;
 let bg=null,miniBg=null;
 const mc=$('#mini'),mx=mc.getContext('2d');
 
-function newTeam(){return{nat:'vn',credits:2500,bq:null,bready:null,pq:{barracks:[],factory:[],airfield:[],shipyard:[],temple:[]},pt:{barracks:0,factory:0,airfield:0,shipyard:0,temple:0},power:0,powerMax:100*60,haste:0,hasteMax:150*60,stake:0,stakeMax:110*60};}
+function newTeam(){return{nat:'vn',credits:2500,bq:null,bready:null,pq:{barracks:[],factory:[],airfield:[],shipyard:[],temple:[]},pt:{barracks:0,factory:0,airfield:0,shipyard:0,temple:0},power:0,powerMax:100*60,pwP:10,pwU:0,pf:1,oilN:0,haste:0,hasteMax:150*60,stake:0,stakeMax:110*60};}
 
 function addUnit(type,team,x,y){
   const d=UT[type];
@@ -778,8 +844,10 @@ function canPlace(team,type,cx,cy,free){
   for(let y=cy-1;y<=cy+s;y++)for(let x=cx-1;x<=cx+s;x++){
     if(x<0||y<0||x>=GW||y>=GH)return false;
     const i=y*GW+x,inside=x>=cx&&x<cx+s&&y>=cy&&y<cy+s;
+    if(!d.dep&&depCell&&depCell[i])return false;   // chừa trống điểm tài nguyên và một ô quanh nó
     if(inside){if(terr[i]!==1||occ[i]||tSlope[i]>.45)return false;}else if(occ[i])return false;
   }
+  if(d.dep&&!DEPS.some(q=>q.k===d.dep&&q.cx===cx&&q.cy===cy))return false;
   const bx=(cx+s/2)*CELL,by=(cy+s/2)*CELL,hw=s*CELL/2;
   for(const c of G.cities)if(hyp(c.x-bx,c.y-by)<hw+(c.lm?58:26))return false;
   if(!free){
@@ -819,7 +887,7 @@ function computeFog(){
   if(!visPrev||visPrev.length!==N)visPrev=new Uint8Array(N);
   visPrev.set(vis);vis.fill(0);
   for(const u of G.units)if(!u.dead&&u.team===1)stamp(u.x,u.y,u.d.sight+30+Math.min(90,groundY(u.x,u.y)*.7));
-  for(const b of G.blds)if(!b.dead&&b.team===1)stamp(b.x,b.y,b.type==='hq'?270:(b.type==='tower'||b.type==='crossbow')?250:175);
+  for(const b of G.blds)if(!b.dead&&b.team===1)stamp(b.x,b.y,b.type==='hq'?270:b.type==='radar'?(G.teams[1].pf>=1&&b.anim>=1?640:175):(b.type==='tower'||b.type==='crossbow'||b.type==='sam'||b.type==='coastal')?250:b.type==='pylon'?110:175);
   for(const c of G.cities)if(c.owner===1)stamp(c.x,c.y,160);
   let x0=GW,y0=GH,x1=-1,y1=-1;
   for(let i=0;i<N;i++)if(vis[i]!==visPrev[i]){const x=i%GW,y=(i/GW)|0;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
@@ -869,6 +937,7 @@ function initObjectives(){
   G.objs=[
     {t:'Chiếm 3 điểm',p:()=>[own(),3],r:400},
     {t:'Xây một Trạm tiếp tế',p:()=>[bc('mine'),1],r:300},
+    {t:'Xây Mỏ vàng trên điểm quặng vàng',p:()=>[bc('gold'),1],r:400},
     {t:'Xây Xưởng cơ giới',p:()=>[bc('factory'),1],r:400},
     {t:'Có 4 xe tăng '+UT[G.teams[1].nat+'_mbt'].name,p:()=>[rc('mbt'),4],r:500},
     {t:'Chiếm 7 điểm',p:()=>[own(),7],r:800},
@@ -903,6 +972,7 @@ function newGame(mapId,startIdx,diff,nats){const nAI=nats.length-1;
   const setup=(team,city,extra)=>{
     const s=findSpot(team,'hq',city.x,city.y,true,3,20)||findSpot(team,'hq',city.x,city.y,true,1,50);const hq=addBld('hq',team,s.cx,s.cy);
     const bs=findSpot(team,'barracks',hq.x,hq.y,true,3,10);if(bs)addBld('barracks',team,bs.cx,bs.cy);
+    const ps=findSpot(team,'power',hq.x,hq.y,true,3,12);if(ps)addBld('power',team,ps.cx,ps.cy);
     if(extra>=1){const f=findSpot(team,'factory',hq.x,hq.y,true,4,12);if(f)addBld('factory',team,f.cx,f.cy);}
     for(let k=0;k<extra;k++){const t=findSpot(team,'tower',hq.x,hq.y,true,4,10);if(t)addBld('tower',team,t.cx,t.cy);}
     const roster=['inf','inf','inf','inf','inf','rocket','rocket','tank','tank'];
@@ -1034,6 +1104,21 @@ function cmdPatrol(list,x,y,isQueue){
   sfx('cmd_move');
   toast('Đã đặt lệnh đi tuần');
 }
+/* Xe chở quân: lính lên xe được cất thành "loại@máu" trong u.cargo (lưu ván được như tàu đổ bộ). */
+function board(u,v){
+  v.cargo=v.cargo||[];if(v.cargo.length>=(v.d.cap||0))return false;
+  v.cargo.push(u.type+'@'+Math.round(u.hp));u.dead=true;u.boarded=true;G.dirty=true;G.sel.delete(u);
+  if(u.team===1)G.fx.push({k:'ring',x:v.x,y:v.y,t:16,T:16,c:'#7CFC9A'});return true;
+}
+function unload(v,hurtF){
+  if(!v.cargo||!v.cargo.length)return[];const out=[];
+  for(const it of v.cargo){const [type,hp]=String(it).split('@');if(!UT[type])continue;
+    const j=nearestPassable(cellAt(v.x+rnd(-22,22),v.y+rnd(-22,22)),'land',8);if(j<0)continue;
+    const n=addUnit(type,v.team,cxw(j)+rnd(-3,3),cyw(j)+rnd(-3,3));n.hp=Math.max(1,Math.min(n.d.hp,(+hp||n.d.hp)*(hurtF||1)));out.push(n);}
+  v.cargo=[];if(v.team===1&&out.length)G.fx.push({k:'ring',x:v.x,y:v.y,t:20,T:20,c:'#ffd23f'});return out;
+}
+function cmdUnload(list){let n=0;for(const v of list)if(v.cargo&&v.cargo.length&&v.d.cap){const out=unload(v);n+=out.length;if(v.team===1)for(const q of out)G.sel.add(q);}
+  if(n)toast('Đã thả '+n+' lính xuống xe');else toast('Không có xe chở quân nào đang chở lính','bad');}
 function cmdStop(list){for(const u of list){u.order=null;u.path=null;u.tgt=null;u.pathReq=null;u.queue=[];}}
 function nextOrder(u){
   u.path=null;u.pathReq=null;
@@ -1062,6 +1147,7 @@ function findTarget(src,d,range){
   const f=G.frame;
   for(const e of G.units){
     if(e.team===src.team||e.dead||!canHit(d,e))continue;
+    if(d.only==='sea'&&e.d.cls!=='sea')continue;
     if(!seenBy(src.team,e))continue;
     if(src.ign&&src.ign[e.id]>f)continue;
     const dd=hyp(e.x-src.x,e.y-src.y)-e.d.r;if(dd>range)continue;
@@ -1074,7 +1160,7 @@ function findTarget(src,d,range){
     }
     if(sc<bs){bs=sc;best=e;}
   }
-  for(const e of G.blds){
+  if(d.only!=='sea')for(const e of G.blds){
     if(e.team===src.team||e.dead||!canHit(d,e))continue;
     if(src.team===1&&!seen1(e))continue;
     if(src.ign&&src.ign[e.id]>f)continue;
@@ -1100,18 +1186,19 @@ function fire(src,d,t){
   const ang=Math.atan2(t.y-src.y,t.x-src.x);
   const mzx=src.x+Math.cos(ang)*(src.kind==='b'?12:d.r+2),mzy=src.y+Math.sin(ang)*(src.kind==='b'?12:d.r+2);
   const z1=src.kind==='b'?24:elevOf(src),z2=elevOf(t);
-  if(w==='mg'||w==='mg2'){
+  if(w==='mg'||w==='mg2'||w==='snipe'){
     hurt(t,dmg*mult(w,t),src);
-    G.fx.push({k:'tr',x:mzx,y:mzy,x2:t.x+rnd(-4,4),y2:t.y+rnd(-4,4),z1,z2,t:5,T:5,c:'#fff3b0'});
+    G.fx.push({k:'tr',x:mzx,y:mzy,x2:t.x+rnd(-4,4),y2:t.y+rnd(-4,4),z1,z2,t:w==='snipe'?9:5,T:w==='snipe'?9:5,c:'#fff3b0'});
   }else if(w==='arty'){
     G.proj.push({k:'arty',x:mzx,y:mzy,sx:mzx,sy:mzy,tx:t.x+rnd(-(d.spread||8),d.spread||8),ty:t.y+rnd(-(d.spread||8),d.spread||8),t:0,T:70,h:0,dmg,team:src.team,src,w,splash:d.splash});
   }else{
-    G.proj.push({k:w,x:mzx,y:mzy,tg:t,tx:t.x,ty:t.y,spd:w==='rocket'?5:(w==='sam'||w==='aam')?7:w==='guided'?4.6:w==='torpedo'?4.2:8,dmg,team:src.team,src,w,splash:d.splash||(w==='torpedo'?18:0),a:ang,z0:z1,z1:z2,ez:z1,d0:Math.max(1,hyp(t.x-mzx,t.y-mzy))});
+    G.proj.push({k:w,x:mzx,y:mzy,tg:t,tx:t.x,ty:t.y,spd:w==='rocket'?5:(w==='sam'||w==='aam')?7:w==='lsam'?8:w==='aship'?5.5:w==='guided'?4.6:w==='torpedo'?4.2:8,dmg,team:src.team,src,w,splash:d.splash||(w==='torpedo'?18:0),a:ang,z0:z1,z1:z2,ez:z1,d0:Math.max(1,hyp(t.x-mzx,t.y-mzy))});
   }
   G.fx.push({k:'mz',x:mzx,y:mzy,z:z1,t:4,T:4});
   if(onScreen(src.x,src.y)){
     if(w==='shell'||w==='arty'||w==='satchel')sfx('shot_cannon');
-    else if(w==='rocket'||w==='sam'||w==='aam'||w==='guided'||w==='torpedo')sfx('shot_rocket');
+    else if(w==='rocket'||w==='sam'||w==='aam'||w==='lsam'||w==='aship'||w==='guided'||w==='torpedo')sfx('shot_rocket');
+    else if(w==='snipe')sfx('shot_cannon');
     else if(w==='mg'||w==='mg2'||w==='auto'||w==='flak')sfx('shot_mg');
     else sfx('shot');
   }
@@ -1130,6 +1217,7 @@ function hurt(e,amt,src){
 }
 function kill(e,src){
   e.dead=true;G.dirty=true;
+  if(e.kind==='u'&&e.d.cap&&e.cargo&&e.cargo.length)unload(e,.5);
   if(src&&src.kind==='u'&&!src.dead&&src.team!==e.team){
     src.kills=(src.kills||0)+(e.kind==='b'?2:1);const nr=src.kills>=8?2:src.kills>=3?1:0;
     if(nr>(src.rank||0)){src.rank=nr;src.hp=Math.min(src.d.hp,src.hp+src.d.hp*.35);G.fx.push({k:'ring',x:src.x,y:src.y,t:40,T:40,c:'#ffd23f'});
@@ -1190,6 +1278,12 @@ function updUnit(u){
         }
       }
     }
+  }
+  if(o&&o.k==='board'){
+    const v=o.t;
+    if(v.dead||v.team!==u.team||(v.cargo||[]).length>=(v.d.cap||0)){o=nextOrder(u);}
+    else if(hyp(u.x-v.x,u.y-v.y)<v.d.r+18){board(u,v);return;}
+    else if(!u.path&&!u.pathReq){o.n=(o.n||0)+1;if(o.n>40)o=nextOrder(u);else requestPath(u,v.x,v.y);}
   }
   if(o&&o.k==='tunnel'){
     if(o.a.dead||o.b.dead){o=nextOrder(u);}
@@ -1325,7 +1419,7 @@ function nudge(u,dx,dy){
 function updBld(b){
   if(b.anim<1)b.anim=Math.min(1,b.anim+1/50);
   const d=b.d;if(!d.wpn)return;
-  if(b.cd>0)b.cd--;
+  if(b.cd>0)b.cd-=G.teams[b.team].pf||1;
   if(b.tgt&&(b.tgt.dead||hyp(b.tgt.x-b.x,b.tgt.y-b.y)-rad(b.tgt)>d.rng))b.tgt=null;
   if(!b.tgt&&G.frame%10===b.id%10)b.tgt=findTarget(b,d,d.rng);
   if(b.tgt){const ang=Math.atan2(b.tgt.y-b.y,b.tgt.x-b.x);b.ta=turn(b.ta,ang,.15);if(b.cd<=0&&Math.abs(angD(b.ta,ang))<.2){fire(b,d,b.tgt);if(d.burst){b.bn=(b.bn||0)+1;if(b.bn>=d.burst){b.bn=0;b.cd=d.cd;}else b.cd=7;}else b.cd=d.cd;}}
@@ -1348,7 +1442,7 @@ function updProj(){
       if(p.splash)splash({tx:p.tx,ty:p.ty,splash:p.splash,dmg:p.dmg,w:p.w,team:p.team,src:p.src});
       G.fx.push({k:'boom',x:p.tx,y:p.ty,z:p.z1,r:p.splash?8:(p.w==='rocket'?7:5),t:12,T:12});
     }else{p.x+=dx/dl*p.spd;p.y+=dy/dl*p.spd;
-      if((p.w==='rocket'||p.w==='sam'||p.w==='aam'||p.w==='guided')&&G.parts.length<PMAX)G.parts.push({x:p.x,y:p.y,z:p.ez,vx:rnd(-.1,.1),vy:rnd(-.1,.1),vz:.08,t:22,T:22,c:'smoke'});
+      if((p.w==='rocket'||p.w==='sam'||p.w==='aam'||p.w==='lsam'||p.w==='aship'||p.w==='guided')&&G.parts.length<PMAX)G.parts.push({x:p.x,y:p.y,z:p.ez,vx:rnd(-.1,.1),vy:rnd(-.1,.1),vz:.08,t:22,T:22,c:'smoke'});
       else if(p.w==='torpedo'&&G.parts.length<PMAX)G.parts.push({x:p.x,y:p.y,z:.4,vx:rnd(-.1,.1),vy:rnd(-.1,.1),vz:.12,t:26,T:26,c:'foam'});}
   }
 }
@@ -1396,7 +1490,7 @@ function updCities(){
 }
 function income(t){
   let v=getHQ(t)?6:0;
-  for(const b of G.blds)if(!b.dead&&b.team===t&&b.type==='mine')v+=7;
+  for(const b of G.blds)if(!b.dead&&b.team===t){if(b.type==='mine')v+=7;else if(b.type==='gold')v+=12;else if(b.type==='oil')v+=9;}
   for(const c of G.cities)if(c.owner===t)v+=4;
   return t!==1?v*DIFF[G.diff].inc:v;
 }
@@ -1409,6 +1503,7 @@ function spawnUnit(type,team,b){
     if(i<0)return null;x=cxw(i);y=cyw(i);
   }
   const u=addUnit(type,team,x,y);
+  if(team!==1&&d.cap){const ik=G.teams[team].nat+'_inf';if(UT[ik])u.cargo=[ik+'@'+UT[ik].hp,ik+'@'+UT[ik].hp];}
   if(team===1){
     G.stats.built++;if(type==='hero')G.hero=u;
     const rx=b.rally?b.rally.x+rnd(-20,20):x+rnd(-30,30),ry=b.rally?b.rally.y+rnd(-20,20):y+rnd(14,40);u.order={k:'move',x:rx,y:ry,n:b.rally?0:1};requestPath(u,rx,ry);
@@ -1418,13 +1513,22 @@ function spawnUnit(type,team,b){
   }
   return u;
 }
+/* Lưới điện: cộng nguồn (Sở chỉ huy, nhà máy điện), trừ tải; pf = hệ số tốc độ khi thiếu điện (tối thiểu 35%). */
+function updPower(id){
+  const T=G.teams[id];let P=0,U=0,oil=0;
+  for(const b of G.blds){if(b.dead||b.team!==id)continue;const d=b.d;if(d.pwOut)P+=d.pwOut*(b.anim<1?b.anim:1);if(d.pw)U+=d.pw;if(b.type==='oil')oil++;}
+  const was=T.pf;T.pwP=Math.round(P);T.pwU=U;T.oilN=oil;T.pf=U<=P?1:Math.max(.35,P/U);
+  if(id===1&&T.pf<1&&was>=1&&G.frame-(T.pwWarn||-9999)>60*25){T.pwWarn=G.frame;toast('Thiếu điện! Xây thêm Nhà máy điện, nếu không mọi thứ sẽ chậm lại.','bad');sfx('alert');}
+}
 function updTeam(id){
   const T=G.teams[id];
-  if(T.bq){T.bq.t++;if(T.bq.t>=T.bq.T){T.bready=T.bq.type;T.bq=null;if(id===1){toast(BT[T.bready].name+' đã xây xong. Chọn nơi đặt.','good');sfx('ready');}}}
+  if(G.frame%20===id||T.pf===undefined)updPower(id);
+  const pf=T.pf;
+  if(T.bq){T.bq.t+=pf;if(T.bq.t>=T.bq.T){T.bready=T.bq.type;T.bq=null;if(id===1){toast(BT[T.bready].name+' đã xây xong. Chọn nơi đặt.','good');sfx('ready');}}}
   for(const cat of CATS){
     const q=T.pq[cat];if(!q.length)continue;
     const prods=G.blds.filter(b=>!b.dead&&b.team===id&&b.type===cat);if(!prods.length)continue;
-    T.pt[cat]+=Math.sqrt(prods.length);
+    T.pt[cat]+=Math.sqrt(prods.length)*pf*(cat==='barracks'?1:1+Math.min(3,T.oilN||0)*.1);
     if(T.pt[cat]>=UT[q[0]].time*60){
       const cnt=G.units.filter(u=>!u.dead&&u.team===id).length;
       if(cnt>=(id===1?110:DIFF[G.diff].cap+12)){T.pt[cat]=UT[q[0]].time*60;continue;}
@@ -1457,20 +1561,39 @@ function ai(t){
   let rival=0,rd=1e9;for(const k in G.teams){if(+k===t)continue;const h=getHQ(+k);if(!h)continue;const dd=hyp(h.x-hq.x,h.y-hq.y);if(dd<rd){rd=dd;rival=+k;}}
   const cnt=k=>{let n=0;for(const b of G.blds)if(!b.dead&&b.team===t&&b.type===k)n++;return n;},myCities=G.cities.filter(c=>c.owner===t);
   // --- kinh tế và xây dựng
+  A.bad=A.bad||{};
+  const freeDep=k=>{let best=null,bd=950;for(let i=0;i<DEPS.length;i++){const q=DEPS[i];if(q.k!==k||occ[q.cy*GW+q.cx]||A.bad[i])continue;const dd=hyp(q.x-hq.x,q.y-hq.y);if(dd<bd){bd=dd;best=q;}}return best;};
   if(!T.bq&&!T.bready){
     let type=null;const wantMines=Math.min(6,2+Math.floor(myCities.length/3)),tw=cnt('tower');
-    if(!cnt('barracks'))type='barracks';else if(cnt('mine')<Math.min(2,wantMines))type='mine';else if(!cnt('factory'))type='factory';
+    let eAirAll=0,eSeaAll=0;for(const u of foes){if(u.d.cls==='air')eAirAll++;else if(u.d.cls==='sea')eSeaAll++;}
+    const reach=q=>G.blds.some(b=>!b.dead&&b.team===t&&hyp(b.x-q.x,b.y-q.y)<220+b.hw);
+    const depGo=k=>{const q=freeDep(k);if(!q)return null;A.dep=q;if(canPlace(t,k,q.cx,q.cy,false))return k;
+      if(reach(q)){A.bad[DEPS.indexOf(q)]=1;return null;}return cnt('pylon')<8&&has(t,'power')?'pylon':null;};
+    if(!cnt('barracks'))type='barracks';else if(cnt('mine')<Math.min(2,wantMines))type='mine';
+    else if(!cnt('power')||T.pf<1||T.pwP-T.pwU<3)type='power';
+    else if(!cnt('factory'))type='factory';
     else if(A.threatT>G.frame-900&&tw<2+D.start)type='tower';
+    else if(cnt('gold')<(smart?2:1)&&(type=depGo('gold')));
+    else if(cnt('oil')<(G.diff==='hard'?2:1)&&(type=depGo('oil')));
     else if(cnt('mine')<wantMines)type='mine';else if(!cnt('airfield')&&G.frame>60*150)type='airfield';
+    else if(smart&&!cnt('radar')&&G.frame>60*200)type='radar';
+    else if(cnt('sam')<(G.diff==='hard'?2:1)&&eAirAll>=3&&has(t,'factory'))type='sam';
+    else if(!cnt('coastal')&&cnt('shipyard')&&eSeaAll>=2&&!A.noCoast)type='coastal';
     else if(!cnt('shipyard')&&G.frame>60*240&&!A.noYard)type='shipyard';
     else if(cnt('factory')<2&&T.credits>1800)type='factory';else if(cnt('barracks')<2&&T.credits>1500)type='barracks';
     else if(tw<3+D.start*2&&T.credits>2200)type='tower';
+    if(type&&type!=='power'&&BT[type].pw&&T.pwU+BT[type].pw>T.pwP)type='power';
     A.saving=0;if(type&&has(t,BT[type].req)){if(T.credits>=BT[type].cost){T.credits-=BT[type].cost;T.bq={type,t:0,T:BT[type].time*60};}else A.saving=Math.min(1200,BT[type].cost)*.8;}
   }
   if(T.bready){
-    let ax=hq.x,ay=hq.y;if(T.bready==='tower'&&A.front&&smart&&Math.random()<.5){ax=A.front.x;ay=A.front.y;}
-    const s=findSpot(t,T.bready,ax,ay,false,3,14)||findSpot(t,T.bready,hq.x,hq.y,false,3,18);
-    if(s)addBld(T.bready,t,s.cx,s.cy);else{T.credits+=BT[T.bready].cost*.6;if(T.bready==='shipyard')A.noYard=true;}T.bready=null;
+    const bt=T.bready;let s=null;
+    if(BT[bt].dep){const q=A.dep&&A.dep.k===BT[bt].dep&&!occ[A.dep.cy*GW+A.dep.cx]?A.dep:freeDep(BT[bt].dep);if(q&&canPlace(t,bt,q.cx,q.cy,false))s={cx:q.cx,cy:q.cy};}
+    else if(bt==='pylon'&&A.dep){let nb=null,bd=1e9;for(const b of G.blds)if(!b.dead&&b.team===t){const dd=hyp(b.x-A.dep.x,b.y-A.dep.y);if(dd<bd){bd=dd;nb=b;}}
+      if(nb){const k=Math.min(1,210/Math.max(1,bd));s=findSpot(t,'pylon',nb.x+(A.dep.x-nb.x)*k,nb.y+(A.dep.y-nb.y)*k,false,0,5);}
+      if(!s)A.bad[DEPS.indexOf(A.dep)]=1;}
+    else{let ax=hq.x,ay=hq.y;if((bt==='tower'||bt==='sam')&&A.front&&smart&&Math.random()<.5){ax=A.front.x;ay=A.front.y;}
+      s=findSpot(t,bt,ax,ay,false,3,14)||findSpot(t,bt,hq.x,hq.y,false,3,18);}
+    if(s)addBld(bt,t,s.cx,s.cy);else{T.credits+=BT[bt].cost*.6;if(bt==='shipyard')A.noYard=true;if(bt==='coastal')A.noCoast=true;if(BT[bt].dep&&A.dep)A.bad[DEPS.indexOf(A.dep)]=1;}T.bready=null;
   }
   // --- chọn quân theo khắc chế đội hình của đối thủ gần nhất
   const rf=foes.filter(u=>u.team===rival),nf=Math.max(1,rf.length);let eInf=0,eVeh=0,eAir=0,eSea=0;
@@ -1479,7 +1602,7 @@ function ai(t){
   const Wt={inf:1.2+eInf/nf*.5,at:.5+eVeh/nf*2.2,aainf:eAir?(.4+eAir/nf*2.5):.05,ifv:.6+eInf/nf*2,
     mbt:myRole('mbt')<2?3.2:1.6,arty:mine.length>=6?(myRole('arty')<2?1.8:.6):.2,mlrs:mine.length>12?(myRole('mlrs')<2?1.4:.5):0,aa:eAir>0?(myRole('aa')<2?2.2:1):0,
     scout:mine.length>=8&&myRole('scout')<1?0.8:.1,ucav:myRole('ucav')<2?1.1:.35,
-    heli:enemyAA<3?.9:.25,jet:eAir?1:.2,ship:eSea?1:.5,sub:eSea>0?(myRole('sub')<2?2:1):.4,eng:myRole('eng')<1&&mine.length>=8?1.2:0,sap:.4};
+    snp:.25+eInf/nf*.9,mor:mine.length>=5?.6:.15,apc:.5,heli:enemyAA<3?.9:.25,jet:eAir?1:.2,ship:eSea?1:.5,sub:eSea>0?(myRole('sub')<2?2:1):.4,eng:myRole('eng')<1&&mine.length>=8?1.2:0,sap:.4};
   if(!smart)for(const k in Wt)Wt[k]=k==='eng'?0:1;
   const reserve=mine.length>=A.waveMin?(A.saving||0):0;
   for(const cat of CATS){
@@ -1523,6 +1646,10 @@ function ai(t){
       if(!tg){for(const c of G.cities){if(c.owner!==rival||c.isl)continue;let guard=0;for(const u of foes)if(Math.abs(u.x-c.x)<200&&hyp(u.x-c.x,u.y-c.y)<200)guard++;if(guard<2){const dd=hyp(c.x-hq.x,c.y-hq.y);if(dd<bd){bd=dd;tg=c;}}}}
       if(tg){cmdMoveAI(fast,tg.x,tg.y);take(fast);}A.nextRaid=G.frame+60*(G.diff==='hard'?55:85);}
   }
+  // --- xe chở quân thả lính khi chạm địch hoặc tới gần mục tiêu tấn công
+  for(const u of mine){if(!u.d.cap||!u.cargo||!u.cargo.length)continue;
+    const near=A.op&&A.op.ids.has(u)&&A.op.st==='attack'&&hyp(A.op.tgt.x-u.x,A.op.tgt.y-u.y)<380;
+    if(u.tgt||near){const out=unload(u);if(A.op&&A.op.ids.has(u))for(const q of out)A.op.ids.add(q);if(out.length&&A.op)cmdMoveAI(out,A.op.tgt.x,A.op.tgt.y);}}
   // --- tàu chiến và tàu ngầm tuần tra sông biển và săn tàu đối thủ
   for(const u of mine){
     if(u.d.cls==='sea'&&!u.order&&!u.tgt&&!u.path&&!u.pathReq&&G.frame%120===(u.id%120)){
@@ -2072,6 +2199,15 @@ gl_FragColor=vec4(col*vCol,mix(0.72,0.95,d));
     }
     const m=new THREE.Mesh(d.build(.3),unitMat);m.castShadow=true;m.add(new THREE.Mesh(m.geometry,outlineMat));m.position.set((b.x1+b.x2)/2,0,(b.y1+b.y2)/2);m.rotation.y=-ang;scene.add(m);worldObjs.push(m);
   }
+  {const grp=new THREE.Group();const mk=k=>{const d=new MBld();
+      if(k==='gold'){for(const [x,z,r] of [[-5,-3,5.5],[4,-5,4.6],[2,5,5],[-6,5,3.6],[7,3,3]])d.sph('#7d6e58',r,r*.62,r,x,r*.25,z);
+        for(const [x,z,r] of [[-3,-1,1.6],[3,-3,1.3],[1,3,1.8],[-5,4,1.1],[6,2,1],[0,0,1.2]])d.sph('#ffd23f',r,r*.8,r,x,r*.9+1.6,z);}
+      else{d.cyl('#0d0d0d',9.5,.35,0,.2,0);d.cyl('#1c1c1c',5,.4,3,.25,-2);for(const [x,z,r] of [[-9,4,2.4],[8,-6,2],[9,5,1.6],[-7,-7,2.2]])d.sph('#6e665a',r,r*.6,r,x,r*.2,z);
+        d.sph('#050505',1.4,.6,1.4,-2,.5,3);d.sph('#050505',1,.5,1,2,.5,-4);}
+      return d.build(.4);};
+    const gg={gold:mk('gold'),oil:mk('oil')};
+    for(const q of DEPS){const m=new THREE.Mesh(gg[q.k],unitMat);m.position.set(q.x,groundY(q.x,q.y),q.y);m.receiveShadow=true;grp.add(m);}
+    scene.add(grp);worldObjs.push(grp);}
   if(snowP){scene.remove(snowP);snowP=null;}
   if(MAP.weather==='snow'){const n=900,g2=new THREE.BufferGeometry(),p=new Float32Array(n*3);for(let i=0;i<n;i++){p[i*3]=rnd(-900,900);p[i*3+1]=rnd(0,650);p[i*3+2]=rnd(-900,900);}
     g2.setAttribute('position',new THREE.BufferAttribute(p,3));snowP=new THREE.Points(g2,new THREE.PointsMaterial({size:5,map:dotTex,color:0xffffff,transparent:true,opacity:.85,depthWrite:false}));snowP.frustumCulled=false;scene.add(snowP);}
@@ -2174,7 +2310,8 @@ function buildTrees(){
      nên three.js tự bỏ các ô ngoài khung nhìn (cả lượt vẽ bóng), còn cullTrees() bỏ các ô chìm trong sương xa. */
   if(!treeMat)treeMat=new THREE.MeshLambertMaterial({vertexColors:true});
   const CH=Math.max(256,Math.ceil(Math.max(TW,TH)/14)),R1=GW+1,TSH=TIERS[gfx.tier].treeShadow;treeSets=[];
-  sets.forEach((items,k)=>{if(!items.length)return;const base=mk(k);base.computeBoundingBox();const bb=base.boundingBox,br=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z)*.5,bh=bb.max.y;
+  const nearDep=(x,y)=>{if(!depCell)return false;const cx=Math.floor(x/CELL),cy=Math.floor(y/CELL);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=cx+dx,Y=cy+dy;if(X>=0&&Y>=0&&X<GW&&Y<GH&&depCell[Y*GW+X])return true;}return false;};
+  sets.forEach((items,k)=>{items=items.filter(t=>!nearDep(t.x,t.y));if(!items.length)return;const base=mk(k);base.computeBoundingBox();const bb=base.boundingBox,br=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z)*.5,bh=bb.max.y;
     const buckets=new Map();for(const t of items){t.fk=Math.round(t.y/CELL)*R1+Math.round(t.x/CELL);t.fv=-1;const key=Math.floor(t.x/CH)*4096+Math.floor(t.y/CH);let l=buckets.get(key);if(!l)buckets.set(key,l=[]);l.push(t);}
     for(const list of buckets.values()){
       for(let i=list.length-1;i>0;i--){const j=(R()*(i+1))|0,tmp=list[i];list[i]=list[j];list[j]=tmp;}   // xáo để mức đồ họa thấp chỉ vẽ phần đầu mà vẫn rải đều
@@ -2292,20 +2429,55 @@ function makeUnitObj(u){
   const tracks=(b,len,z0)=>{for(const z of [-z0,z0]){b.box(TRK,len,3.4,3,0,2.1,z);const n=Math.round(len/4.2);for(let i=0;i<n;i++)b.cz('#565656',1.55,3.2,-len/2+2.2+i*(len-4.4)/(n-1),1.9,z);b.box(CB,len+.6,.6,3.7,0,4.2,z);}};
   const wheels=(b,xs,z0,r=2.3)=>{for(const x of xs)for(const z of [-z0,z0]){b.cz(TY,r,1.9,x,r,z);b.cz('#7d7d7d',r*.45,2.1,x,r,z);}};
   const idp=(b,x,y,z,w=3,dp=3)=>b.box(TM,w,.14,dp,x,y,z);
+  /* Quân phục: rằn ri theo mẫu của từng nước (ô vuông kỹ thuật số hoặc mảng loang), mũ đúng kiểu, cờ quốc gia trên vai trái,
+     băng tay màu phe ở hai cánh tay để phân biệt đội khi hai bên cùng một nước. */
+  const IN=NA.inf,FLAG=IN.flag||u.d.nat||'vn';
+  const camo=(b,x0,y0,z0,sx,sy,sz,n,seed)=>{if(!IN.cam)return;let r=seed;const R=()=>{r=(r*16807)%2147483647;return r/2147483647;};const dg=IN.pat==='digi';
+    for(let i=0;i<n;i++){const f=(R()*4)|0,c=IN.cam[(R()*IN.cam.length)|0],w=dg?.42+R()*.2:.8+R()*.6,hh=dg?w*(R()<.5?1:2):w*(.6+R()*.5),u2=R()-.5,v=R()-.5;
+      const W=Math.min(w,f<2?sz:sx),Hh=Math.min(hh,sy);
+      if(f<2)b.box(c,.08,Hh,W,x0+(f?-1:1)*(sx/2+.03),y0+v*(sy-Hh),z0+u2*(sz-W));
+      else b.box(c,W,Hh,.08,x0+u2*(sx-W),y0+v*(sy-Hh),z0+(f===2?1:-1)*(sz/2+.03));}};
+  const flagPatch=(b,x,y,z)=>{const W=1.3,H=.86,t=.06,f=(c,dx,dy,w,h,l=0)=>b.box(c,w,h,t,x+dx,y+dy,z-l*.025),hs=k=>H/k;
+    switch(FLAG){
+      case 'vn':f('#da251d',0,0,W,H);f('#ffde00',0,0,.34,.34,1);break;
+      case 'th':f('#a51931',0,0,W,H);f('#f4f5f8',0,0,W,H*4/6,1);f('#2d2a4a',0,0,W,H*2/6,2);break;
+      case 'my':for(let k=0;k<5;k++)f(k%2?'#f4f5f8':'#cc0001',0,H/2-hs(5)*(k+.5),W,hs(5));f('#010066',-W/4,H/4,W/2,H/2,1);f('#ffcc00',-W/4,H/4,.18,.18,2);break;
+      case 'kh':f('#032ea1',0,0,W,H);f('#e00025',0,0,W,H/2,1);f('#f4f5f8',0,0,.32,.26,2);break;
+      case 'ru':f('#f4f5f8',0,H/3,W,H/3);f('#0039a6',0,0,W,H/3);f('#d52b1e',0,-H/3,W,H/3);break;
+      case 'us':for(let k=0;k<5;k++)f(k%2?'#f4f5f8':'#b22234',0,H/2-hs(5)*(k+.5),W,hs(5));f('#3c3b6e',-W/4,H/4,W/2,H/2,1);break;
+      case 'cn':f('#de2910',0,0,W,H);f('#ffde00',-W/3,H/5,.26,.26,1);break;
+      case 'fr':f('#0055a4',-W/3,0,W/3,H);f('#f4f5f8',0,0,W/3,H);f('#ef4135',W/3,0,W/3,H);break;}};
+  const helmet=(b)=>{const HC=IN.h;
+    switch(IN.hat){
+      case 'pith':b.g(NI('dome'),HC,1.95,1.5,1.95,0,12.1,0);b.cyl(HC,2.35,.25,0,12.1,0);b.sph('#c8102e',.32,.32,.12,1.5,12.9,0);break;
+      case 'ach':b.g(NI('dome'),HC,1.95,1.45,1.95,0,12.15,0);b.box('#2a2a2a',.45,.7,.9,1.85,12.75,0);for(const z of [-1.75,1.75])b.box('#5d5440',1.6,.3,.12,0,12.5,z);b.box('#3a3a2e',.25,.4,3.6,1.6,12.25,0);break;
+      case 'ratnik':b.g(NI('dome'),HC,2.05,1.6,2.05,0,12.05,0);for(const z of [-1.95,1.95])b.box('#3a3f30',1.8,.32,.14,0,12.4,z);b.box('#1e1e1e',.6,.45,1.7,1.25,13.25,0);break;
+      case 'qgf':b.g(NI('dome'),HC,2,1.5,2,0,12.1,0);b.cyl(HC,2.12,.22,0,12.05,0);break;
+      case 'spectra':b.g(NI('dome'),HC,1.95,1.5,1.95,0,12.1,0);b.box(HC,.55,.25,2.8,1.8,12.15,0);b.box('#2a2a2a',.3,.3,3.6,-.4,12.6,0);break;
+      default:b.g(NI('dome'),HC,2,1.5,2,0,12.1,0);b.box(HC,2,.9,3.9,-.2,12.3,0);}};
   const soldier=(opt)=>{
-    M('',b=>{const U=NA.inf.u,HC=NA.inf.h;
-      b.box(U,2.2,4.4,3.4,0,8.4,0);b.box(CB,2.4,1,3.6,0,6.4,0);b.box(TM,2.5,1.5,3.6,0,9.6,0);b.sph(SKIN,1.45,1.5,1.45,0,11.9,0);
+    M('',b=>{const U=IN.u,VE=IN.p,seed=7+FLAG.charCodeAt(0)*13+FLAG.charCodeAt(1);
+      b.box(U,2.2,4.4,3.4,0,8.4,0);camo(b,0,8.4,0,2.2,4.4,3.4,16,seed);
+      b.box('#3a3a2e',2.4,.8,3.6,0,6.5,0);b.box(VE,2.5,1.6,3.6,0,9.4,0);b.box('#2e2e26',.3,.9,1.2,1.3,9.2,-.9);b.box('#2e2e26',.3,.9,1.2,1.3,9.2,.9);
+      b.sph(SKIN,1.45,1.5,1.45,0,11.9,0);
       if(opt.hat==='hard'){b.g(NI('dome'),'#ffd23f',1.95,1.4,1.95,0,12.1,0);b.box('#ffd23f',1.3,.3,3,1.6,12.2,0);}
       else if(opt.hat==='band'){b.sph('#2a2a2a',1.5,1.1,1.5,0,12.5,0);b.box(TM,3.1,.6,3.1,0,12.4,0);}
-      else{b.g(NI('dome'),HC,1.95,1.5,1.95,0,12.1,0);if(NA.inf.hat==='pith')b.cyl(HC,2.35,.25,0,12.1,0);else b.box(HC,2,.9,3.9,-.2,12.3,0);}
-      b.box(U,1.1,4,1.1,0,8.6,-2.3);b.box(U,3.4,1.1,1.1,1.4,9.6,2.2);b.box('#3a3f35',1.6,3.2,2.6,-1.8,8.6,0);
+      else if(opt.ghillie){b.sph('#4f5a32',1.75,1.4,1.75,0,12.4,0);for(const [x,z] of [[-.8,-1.2],[-.9,1.1],[-1.4,0],[.2,-1.4],[.2,1.4]])b.sph(z<0?'#6b6a3c':'#3e4a28',.75,.6,.75,x,12.1+(x+1)*.3,z);}
+      else helmet(b);
+      b.box(U,1.1,4,1.1,0,8.6,-2.3);camo(b,0,8.6,-2.3,1.1,4,1.1,4,seed+5);b.box(TM,1.2,.9,1.2,0,9.4,-2.3);flagPatch(b,0,8.5,-2.88);
+      b.box(U,3.4,1.1,1.1,1.4,9.6,2.2);b.box(TM,.8,1.2,1.2,.4,9.6,2.2);
+      b.box('#3a3f35',1.6,3.2,2.6,-1.8,8.6,0);
+      if(opt.ghillie)for(const [y,z] of [[9.8,-1],[8.6,.6],[10.2,.9],[7.6,-.6]])b.sph(z<0?'#5d5a34':'#46522c',.9,.8,.7,-2.1,y,z);
       if(opt.tube==='at'){b.cx('#4a5240',1,10,.5,11.3,2.4);b.cx(GUN,1.3,1.6,5,11.3,2.4);b.g(NI('cone'),'#5a6a4a',.95,2.4,.95,6.8,11.3,2.4,0,0,-Math.PI/2);}
       else if(opt.tube==='aa'){b.aim('#55604a',.75,12,-3,9.6,2.4,.55);b.aim(GUN,1,2,-3+Math.cos(.55)*11,9.6+Math.sin(.55)*11,2.4,.55);b.box(GUN,1.6,2,1,1.6,10.4,2.4);}
       else if(opt.kit){b.box('#b5362b',2.6,1.8,1.4,2.8,6.8,2.4);b.box('#ddd',.5,.5,3.8,3.2,9.6,2.2);}
       else if(opt.sat){b.box('#5a4a2c',2.6,2.6,2,2.6,7.4,2.2);b.box(GUN,5,.6,.6,3,9.6,1.6);}
+      else if(opt.rifle==='snp'){b.box(GUN,10.5,.6,.6,4.8,9.6,1.6);b.box('#3d3a2a',3,1.3,.7,.4,9.3,1.6);b.cx('#1e1e1e',.45,3.4,3,10.4,1.6);b.box(GUN,.25,1.4,.25,7.6,8.8,1.4);b.box(GUN,.25,1.4,.25,7.6,8.8,1.8);}
+      else if(opt.mortar){b.aim('#3d4430',.55,6.6,3.2,.4,0,1.05);b.box('#2a2a2a',2.6,.35,2.6,3.2,.3,0);b.aim('#2a2a2a',.15,3.6,6.4,.2,.8,1.9);b.aim('#2a2a2a',.15,3.6,6.4,.2,-.8,1.9);
+        b.box('#5a4a2c',1.6,2.2,2.6,-2.1,8,0);for(const z of [-.7,0,.7])b.cyl('#6d7a58',.32,1.4,-2.1,9.6,z);b.box(GUN,4.6,.6,.6,2.4,9.4,1.6);}
       else{b.box(GUN,7.5,.7,.7,3.6,9.4,1.6);b.box('#5a3d1e',2.4,1.2,.7,.2,9,1.6);b.box(GUN,.6,1.7,.6,3.4,8.5,1.6);}
     });
-    const lf=b=>{b.box(NA.inf.p,1.5,5.4,1.5,0,-2.7,0);b.box('#1c1c1c',2.5,1,1.6,.4,-5.6,0);};
+    const lf=b=>{b.box(IN.p,1.5,5.4,1.5,0,-2.7,0);camo(b,0,-2.4,0,1.5,4.6,1.5,6,31);b.box('#1c1c1c',2.5,1,1.6,.4,-5.6,0);};
     leg('#l',0,6.2,-.95,lf,1);leg('#l',0,6.2,.95,lf,-1);
   };
   const truck=(b,ax,cab)=>{wheels(b,ax,4.3,2.5);b.box('#2a2a2a',ax[0]-ax[ax.length-1]+8,1.2,6,(ax[0]+ax[ax.length-1])/2,4.2,0);
@@ -2316,6 +2488,18 @@ function makeUnitObj(u){
     case 'aainf':soldier({tube:'aa'});break;
     case 'eng':soldier({hat:'hard',kit:1});break;
     case 'sap':soldier({hat:'band',sat:1});break;
+    case 'snp':soldier({ghillie:1,rifle:'snp'});break;
+    case 'mor':soldier({mortar:1});break;
+    case 'apc':{
+      const trk=S.apc==='track';
+      M('',b=>{
+        if(trk){tracks(b,21,4.8);b.box(CA,20,6.4,8.8,-.4,7.2,0);b.box(CA,5,4.4,8.8,9.6,6.6,0,0,0,-.75);b.box(CB,7,.5,7,-5,10.6,0);b.box('#2a2a2a',.6,4.6,5.4,-10.7,7,0);}
+        else{wheels(b,[8.2,3,-2.6,-8],4.5,2.3);b.box('#2a2a2a',20,1.3,6,0,4.1,0);b.box(CA,22,5.6,9,0,7.4,0);b.box(CA,6,4,8.6,11.6,6.6,0,0,0,-.6);b.box(CA,4,3,8.8,-11.4,7,0,0,0,.45);
+          b.box(CB,9,.5,7.4,-4,10.4,0);for(const z of [-4.55,4.55])b.box(CB,6,2.6,.2,-3,7.6,z);b.box('#1b2a38',.3,1.2,5,13.4,8.4,0);}
+        for(const z of [-4.5,4.5])b.box(TM,14,.45,.35,-1,9.6,z);b.box('#f3e9b0',.5,.9,1.1,trk?11.8:14.2,7,2.6);b.box('#f3e9b0',.5,.9,1.1,trk?11.8:14.2,7,-2.6);
+        b.cyl('#999',.1,7,-8,13.4,-3);});
+      turret(trk?-1:2,trk?10.4:10.2,0,b=>{b.cyl(CB,1.8,1.6,0,.8,0);b.box(CB,.6,1.4,2.6,1.4,1.8,0);b.cx(GUN,.35,6,3.8,1.4,0);idp(b,-1.2,1.62,0,1.6,1.6);});
+      break;}
     case 'mbt':{
       const st=S.tank,ab=st==='abrams',L=ab||st==='leclerc'?27:25;
       M('',b=>{tracks(b,L,5.7);b.box(CA,L-3,3.2,8.4,-.6,4.7,0);b.box(CA,7,3.2,8.4,L/2-2.3,4.2,0,0,0,-.5);b.box(CB,8.5,1,7,-7,6.6,0);b.box('#2a2a2a',1,1.6,6.4,-L/2+.6,5,0);
@@ -2490,7 +2674,7 @@ function makeBldObj(b){
   const K='B'+b.type+'|'+b.team,M=(sfx,fn,parent=I)=>kitMesh(K+sfx,fn,parent,true,true);
   const turret=(y,fn)=>{o.turret=new THREE.Group();o.turret.position.set(0,y,0);I.add(o.turret);M('#t',fn,o.turret);};
   const flagAt=(x,y,z)=>{o.flag=new THREE.Mesh(GEO.flag,flagMats[b.team]);o.flag.position.set(x,y,z);o.flag.castShadow=true;I.add(o.flag);};
-  const CON='#8b8478',CON2='#6f695f',WIN='#1b2a38',GUN='#2c2c2c',YEL='#e0b33e',SAND='#b7a57a';
+  const CON='#8b8478',CON2='#6f695f',WIN='#1b2a38',GUN='#2c2c2c',YEL='#e0b33e',SAND='#b7a57a',TRK='#1c1c1c';
   const base=d=>{d.box(CON,s-1,14,s-1,0,-4.2,0);d.box(CON2,s+.8,1,s+.8,0,2.3,0);};
   switch(b.type){
     case 'hq':
@@ -2559,6 +2743,65 @@ function makeBldObj(b){
         for(const x of [-1,1]){d.sph('#e2463b',1.1,1.4,1.1,x*7.5,12.4,13.6);d.box('#ffd23f',.3,1.6,.3,x*7.5,14.2,13.6);}
         d.cyl('#ddd',.5,24,-(h-5),15.6,h-5);});
       flagAt(-(h-5)+6.4,23.4,h-5);break;
+    case 'gold':
+      M('',d=>{base(d);
+        for(const [x,z] of [[-1,-1],[1,-1],[-1,1],[1,1]])d.box('#5a4632',1.2,22,1.2,-5+x*3.2,13.6,-5+z*3.2,z*.07,0,-x*.07);
+        d.box('#5a4632',8,1.2,8,-5,24.4,-5);d.box('#5a4632',8,1.2,8,-5,15,-5);d.cz('#2e2e2e',3.4,1,-5,26.4,-5);d.cz('#999',1,1.4,-5,26.4,-5);d.box('#888',.3,.3,9,-5,24.8,-1);
+        d.box('#22180f',6,3.6,6,-5,4.6,-5);d.box('#6b5640',7.4,.8,7.4,-5,6.6,-5);
+        d.box('#c9b48a',11,7,9,8,6.3,-7);d.box(C.m,12,1,10,8,10.2,-7,0,0,.12);d.box('#3a2a1a',3,4.4,.4,8,5,-2.4);
+        d.sph('#c9961a',6,3.2,6,6,3.6,8);d.sph('#ffd23f',3.8,2.4,3.8,8.6,5,9.4);d.sph('#e6b422',3,1.9,3,2.6,4.4,10.4);d.sph('#fff2a8',1,1,1,9,7.2,9);
+        d.box('#5a5a5a',24,.4,.5,-1,3,12.6);d.box('#5a5a5a',24,.4,.5,-1,3,14.6);for(let x=-12;x<=10;x+=3)d.box('#5a3d1e',.8,.4,3.4,x,2.8,13.6);
+        d.box('#6b6b6b',4.6,2.4,3,-8,4.6,13.6);d.sph('#ffd23f',1.9,1,1.3,-8,6,13.6);
+        d.cyl('#ddd',.3,13,h-3,9.2,-(h-3));d.box(C.m,4.4,2.8,.2,h-.6,14,-(h-3));});
+      break;
+    case 'oil':
+      M('',d=>{base(d);
+        d.box('#2a2a2a',16,1,6,-3,3.3,-3);d.box('#3a3a3a',1.1,10.6,1.1,-2.4,8.6,-4.6,.18,0,0);d.box('#3a3a3a',1.1,10.6,1.1,-2.4,8.6,-1.4,-.18,0,0);
+        d.box('#b5362b',4.4,4,4.4,-9,5.8,-3);d.cz('#555',2.6,1.2,-9,6.8,-.6);d.cyl('#444',.9,4,6.6,5,-3);d.cyl('#666',1.6,.8,6.6,3.4,-3);
+        d.cyl('#d8d2c2',6.4,11,6,8.3,8);d.g(NI('dome'),'#c8c2b2',6.4,1.8,6.4,6,13.8,8);d.cyl(C.m,6.6,1.4,6,9,8);d.box('#888',.4,12,.4,12.6,9,8);
+        d.cx('#666',.5,13,-.4,3.8,6.4);d.cyl('#111',5,.25,-8,2.95,9);d.cyl('#1a1a1a',2.6,.3,-6,3,11);
+        d.cyl('#ddd',.3,13,-(h-3),9.2,h-3);d.box(C.m,4.4,2.8,.2,-(h-3)+2.4,14,h-3);});
+      o.nod=new THREE.Group();o.nod.position.set(-2.4,13.6,-3);I.add(o.nod);
+      M('#n',d=>{d.box('#c8a82a',17,1.5,1.5,1.5,0,0);d.box('#c8a82a',2.6,4.6,1.8,10.4,-1.4,0);d.box('#222',.3,8,.3,11.2,-6,0);d.box('#555',3.4,3,2.2,-6.6,-1.6,0);},o.nod);
+      break;
+    case 'power':
+      M('',d=>{base(d);
+        d.g(NI('taper'),'#dcd7cb',8.4,15,8.4,-6,10.3,-5);d.g(NI('taper'),'#d2ccbf',5.8,6,5.8,-6,20.6,-5,Math.PI,0,0);d.cyl('#b9b2a4',5.9,.8,-6,23.6,-5);
+        d.box('#aab1b6',12,9,10,7,7.3,-5);d.box(C.m,12.6,1.2,10.6,7,12.3,-5);d.box(WIN,12.2,1.6,10.2,7,9.4,-5);d.cyl('#8a8a8a',1.3,12,10,17.8,-7);d.cyl('#b5362b',1.4,1.2,10,23.4,-7);
+        d.box('#5a6066',9,4.4,5,5,5,9);for(const x of [2,5,8])d.cyl('#cfd8dc',.5,3.4,x,8.8,9);d.box('#8a8f94',.5,9,.5,-8,7.3,10);d.box('#8a8f94',.5,9,.5,-2,7.3,10);d.box('#8a8f94',7,.5,.5,-5,11.6,10);
+        d.box(YEL,2,2,.3,-11,5,13);d.box('#111',.6,1.2,.32,-11,5,13.02);
+        d.cyl('#ddd',.3,13,h-3,9.2,h-3);d.box(C.m,4.4,2.8,.2,h-.6,14,h-3);});
+      break;
+    case 'pylon':
+      M('',d=>{const ST='#8a8f94';
+        for(const [x,z] of [[1,1],[1,-1],[-1,1],[-1,-1]]){d.box(ST,.7,25,.7,x*1.9,14.6,z*1.9,z*.075,0,-x*.075);d.box(CON,2.2,1.6,2.2,x*2.9,2.4,z*2.9);}
+        for(const y of [8,14,20]){const w=2.9-(y-2)/24*1.9;d.box(ST,w*2,.35,.35,0,y,w);d.box(ST,w*2,.35,.35,0,y,-w);d.box(ST,.35,.35,w*2,w,y,0);d.box(ST,.35,.35,w*2,-w,y,0);
+          d.box(ST,.25,6.6,.25,0,y-3,w+.05,0,0,.62);d.box(ST,.25,6.6,.25,0,y-3,-w-.05,0,0,-.62);}
+        d.box(ST,15,.8,.8,0,24.2,0);d.box(ST,10,.7,.7,0,19.2,0);d.box(ST,.6,3,.6,0,26.6,0);
+        for(const x of [-6.8,6.8])d.cyl('#cfd8dc',.4,2.2,x,22.8,0);for(const x of [-4.4,4.4])d.cyl('#cfd8dc',.4,2.2,x,17.8,0);
+        d.box(C.m,1.4,1,1.4,0,28.4,0);});
+      break;
+    case 'radar':
+      M('',d=>{base(d);
+        d.box('#aab1b6',11,6,9,-7,5.8,7);d.box(C.m,11.6,1,9.6,-7,9.3,7);d.box(WIN,11.2,1.4,9.2,-7,7.2,7);
+        d.cyl('#8a8f94',1.4,13,5,9.3,-5);d.box('#5a6066',6,3,6,5,4.3,-5);d.box('#4a5240',7,3.4,5,-8,4.5,-8);d.cyl('#333',.3,6,-8,9,-8);
+        d.cyl('#ddd',.3,13,h-3,9.2,h-3);d.box(C.m,4.4,2.8,.2,h-.6,14,h-3);});
+      o.spin=new THREE.Group();o.spin.position.set(5,16.4,-5);I.add(o.spin);
+      M('#d',d=>{d.box('#5a6066',2.4,2,2.4,0,0,0);d.box('#e2e6e9',.7,7,15,1.2,3.4,0,0,0,-.28);for(let k=-6;k<=6;k+=2)d.box('#9aa3ab',.75,6.6,.25,1.25,3.4,k,0,0,-.28);d.box('#888',3,.4,.4,-.3,1.4,0);},o.spin);
+      break;
+    case 'sam':
+      M('',d=>{base(d);
+        d.box('#4f5a40',10,5,6,7,5.3,10);d.box(WIN,.3,1.6,4,12.1,6.4,10);d.box('#c8ccd0',.6,10,.6,-9,7.8,10);d.box('#d9dde0',7,4.6,.5,-9,13.6,10,-.3,0,0);
+        d.box('#4a5240',8,4,6,-9,4.8,-10);d.cyl('#333',.3,5,-11,9,-10);for(let k=0;k<6;k++){const a=k/6*TAU+.3;d.box(SAND,4.4,1.8,2,Math.cos(a)*13.4,3.6,Math.sin(a)*13.4,0,-a+Math.PI/2,0);}});
+      turret(4,d=>{d.box('#4a5240',13,2.2,7.4,0,1.1,0);d.box('#3d4a2f',3,3.4,8,-5,3.2,0);
+        for(const z of [-2.7,-.9,.9,2.7])d.aim('#5d6b45',.9,13,-5.5,3.6,z,.9);d.box('#2a2a2a',.6,1.6,7.6,-5,10.4,0);});
+      break;
+    case 'coastal':
+      M('',d=>{base(d);d.cyl('#8a8f94',.6,17,-10,11,-10);d.box('#d9dde0',6,3.6,.5,-10,20,-10);d.box('#4f5a40',8,5,6,8,5.3,-10);d.box(WIN,.3,1.6,4,12.1,6.4,-10);
+        for(let k=0;k<6;k++){const a=k/6*TAU+.3;d.box(SAND,4.4,1.8,2,Math.cos(a)*13.4,3.6,Math.sin(a)*13.4,0,-a+Math.PI/2,0);}});
+      turret(4,d=>{for(const x of [-5,-1,4])for(const z of [-3.6,3.6])d.cz(TRK,1.6,1.4,x,1.6,z);d.box('#3d4a2f',16,2.4,7,0,3,0);d.box('#3d4a2f',4,4.4,7,7.4,5.2,0);d.box(WIN,.3,1.6,5,9.45,6,0);
+        for(const z of [-1.6,1.6])d.aim('#6d7a58',1.5,13,-7,5.4,z,.32);});
+      break;
     case 'tunnel':
       M('',d=>{d.sph('#7a6a45',h-.5,8.4,h-.5,0,2.2,0);d.sph('#6a5a38',h*.7,6,h*.7,-3,5.4,-3);
         d.box('#5a3d1e',1.5,9,1.5,-4.8,5.2,h-4.6);d.box('#5a3d1e',1.5,9,1.5,4.8,5.2,h-4.6);d.box('#5a3d1e',12.6,1.5,1.8,0,10,h-4.6);d.box('#120d08',8.4,8,4,0,5,h-6.4);
@@ -2729,7 +2972,7 @@ function makeCityObj(c){
   prog.rotation.x=-Math.PI/2;prog.position.y=gy0+3;prog.renderOrder=4;prog.visible=false;g.add(prog);
   world.add(g);return{c,g,flag,zone,prog,lastCap:null,lastOwner:-1};
 }
-function newScene(){clearWorld();resetTrees();fogV.fill(.3);fogAttr.array.fill(.3);fogAttr.updateRange.count=-1;fogAttr.needsUpdate=true;fogFull=true;miniFogVer=-1;for(let t=0;t<=4;t++)flagMats[t]=makeFlag(t);cityObjs=G.cities.map(makeCityObj);}
+function newScene(){clearWorld();if(wireObj){scene.remove(wireObj);wireObj.geometry.dispose();wireObj=null;}wireSig='';resetTrees();fogV.fill(.3);fogAttr.array.fill(.3);fogAttr.updateRange.count=-1;fogAttr.needsUpdate=true;fogFull=true;miniFogVer=-1;for(let t=0;t<=4;t++)flagMats[t]=makeFlag(t);cityObjs=G.cities.map(makeCityObj);}
 const cam={tx:0,ty:0,yaw:0,dist:520};
 function clampCam(){cam.tx=clamp(cam.tx,0,W);cam.ty=clamp(cam.ty,0,H);cam.dist=clamp(cam.dist,150,Math.max(W,H)*.8);}
 function centerOn(x,y){cam.tx=x;cam.ty=y;clampCam();}
@@ -2767,12 +3010,30 @@ function groundPoint(sx,sy){
   const q=ray.ray.intersectPlane(groundPlane,_v2);return q?{x:q.x,y:q.z}:null;
 }
 function fxHeight(f){return groundY(f.x,f.y)+(f.z||4);}
+/* Dây điện: mỗi trụ nối tới trụ / nhà máy điện / sở chỉ huy gần nhất cùng phe (dựng lại khi danh sách công trình đổi). */
+let wireObj=null,wireSig='';
+function updWires(){
+  const nodes=G.blds.filter(b=>!b.dead&&(b.type==='pylon'||b.type==='power'||b.type==='hq'));
+  const sig=nodes.map(b=>b.id).join(',');if(sig===wireSig)return;wireSig=sig;
+  if(wireObj){scene.remove(wireObj);wireObj.geometry.dispose();wireObj=null;}
+  const pts=[],top=b=>b.type==='pylon'?22.6:b.type==='power'?12:18;
+  for(const a of nodes){if(a.type!=='pylon')continue;let best=null,bd=340;
+    for(const b of nodes){if(b===a||b.team!==a.team)continue;const dd=hyp(b.x-a.x,b.y-a.y);if(dd<bd){bd=dd;best=b;}}
+    if(!best)continue;const ga=groundY(a.x,a.y),gb=groundY(best.x,best.y);
+    for(const o of [-6.8,6.8]){const n=6;for(let k=0;k<n;k++){const t0=k/n,t1=(k+1)/n,sag=t=>Math.sin(t*Math.PI)*Math.min(9,bd*.03);
+      const P=t=>[a.x+o+(best.x+o*(best.type==='pylon'?1:.4)-a.x-o)*t,ga+top(a)+(gb+top(best)-ga-top(a))*t-sag(t),a.y+(best.y-a.y)*t];
+      pts.push(...P(t0),...P(t1));}}}
+  if(!pts.length)return;
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));
+  wireObj=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0x2b2b2b}));scene.add(wireObj);
+}
 function render3D(){
   if(!renderer)return;
   updateCamera();
   const fr=++renderFrame;OUTL.value=clamp(cam.dist*.0019,.3,2.4);if(snowP){const sp=snowP.geometry.attributes.position,a=sp.array;for(let i=1;i<a.length;i+=3){a[i]-=2.2;a[i-1]+=.5;if(a[i]<0){a[i]=650;a[i-1]=rnd(-900,900);}}sp.needsUpdate=true;snowP.position.set(cam.tx,0,cam.ty);}if(waterMat)waterMat.uniforms.time.value=performance.now()*.00096;
   if(G){
     if(fr%3===0)applyFog();
+    if(fr%20===0)updWires();
     cullTrees();
     for(const u of G.units){
       if(u.dead)continue;let o=objs.get(u);if(!o){o=makeUnitObj(u);objs.set(u,o);}o.seen=fr;
@@ -2793,9 +3054,11 @@ function render3D(){
     for(const b of G.blds){
       if(b.dead)continue;let o=objs.get(b);if(!o){o=makeBldObj(b);objs.set(b,o);}o.seen=fr;
       o.g.visible=b.team===1||!!expl[cellAt(b.x,b.y)];
-      o.inner.scale.y=.12+.88*b.anim;if(o.turret)o.turret.rotation.y=-b.ta;if(o.flag)o.flag.rotation.y=Math.sin(fr*.05+b.id)*.3;
+      o.inner.scale.y=.12+.88*b.anim;if(o.turret)o.turret.rotation.y=-b.ta;
+      {const pf=G.teams[b.team].pf;if(o.nod&&!G.paused)o.nod.rotation.z=Math.sin(fr*.05*pf+b.id)*.28;if(o.spin&&!G.paused&&pf>=1)o.spin.rotation.y+=.035;}if(o.flag)o.flag.rotation.y=Math.sin(fr*.05+b.id)*.3;
       if(!G.paused){
         if(b.hp<b.d.hp*.5&&fr%7===0&&G.parts.length<PMAX)G.parts.push({x:b.x+rnd(-b.hw/2,b.hw/2),y:b.y+rnd(-b.hw/2,b.hw/2),z:16,vx:rnd(-.1,.1),vy:rnd(-.1,.1),vz:.45,t:60,T:60,c:Math.random()<.3?'fire':'smoke'});
+        if(b.type==='power'&&b.anim>=1&&fr%9===0&&G.parts.length<PMAX)G.parts.push({x:b.x-6+rnd(-2,2),y:b.y-5+rnd(-2,2),z:26,vx:rnd(-.05,.05),vy:rnd(-.05,.05),vz:.3,t:80,T:80,c:'foam'});
         if(b.type==='factory'&&fr%12===0&&G.parts.length<PMAX)G.parts.push({x:b.x+b.hw-7,y:b.y-(b.hw-7),z:28,vx:rnd(-.08,.08),vy:rnd(-.08,.08),vz:.35,t:70,T:70,c:'smoke'});
       }
     }
@@ -2856,7 +3119,7 @@ function render3D(){
     tracer.geometry.setDrawRange(0,n*2);tracer.geometry.attributes.position.needsUpdate=true;tracer.geometry.attributes.color.needsUpdate=true;
     // bóng công trình khi đặt
     ghost.visible=false;
-    if(G.place&&G.mg){const s=BT[G.place].size,cx=Math.round(G.mg.x/CELL-s/2),cy=Math.round(G.mg.y/CELL-s/2);const ok=canPlace(1,G.place,cx,cy,false);
+    if(G.place&&G.mg){const s=BT[G.place].size,{cx,cy}=placeCell(G.place,G.mg.x,G.mg.y);const ok=canPlace(1,G.place,cx,cy,false);
       const gx=(cx+s/2)*CELL,gz=(cy+s/2)*CELL;ghost.scale.set(s*CELL,16,s*CELL);ghost.position.set(gx,groundY(gx,gz)+8,gz);ghost.material.color.set(ok?0x6fd07b:0xff4d4d);ghost.visible=true;G.ghostOk={cx,cy,ok};}
   }
   renderer.render(scene,camera);
@@ -2975,6 +3238,7 @@ function drawHud(){
   hx.setTransform(dpr,0,0,dpr,0,0);hx.clearRect(0,0,vw,vh);
   if(!G||!camera)return;
   drawUnitPaths();
+  if(G.place&&BT[G.place].dep){for(const q of DEPS)if(q.k===BT[G.place].dep&&!occ[q.cy*GW+q.cx]&&expl[cellAt(q.x,q.y)])hudCircle(q.x,q.y,24,q.k==='gold'?'rgba(255,215,64,.95)':'rgba(40,40,40,.95)',false);}
   if(G.place){for(const b of G.blds)if(!b.dead&&b.team===1)hudCircle(b.x,b.y,230+b.hw,'rgba(255,210,63,.75)',true);
     for(const c of G.cities)if(c.owner===1)hudCircle(c.x,c.y,210,'rgba(255,210,63,.75)',true);
     if(G.ghostOk&&BT[G.place].rng){const s=BT[G.place].size;hudCircle((G.ghostOk.cx+s/2)*CELL,(G.ghostOk.cy+s/2)*CELL,BT[G.place].rng,'rgba(255,255,255,.6)',true);}}
@@ -3007,6 +3271,7 @@ function drawMini(){
   const s=mc.width/W;mx.drawImage(miniBg,0,0);
   if(!fogC){fogC=document.createElement('canvas');fogC.width=GW;fogC.height=GH;fogX=fogC.getContext('2d');fogI=fogX.createImageData(GW,GH);}
   {if(miniFogVer!==fogVer||fogI.width!==GW||fogI.height!==GH){miniFogVer=fogVer;if(fogI.width!==GW||fogI.height!==GH){fogC.width=GW;fogC.height=GH;fogI=fogX.createImageData(GW,GH);}const d=fogI.data;for(let i=0;i<N;i++)d[i*4+3]=vis[i]?0:expl[i]?95:190;fogX.putImageData(fogI,0,0);}mx.drawImage(fogC,0,0,mc.width*TW/W,mc.height*TH/H);}
+  for(const q of DEPS){if(!expl[cellAt(q.x,q.y)])continue;mx.fillStyle=q.k==='gold'?'#ffd23f':'#111';mx.beginPath();mx.arc(q.x*s,q.y*s,1.8,0,TAU);mx.fill();}
   for(const c of G.cities){mx.fillStyle=c.owner?TC[c.owner].m:'#f3ead0';mx.fillRect(c.x*s-2,c.y*s-2,4,4);mx.strokeStyle='#000';mx.lineWidth=.6;mx.strokeRect(c.x*s-2,c.y*s-2,4,4);}
   for(const b of G.blds){if(b.dead||(b.team!==1&&!expl[cellAt(b.x,b.y)]))continue;mx.fillStyle=TC[b.team].l;mx.fillRect(b.x*s-2.5,b.y*s-2.5,5,5);mx.fillStyle=TC[b.team].m;mx.fillRect(b.x*s-1.5,b.y*s-1.5,3,3);}
   for(const u of G.units){if(u.dead||(u.team!==1&&!vis[cellAt(u.x,u.y)]))continue;mx.fillStyle=TC[u.team].m;mx.fillRect(u.x*s-1,u.y*s-1,2,2);}
@@ -3051,7 +3316,7 @@ Object.assign(ICON,{
   sap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="14" r="6"/><path d="M15 9l3-3M18 6l2-3M18 6l3 1"/></svg>',
   ifv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l3-5h12l5 5z"/><circle cx="7" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M9 11V8h5v3M14 9h7"/></svg>',
   mlrs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17h20M5 17v-3h14v3"/><circle cx="7" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/><path d="M7 13l10-7M9 14l10-7M5 12l10-7"/></svg>'});
-const RICON={inf:'inf',at:'rocket',aainf:'aainf',eng:'engineer',sap:'sap',ifv:'ifv',mbt:'tank',arty:'arty',mlrs:'mlrs',aa:'aa',scout:'scout',ucav:'ucav',heli:'heli',jet:'jet',ship:'ship',sub:'sub'};
+const RICON={snp:'snp',mor:'mor',apc:'apc',inf:'inf',at:'rocket',aainf:'aainf',eng:'engineer',sap:'sap',ifv:'ifv',mbt:'tank',arty:'arty',mlrs:'mlrs',aa:'aa',scout:'scout',ucav:'ucav',heli:'heli',jet:'jet',ship:'ship',sub:'sub'};
 const ARM={inf:'bộ binh',veh:'xe bọc thép',air:'máy bay',ship:'tàu',bld:'công trình'};
 const ui={tab:'build',items:{},info:null};
 const iconOf=k=>BT[k]?ICON[k]:ICON[RICON[UT[k].role]];
@@ -3071,12 +3336,12 @@ function drawFlag(g,nat,w,h){
   else{g.fillStyle='#f3efe2';g.fillRect(0,0,w,h);}
 }
 const FLAGURL={};function flagURL(nat){if(!FLAGURL[nat]){const c=document.createElement('canvas');c.width=90;c.height=60;drawFlag(c.getContext('2d'),nat,90,60);FLAGURL[nat]=c.toDataURL();}return FLAGURL[nat];}
-function myItems(){const nat=G.teams[1].nat;if(ui.tab==='build')return['mine','barracks','factory','tower','airfield','shipyard'].concat(nat==='vn'?['tunnel']:[]);return RORDER.filter(r=>ROLES[r].cat===ui.tab&&UT[nat+'_'+r]).map(r=>nat+'_'+r);}
+function myItems(){const nat=G.teams[1].nat;if(ui.tab==='build')return['mine','power','pylon','gold','oil','barracks','factory','tower','radar','sam','airfield','shipyard','coastal'].concat(nat==='vn'?['tunnel']:[]);return RORDER.filter(r=>ROLES[r].cat===ui.tab&&UT[nat+'_'+r]).map(r=>nat+'_'+r);}
 function buildItems(){
   const box=$('#items');box.innerHTML='';ui.items={};
   for(const k of myItems()){
     const d=BT[k]||UT[k],b=document.createElement('button');b.className='item';
-    b.innerHTML=`<span class="q"></span>${iconOf(k)}<span class="nm">${d.name}</span><span class="cs">${d.cost}</span><span class="pg"></span>`;
+    b.innerHTML=`<span class="q"></span>${iconOf(k)}<span class="nm">${BT[k]?(NB[k]&&NB[k][G.teams[1].nat]?(k==='radar'?'Radar ':'')+NB[k][G.teams[1].nat]:d.name):d.name}</span><span class="cs">${d.cost}</span><span class="pg"></span>`;
     b.onclick=()=>{showInfo(k);itemClick(k);};b.onpointerenter=()=>showInfo(k);b.onfocus=()=>showInfo(k);
     b.oncontextmenu=e=>{e.preventDefault();itemCancel(k);};
     box.appendChild(b);ui.items[k]=b;
@@ -3086,7 +3351,7 @@ function buildItems(){
 function bars(list){return'<div class="bars">'+list.map(([n,v,mx])=>`<div><span>${n}</span><i><em style="width:${Math.max(3,Math.min(100,v/mx*100))}%"></em></i></div>`).join('')+'</div>';}
 function showInfo(k){
   ui.info=k;const el=$('#itemInfo');if(!k){el.innerHTML='';return;}
-  if(BT[k]){const d=BT[k];el.innerHTML=`<b>${d.name}</b><span class="cost">${d.cost} ngân sách · ${d.time} giây</span><p>${d.tip}</p>`+(d.req&&d.req!=='hq'?`<p class="req">Cần: ${BT[d.req].name}</p>`:'')+bars(d.rng?[['Độ bền',d.hp,1500],['Hỏa lực',d.dmg*60/d.cd,70],['Tầm bắn',d.rng,320]]:[['Độ bền',d.hp,1500]]);return;}
+  if(BT[k]){const d=BT[k];el.innerHTML=`<b>${bName(k,G.teams[1].nat)}</b><span class="cost">${d.cost} ngân sách · ${d.time} giây${d.pw?' · dùng '+d.pw+' điện':d.pwOut?' · cấp '+d.pwOut+' điện':''}</span><p>${d.tip}</p>`+(d.req&&d.req!=='hq'?`<p class="req">Cần: ${BT[d.req].name}</p>`:'')+bars(d.rng?[['Độ bền',d.hp,1500],['Hỏa lực',d.dmg*60/d.cd,70],['Tầm bắn',d.rng,320]]:[['Độ bền',d.hp,1500]]);return;}
   const d=UT[k],dps=d.dmg*(d.burst||1)*60/(d.cd+(d.burst?d.burst*9:0)),w=DM[d.wpn],good=[],bad=[];
   if(d.dmg)for(const a in ARM){if(a==='air'?!d.air:!d.ground)continue;if(w[a]>=1.2)good.push(ARM[a]);else if(w[a]>0&&w[a]<=.5)bad.push(ARM[a]);}
   const tg=!d.dmg?'Không có vũ khí':d.air&&d.ground?'Bắn cả mặt đất và trên không':d.air?'Chỉ bắn mục tiêu trên không':'Chỉ bắn mục tiêu mặt đất';
@@ -3136,6 +3401,7 @@ function refreshTop(){
   if(!G)return;const T=G.teams[1],NA=NATIONS[T.nat];
   $('#credits').textContent=Math.floor(T.credits);$('#income').textContent='+'+Math.round(income(1))+'/giây';
   let pop=0;for(const u of G.units)if(!u.dead&&u.team===1)pop++;$('#pop').textContent=pop+'/110';
+  $('#pwr').textContent=T.pwU+'/'+T.pwP;$('#pwrStat').classList.toggle('low',T.pf<1);
   $('#cityCount').textContent=G.cities.filter(c=>c.owner===1).length+'/'+G.cities.length;
   $('#clock').textContent=fmtTime(G.frame/60);
   {let wl=1e9;for(const k in G.ais)if(!G.ais[k].dead)wl=Math.min(wl,G.ais[k].op?0:(G.ais[k].nextWave-G.frame)/60);$('#wave').textContent=wl>1e8?'–':wl>0?fmtTime(wl):'đang tiến quân';}
@@ -3147,10 +3413,10 @@ function refreshTop(){
   $('#boxBtn').classList.toggle('on',G.boxMode);$('#powerBtn').classList.toggle('on',!!G.powerArm);
   $('#pauseBtn').textContent=G.paused?'▶':'⏸';
   const si=$('#selInfo'),sel=[...G.sel].filter(u=>!u.dead);let html,sell='';
-  if(sel.length===1){const u=sel[0],d=u.d;html='<strong>'+d.name+(u.rank?' '+(u.rank===2?'★★':'★'):'')+'</strong><div class="hp"><em style="width:'+(u.hp/d.hp*100)+'%"></em></div>Máu '+Math.ceil(u.hp)+'/'+d.hp+' · hạ '+(u.kills||0)+' địch'+(u.rank?' · '+(u.rank===2?'Tinh nhuệ':'Kỳ cựu')+' (+'+u.rank*20+'% hỏa lực)':'')+'<br>Tầm bắn '+d.rng+' · tầm nhìn '+d.sight+(d.cls==='land'?'<br>Đang đứng: '+terrText(cellAt(u.x,u.y)).split(' | ').map(x=>x.split(' · ')[0]).join(', '):'');}
+  if(sel.length===1){const u=sel[0],d=u.d;html='<strong>'+d.name+(u.rank?' '+(u.rank===2?'★★':'★'):'')+'</strong><div class="hp"><em style="width:'+(u.hp/d.hp*100)+'%"></em></div>Máu '+Math.ceil(u.hp)+'/'+d.hp+' · hạ '+(u.kills||0)+' địch'+(u.rank?' · '+(u.rank===2?'Tinh nhuệ':'Kỳ cựu')+' (+'+u.rank*20+'% hỏa lực)':'')+'<br>Tầm bắn '+d.rng+' · tầm nhìn '+d.sight+(d.cap?'<br>Đang chở '+(u.cargo||[]).length+'/'+d.cap+' lính':'')+(d.cls==='land'?'<br>Đang đứng: '+terrText(cellAt(u.x,u.y)).split(' | ').map(x=>x.split(' · ')[0]).join(', '):'');}
   else if(sel.length){const cnt={};sel.forEach(u=>cnt[u.d.role]=(cnt[u.d.role]||0)+1);let hp=0,mx=0;sel.forEach(u=>{hp+=u.hp;mx+=u.d.hp;});
     html='<strong>Đã chọn '+sel.length+' đơn vị</strong><div class="hp"><em style="width:'+(hp/mx*100)+'%"></em></div><div class="chips">'+RORDER.filter(r=>cnt[r]).map(r=>'<span>'+ICON[RICON[r]]+cnt[r]+'</span>').join('')+'</div>';}
-  else if(G.selB&&!G.selB.dead){const b=G.selB;html='<strong>'+b.d.name+'</strong>'+tname(b.team)+'<div class="hp"><em style="width:'+(b.hp/b.d.hp*100)+'%"></em></div>Độ bền '+Math.ceil(b.hp)+'/'+b.d.hp;
+  else if(G.selB&&!G.selB.dead){const b=G.selB;html='<strong>'+bName(b.type,G.teams[b.team].nat)+'</strong>'+tname(b.team)+'<div class="hp"><em style="width:'+(b.hp/b.d.hp*100)+'%"></em></div>Độ bền '+Math.ceil(b.hp)+'/'+b.d.hp;
     if(b.team===1&&CATS.includes(b.type)){const q=T.pq[b.type];html+=q.length?'<br>Hàng chờ: '+q.slice(0,5).map(k=>UT[k].name).join(', ')+(q.length>5?'…':''):'<br>Hàng chờ trống.';html+='<br>Chạm lên mặt đất để đặt điểm tập kết.';}
     if(b.team===1&&b.type!=='hq')sell='Bán (+'+Math.round(b.d.cost*.5*b.hp/b.d.hp)+')';}
   else html='<strong>Chưa chọn gì</strong>Chạm vào quân ta để chọn, kéo chuột để chọn vùng. Đứng gần một điểm để chiếm; mỗi điểm cho +4 ngân sách mỗi giây và hồi máu cho quân đứng gần.';
@@ -3191,9 +3457,9 @@ function tap(sx,sy,right,shift,touch){
   if(right){if(G.place||G.powerArm||G.amove||G.patrol){G.place=null;G.powerArm=false;G.amove=false;G.patrol=false;}else{G.sel.clear();G.selB=null;}updHint();return;}
   const w=groundPoint(sx,sy);if(!w)return;
   if(G.place){
-    const s=BT[G.place].size,cx=Math.round(w.x/CELL-s/2),cy=Math.round(w.y/CELL-s/2);
+    const {cx,cy}=placeCell(G.place,w.x,w.y),pd=BT[G.place];
     if(canPlace(1,G.place,cx,cy,false)){addBld(G.place,1,cx,cy);G.teams[1].bready=null;G.place=null;sfx('ready');refreshItems();}
-    else toast(BT[G.place].coast?'Xưởng tàu phải đặt sát biển, gần căn cứ hoặc thành phố của ta':'Không thể đặt ở đây','bad');
+    else toast(pd.dep?(pd.dep==='gold'?'Mỏ vàng phải đặt lên điểm quặng vàng':'Giếng dầu phải đặt lên điểm dầu')+' trong vùng xây dựng của ta (kéo Trụ điện tới nếu ở xa)':pd.coast?pd.name+' phải đặt sát biển, gần căn cứ hoặc thành phố của ta':'Không thể đặt ở đây','bad');
     updHint();return;
   }
   if(G.powerArm==='stake'){
@@ -3204,6 +3470,11 @@ function tap(sx,sy,right,shift,touch){
   const isQ=shift||!!(G&&G.queueMode);
   if(G.patrol&&sel.length){cmdPatrol(sel,w.x,w.y,isQ);G.patrol=false;updHint();return;}
   if(G.amove&&sel.length){cmdMove(sel,w.x,w.y,true,isQ);G.amove=false;updHint();return;}
+  if(e&&e.team===1&&e.kind==='u'&&e.d.cap&&sel.length&&sel.some(u=>u.d.armor==='inf'&&u.d.cls==='land')&&!sel.includes(e)){
+    const inf=sel.filter(u=>u.d.armor==='inf'&&u.d.cls==='land'),room=e.d.cap-(e.cargo||[]).length;
+    if(room<=0){toast(e.d.name+' đã đầy','bad');return;}
+    for(const u of inf.slice(0,room)){u.order={k:'board',t:e,n:0};u.tgt=null;u.queue=[];requestPath(u,e.x,e.y);}
+    toast(Math.min(room,inf.length)+' lính lên '+e.d.name+(inf.length>room?' (xe chỉ còn '+room+' chỗ)':''));return;}
   if(e&&e.team===1){
     if(e.kind==='u'){
       const now=performance.now();
@@ -3282,6 +3553,7 @@ window.addEventListener('keydown',e=>{
   else if(k==='a'&&!e.ctrlKey&&!e.metaKey){if(selArmy().length){G.amove=!G.amove;G.patrol=false;updHint();}}
   else if(k==='t'&&!e.ctrlKey&&!e.metaKey){if(selArmy().length){G.patrol=!G.patrol;G.amove=false;updHint();}}
   else if(k==='s'&&!e.ctrlKey){cmdStop(selArmy());}
+  else if(k==='u'&&!e.ctrlKey&&!e.metaKey){cmdUnload(selArmy());}
   else if(k==='q'){selectAll();}
   else if(k===' '){const hq=getHQ(1);if(hq)centerOn(hq.x,hq.y);}
   else if(k==='p'){G.paused=!G.paused;}
@@ -3324,6 +3596,7 @@ const pToggle=$('#panelToggleBtn');if(pToggle)pToggle.onclick=()=>{
 $('#boxBtn').onclick=()=>{if(G){G.boxMode=!G.boxMode;toast(G.boxMode?'Kéo trên bản đồ để chọn vùng':'Kéo để cuộn bản đồ');}};
 $('#allBtn').onclick=()=>{if(G)selectAll();};
 $('#stopBtn').onclick=()=>{if(G)cmdStop(selArmy());};
+$('#unloadBtn').onclick=()=>{if(G)cmdUnload(selArmy());};
 $('#deselBtn').onclick=()=>{if(G){G.sel.clear();G.selB=null;G.place=null;G.powerArm=false;G.amove=false;updHint();}};
 $('#homeBtn').onclick=()=>{if(!G)return;const hq=getHQ(1);if(hq)centerOn(hq.x,hq.y);};
 $('#rotLBtn').onclick=()=>{cam.yaw-=Math.PI/4;};
@@ -3470,7 +3743,9 @@ const HELP=`<ul class="help">
 <li><b>Chọn quân:</b> chạm hoặc nhấp vào quân ta; kéo chuột trái để chọn vùng; nhấp đúp để chọn mọi đơn vị cùng loại trên màn hình.</li>
 <li><b>Ra lệnh & Đi tuần:</b> chạm lên mặt đất để di chuyển, lên quân địch để tấn công. Nút ⚔ (phím A) để tiến công. Nút 🔄 (phím T) để đi tuần tra qua lại giữa 2 điểm và tự bắn địch. Giữ phím <b>Shift</b> hoặc bật nút <b>⛓ Nối lệnh</b> để xếp hàng các điểm đến theo thứ tự 1, 2, 3...</li>
 <li><b>Góc nhìn:</b> kéo một ngón (hoặc kéo chuột phải, phím mũi tên, đưa chuột ra mép) để cuộn; chụm hai ngón hoặc lăn chuột để phóng to; xoay hai ngón, kéo chuột giữa, phím Z/X hoặc nút ⟲ ⟳ để xoay; R quay về hướng Bắc.</li>
-<li><b>Kinh tế:</b> Sở chỉ huy +6, mỗi Trạm tiếp tế +7, mỗi điểm chiếm được +4 ngân sách mỗi giây. Đứng gần một điểm không có địch để chiếm.</li>
+<li><b>Kinh tế:</b> Sở chỉ huy +6, mỗi Trạm tiếp tế +7, Mỏ vàng +12, Giếng dầu +9, mỗi điểm chiếm được +4 ngân sách mỗi giây. Mỏ vàng chỉ đặt lên điểm quặng vàng (chấm vàng trên bản đồ), Giếng dầu lên điểm dầu (chấm đen); mỗi giếng dầu còn tăng 10% tốc độ sản xuất xe, máy bay, tàu.</li>
+<li><b>Điện:</b> ⚡ trên thanh trên cùng là điện đang dùng / đang cấp. Sở chỉ huy cấp 10, mỗi Nhà máy điện cấp 25. Thiếu điện thì xây dựng, sản xuất và vũ khí công trình chậm lại, radar tắt. Trụ điện cao thế kéo vùng xây dựng đi xa để vươn tới mỏ ở xa.</li>
+<li><b>Xe chở quân:</b> chọn lính bộ rồi chạm vào xe thiết giáp chở quân của ta để lên xe (tối đa 5); chọn xe rồi bấm 🚪 Thả quân (phím U). Xe bị phá thì lính nhảy ra, bị thương.</li>
 <li><b>Xây dựng:</b> chọn công trình, đợi xây xong rồi đặt trong vòng vàng quanh căn cứ hoặc điểm đã chiếm. Xưởng đóng tàu phải sát sông, biển.</li>
 <li><b>Địa hình:</b> đi trên đường nhanh hơn hẳn; rừng che chắn cho bộ binh nhưng làm xe chậm; sườn núi dốc thì xe không lên được, phải theo đường đèo; đứng trên cao bắn xuống mạnh hơn, xa hơn và nhìn xa hơn; ruộng trũng và tuyết làm xe chậm. Rê chuột lên bản đồ để xem loại địa hình.</li>
 <li><b>Sông và cầu:</b> quân bộ chỉ qua sông ở cầu và bến phà. Giữ cầu là giữ được cả một bờ. Tàu chiến chạy được trên sông lớn.</li>
@@ -3478,12 +3753,12 @@ const HELP=`<ul class="help">
 <li><b>Sương mù:</b> chỉ thấy địch trong tầm nhìn của quân, công trình và điểm của ta.</li>
 <li><b>Thăng cấp và hồi máu:</b> hạ 3 rồi 8 địch để lên ★ và ★★. Quân hồi máu khi đứng gần điểm của ta; công binh sửa xe và công trình.</li>
 <li><b>Lưu ván:</b> mỗi ván có một ô lưu riêng, tự lưu mỗi 30 giây và khi bạn mở trình đơn hoặc rời trang; nút 💾 để lưu ngay. Màn hình đầu liệt kê mọi ván đã lưu (tối đa 12) để chọn Chơi tiếp hoặc Xóa. Ván lưu nằm trong trình duyệt này, trên máy này.</li>
-<li><b>Phím tắt & Mobile:</b> Q chọn toàn quân, S dừng, T đi tuần, A tấn công, Space về căn cứ, Ctrl+1–9 lưu nhóm, 1–9 gọi nhóm, P tạm dừng. Trên điện thoại: nút 🏭 cho phép thu gọn/mở rộng bảng sản xuất để quan sát chiến trường toàn màn hình.</li>
+<li><b>Phím tắt & Mobile:</b> Q chọn toàn quân, S dừng, U thả quân khỏi xe, T đi tuần, A tấn công, Space về căn cứ, Ctrl+1–9 lưu nhóm, 1–9 gọi nhóm, P tạm dừng. Trên điện thoại: nút 🏭 cho phép thu gọn/mở rộng bảng sản xuất để quan sát chiến trường toàn màn hình.</li>
 <li><b>Thắng:</b> phá hủy Sở chỉ huy của mọi đối thủ. <b>Thua:</b> mất Sở chỉ huy của ta.</li>
 </ul>`;
 const cfg={map:'quangtri',nat:'vn',n:2,ai:['rand','rand','rand'],start:0,diff:'normal'};
 function showCard(html){$('#card').innerHTML=html;$('#overlay').classList.remove('hide');}
-function hideCard(){$('#overlay').classList.add('hide');}
+function hideCard(){$('#overlay').classList.add('hide');stopArsenalViewer();}
 function drawPreview(cv,m){
   const g=cv.getContext('2d'),w=cv.width,h=cv.height,[x0,x1,y0,y1]=m.box,mw=(x1-x0)*m.kx,mh=y1-y0,s=Math.min(w/mw,h/mh),ox=(w-mw*s)/2,oy=(h-mh*s)/2,p=(lon,lat)=>[ox+(lon-x0)*m.kx*s,oy+(y1-lat)*s];
   const T=THEMES[m.theme],rgb=a=>'rgb('+a.map(Math.round).join(',')+')',poly=(pts)=>{g.beginPath();pts.forEach((q,i)=>{const [x,y]=p(q[0],q[1]);i?g.lineTo(x,y):g.moveTo(x,y);});g.closePath();};
@@ -3504,6 +3779,225 @@ function gfxHTML(){
   <div class="desc"><small>Máy: ${esc(gfx.gpu)} · ${navigator.hardwareConcurrency||'?'} luồng CPU${mem?' · '+(mem>=8?'≥8':mem)+' GB RAM':''}. Đề xuất cho máy này: <b>${TIERS[gfx.detected].label}</b>${gfx.why?' ('+esc(gfx.why)+')':''}.<br>
   Đang dùng: <b>${TIERS[gfx.tier].label} · độ phân giải ${Math.round(gfx.scale*100)}%</b>${gfx.mode==='auto'?' — chế độ Tự động sẽ hạ hoặc nâng dần để giữ khoảng 60 khung/giây.':''}${aaNote}</small></div>`;
 }
+/* ================= KHO KHÍ TÀI VŨ TRANG 3D (ARSENAL SHOWROOM) ================= */
+const ROLE_META={
+  mbt:  {icon:'🛡',cat:'Xe tăng chủ lực'},
+  ifv:  {icon:'🚜',cat:'Thiết giáp bộ binh'},
+  arty: {icon:'💥',cat:'Pháo tự hành'},
+  mlrs: {icon:'🚀',cat:'Pháo phản lực'},
+  aa:   {icon:'🎯',cat:'Phòng không'},
+  heli: {icon:'🚁',cat:'Trực thăng vũ trang'},
+  jet:  {icon:'✈', cat:'Tiêm kích phản lực'},
+  ship: {icon:'🚢',cat:'Chiến hạm mặt nước'},
+  sub:  {icon:'⚓',cat:'Tàu ngầm chiến lược'},
+  ucav: {icon:'🛸',cat:'Drone chiến đấu UCAV'},
+  scout:{icon:'🛰',cat:'Drone trinh sát'},
+  inf:  {icon:'🪖',cat:'Bộ binh tác chiến'},
+  at:   {icon:'🎯',cat:'Tổ chống tăng'},
+  aainf:{icon:'📡',cat:'Tổ phòng không vác vai'},
+  sap:  {icon:'💣',cat:'Đặc công bộc phá'},
+  eng:  {icon:'🔧',cat:'Công binh'},
+  snp:  {icon:'🎯',cat:'Bắn tỉa'},
+  mor:  {icon:'💥',cat:'Súng cối'},
+  apc:  {icon:'🚌',cat:'Thiết giáp chở quân'}
+};
+let currentViewerRole='mbt';
+function renderUnitSpecs(natId,role){
+  const u=UT[natId+'_'+role];if(!u)return '';
+  const hpPct=Math.min(100,Math.round(u.hp/6.5));
+  const dmgPct=Math.min(100,Math.round((u.dmg||0)/0.65));
+  const rngPct=Math.min(100,Math.round((u.rng||0)/3.2));
+  const spdPct=Math.min(100,Math.round(u.spd/0.026));
+  const wpnMap={snipe:'Súng bắn tỉa',lsam:'Tên lửa phòng không tầm xa',aship:'Tên lửa diệt hạm',mg:'Súng máy liên thanh',mg2:'Pháo 23mm / Súng máy',rocket:'Tên lửa chống tăng ATGM',shell:'Pháo nòng trơn hạng nặng',arty:'Lựu pháo tầm xa (sát thương lan)',flak:'Pháo phòng không bắn nhanh',sam:'Tên lửa phòng không',aam:'Tên lửa không đối không',guided:'Tên lửa dẫn đường chính xác',satchel:'Bộc phá uy lực cao',torpedo:'Ngư lôi 533mm / Tên lửa diệt hạm',auto:'Pháo tự động bắn nhanh'};
+  const wpnName=wpnMap[u.wpn]||u.wpn||'Hỏa lực tiêu chuẩn';
+  const targetType=(u.air&&u.ground)?'Mặt đất & Trên không':(u.air?'Chỉ bắn trên không':(u.ground?'Chỉ bắn mặt đất':'Không vũ trang'));
+  return `<div class="arsenal-desc">${u.tip}</div>
+  <div class="arsenal-stat-grid">
+    <div class="stat-row"><span class="stat-lbl">Sinh lực</span><div class="stat-bar"><em style="width:${hpPct}%;background:#22c55e"></em></div><span class="stat-val">${u.hp}</span></div>
+    <div class="stat-row"><span class="stat-lbl">Hỏa lực</span><div class="stat-bar"><em style="width:${dmgPct}%;background:#ef4444"></em></div><span class="stat-val">${u.dmg||0}</span></div>
+    <div class="stat-row"><span class="stat-lbl">Tầm xa</span><div class="stat-bar"><em style="width:${rngPct}%;background:#eab308"></em></div><span class="stat-val">${u.rng?u.rng+'m':'–'}</span></div>
+    <div class="stat-row"><span class="stat-lbl">Tốc độ</span><div class="stat-bar"><em style="width:${spdPct}%;background:#38bdf8"></em></div><span class="stat-val">${u.spd.toFixed(2)}</span></div>
+  </div>
+  <div class="arsenal-meta-chips">
+    <span class="arsenal-meta-chip">💰 Ngân sách: <b>${u.cost}</b></span>
+    <span class="arsenal-meta-chip">⏱ Chế tạo: <b>${u.time}s</b></span>
+    <span class="arsenal-meta-chip">🎯 Tác chiến: <b>${targetType}</b></span>
+    <span class="arsenal-meta-chip">🔫 Trang bị: <b>${wpnName}</b></span>
+  </div>`;
+}
+function arsenalHTML(natId){
+  const NA=NATIONS[natId];if(!NA)return '';
+  const roles=RORDER.filter(r=>NA.u[r]);
+  if(!NA.u[currentViewerRole])currentViewerRole=NA.u.mbt?'mbt':roles[0];
+  const curRole=currentViewerRole,curUnit=UT[natId+'_'+curRole];
+  const tabs=roles.map(r=>{
+    const u=UT[natId+'_'+r],meta=ROLE_META[r]||{icon:'🪖',cat:r};
+    return `<button type="button" class="arsenal-tab${r===curRole?' on':''}" data-role="${r}" title="${meta.cat}: ${u.name}">
+      <span class="tab-icon">${meta.icon}</span>
+      <span class="tab-name">${u.name}</span>
+      <span class="tab-role">${meta.cat}</span>
+    </button>`;
+  }).join('');
+  return `
+  <div class="arsenal-box">
+    <div class="arsenal-head">
+      <div class="arsenal-title">
+        <img src="${flagURL(natId)}" class="arsenal-flag" alt="">
+        <div>
+          <h4>Kho Khí Tài Vũ Trang · Quân Đội ${NA.name}</h4>
+          <p>${NA.trait}</p>
+        </div>
+      </div>
+      <div class="arsenal-power">
+        <span>🚀 Đòn chiến lược:</span> <b>${NA.power}</b>
+      </div>
+    </div>
+    <div class="arsenal-body">
+      <div class="arsenal-view-wrap">
+        <canvas id="arsenalCanvas" width="460" height="290"></canvas>
+        <div class="arsenal-hud-top">
+          <div class="arsenal-cur-badge">
+            <div class="arsenal-cur-name" id="a3dCurName">${curUnit.name}</div>
+            <div class="arsenal-cur-role" id="a3dCurRole">${(ROLE_META[curRole]||{}).cat||curRole}</div>
+          </div>
+          <div class="arsenal-view-btns">
+            <button type="button" class="a3d-btn" id="a3dReset" title="Đặt lại góc nhìn">⟲ Góc nhìn</button>
+            <button type="button" class="a3d-btn on" id="a3dSpin" title="Tự động xoay 360°">🔄 Xoay</button>
+          </div>
+        </div>
+        <div class="arsenal-hint">⟲ Kéo chuột / vuốt để xoay 360° · Lăn chuột / chụm để phóng to</div>
+      </div>
+      <div class="arsenal-detail">
+        <div class="arsenal-tabs" id="arsenalTabs">${tabs}</div>
+        <div class="arsenal-specs" id="arsenalSpecs">${renderUnitSpecs(natId,curRole)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+let arsenalRenderer=null,arsenalScene=null,arsenalCamera=null;
+let arsenalAnimId=null,arsenalModelGroup=null,arsenalUnitObj=null;
+let a3dYaw=0.65,a3dPitch=0.38,a3dDist=48,a3dTargetDist=48,a3dTargetY=6,a3dDefDist=48,a3dOutl=.3;
+let a3dAutoSpin=true;
+
+function stopArsenalViewer(){
+  if(arsenalAnimId){cancelAnimationFrame(arsenalAnimId);arsenalAnimId=null;}
+  if(arsenalRenderer){try{arsenalRenderer.dispose();}catch(e){}arsenalRenderer=null;}
+  arsenalScene=null;arsenalCamera=null;arsenalModelGroup=null;arsenalUnitObj=null;
+}
+
+/* Đưa mô hình lên bệ xoay: chuẩn hóa kích thước theo khối bao (lính nhỏ hay tàu dài đều vừa khung),
+   đặt đáy lên bệ (máy bay lơ lửng) và tính khoảng cách camera theo góc nhìn để luôn thấy trọn mô hình. */
+function loadArsenalModel(nat,role){
+  if(!arsenalModelGroup)return;
+  while(arsenalModelGroup.children.length>0){arsenalModelGroup.remove(arsenalModelGroup.children[0]);}
+  arsenalUnitObj=null;
+  const key=nat+'_'+role,d=UT[key];if(!d)return;
+  const o=makeUnitObj({team:1,type:role,d,noWorld:true});
+  if(!o||!o.g)return;
+  arsenalUnitObj=o;if(o.ring&&o.ring.parent)o.ring.parent.remove(o.ring);
+  const box=new THREE.Box3().setFromObject(o.g),size=box.getSize(new THREE.Vector3());
+  const air=d.cls==='air',fit=air?30:32,sc=fit/Math.max(size.x,size.z,size.y*1.4,.001);
+  o.g.scale.setScalar(sc);
+  const c=box.getCenter(new THREE.Vector3());
+  o.g.position.set(-c.x*sc,(air?5:.6)-box.min.y*sc,-c.z*sc);
+  arsenalModelGroup.add(o.g);
+  const h=size.y*sc,r=.5*Math.hypot(size.x*sc,h,size.z*sc);
+  a3dTargetY=(air?5:.6)+h*.45;
+  a3dDefDist=a3dTargetDist=Math.max(22,r/Math.sin(THREE.MathUtils.degToRad(arsenalCamera?arsenalCamera.fov/2:19))*1.12);
+  a3dOutl=.35/sc;
+}
+
+function initArsenalViewer(canvas){
+  stopArsenalViewer();
+  if(!canvas||!window.THREE)return;
+  const w=canvas.clientWidth||460,h=canvas.clientHeight||290;
+  canvas.width=Math.round(w*Math.min(window.devicePixelRatio||1,2));
+  canvas.height=Math.round(h*Math.min(window.devicePixelRatio||1,2));
+  try{
+    arsenalRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+    arsenalRenderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    arsenalRenderer.setSize(w,h,false);
+  }catch(e){console.warn('arsenalRenderer failed:',e);return;}
+
+  arsenalScene=new THREE.Scene();
+  arsenalCamera=new THREE.PerspectiveCamera(38,w/h,1,1000);
+
+  const hemi=new THREE.HemisphereLight(0xffffff,0x8a7a5a,.85);arsenalScene.add(hemi);
+  const sunLight=new THREE.DirectionalLight(0xfff5e6,1.15);sunLight.position.set(30,50,40);arsenalScene.add(sunLight);
+  const rimLight=new THREE.DirectionalLight(0xffe2b0,.55);rimLight.position.set(-35,25,-35);arsenalScene.add(rimLight);
+  const fillLight=new THREE.DirectionalLight(0xffffff,.35);fillLight.position.set(0,-20,20);arsenalScene.add(fillLight);
+
+  const turntable=new THREE.Group();
+  const baseMesh=new THREE.Mesh(new THREE.CylinderGeometry(24,25.5,1.2,48),new THREE.MeshLambertMaterial({color:0x7a5a3a}));
+  baseMesh.position.y=-0.6;turntable.add(baseMesh);
+  const ringMesh=new THREE.Mesh(new THREE.RingGeometry(23.2,24.2,48),new THREE.MeshBasicMaterial({color:0xa8201a,side:THREE.DoubleSide}));
+  ringMesh.rotation.x=-Math.PI/2;ringMesh.position.y=0.02;turntable.add(ringMesh);
+  const plateMesh=new THREE.Mesh(new THREE.CircleGeometry(23,48),new THREE.MeshLambertMaterial({color:0xd9c9a6}));
+  plateMesh.rotation.x=-Math.PI/2;plateMesh.position.y=0.01;turntable.add(plateMesh);
+  const innerRingMesh=new THREE.Mesh(new THREE.RingGeometry(11.5,11.9,36),new THREE.MeshBasicMaterial({color:0xb9841a,transparent:true,opacity:.6,side:THREE.DoubleSide}));
+  innerRingMesh.rotation.x=-Math.PI/2;innerRingMesh.position.y=0.03;turntable.add(innerRingMesh);
+  arsenalScene.add(turntable);
+
+  arsenalModelGroup=new THREE.Group();
+  arsenalScene.add(arsenalModelGroup);
+
+  loadArsenalModel(cfg.nat,currentViewerRole);
+
+  let isDown=false,downX=0,downY=0;
+  canvas.onpointerdown=e=>{isDown=true;downX=e.clientX;downY=e.clientY;try{canvas.setPointerCapture(e.pointerId);}catch(err){}};
+  canvas.onpointermove=e=>{
+    if(!isDown)return;
+    const dx=e.clientX-downX,dy=e.clientY-downY;
+    downX=e.clientX;downY=e.clientY;
+    a3dYaw+=dx*0.008;
+    a3dPitch=Math.max(0.05,Math.min(1.25,a3dPitch+dy*0.006));
+  };
+  canvas.onpointerup=canvas.onpointercancel=e=>{isDown=false;try{canvas.releasePointerCapture(e.pointerId);}catch(err){}};
+  canvas.onwheel=e=>{e.preventDefault();a3dTargetDist=Math.max(a3dDefDist*.45,Math.min(a3dDefDist*2.2,a3dTargetDist*(1+e.deltaY*0.0012)));};
+
+  let touchStartDist=0;
+  canvas.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){touchStartDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+  },{passive:true});
+  canvas.addEventListener('touchmove',e=>{
+    if(e.touches.length===2){
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      if(touchStartDist>0){const f=touchStartDist/d;a3dTargetDist=Math.max(a3dDefDist*.45,Math.min(a3dDefDist*2.2,a3dTargetDist*f));touchStartDist=d;}
+    }
+  },{passive:true});
+
+  function aLoop(now){
+    arsenalAnimId=requestAnimationFrame(aLoop);
+    if(a3dAutoSpin&&!isDown)a3dYaw+=0.007;
+    a3dDist+=(a3dTargetDist-a3dDist)*0.12;
+    const cd=a3dDist*Math.cos(a3dPitch);
+    arsenalCamera.position.x=cd*Math.sin(a3dYaw);
+    arsenalCamera.position.y=a3dTargetY+a3dDist*Math.sin(a3dPitch);
+    arsenalCamera.position.z=cd*Math.cos(a3dYaw);
+    arsenalCamera.lookAt(0,a3dTargetY,0);
+
+    if(arsenalUnitObj){
+      if(arsenalUnitObj.spins)for(const sp of arsenalUnitObj.spins)sp.m.rotation[sp.ax]+=sp.sp*0.22;
+      if(arsenalUnitObj.turret&&!isDown)arsenalUnitObj.turret.rotation.y=Math.sin(now*0.0008)*0.18;
+    }
+    const ol=OUTL.value;OUTL.value=a3dOutl;   // viền mảnh theo tỉ lệ mô hình (OUTL dùng chung với bản đồ)
+    arsenalRenderer.render(arsenalScene,arsenalCamera);OUTL.value=ol;
+  }
+  arsenalAnimId=requestAnimationFrame(aLoop);
+}
+
+function selectArsenalUnit(role){
+  currentViewerRole=role;
+  document.querySelectorAll('#arsenalTabs .arsenal-tab').forEach(b=>{b.classList.toggle('on',b.dataset.role===role);});
+  const u=UT[cfg.nat+'_'+role],meta=ROLE_META[role]||{icon:'🪖',cat:role};
+  if(u){
+    const curNameEl=$('#a3dCurName');if(curNameEl)curNameEl.textContent=u.name;
+    const curRoleEl=$('#a3dCurRole');if(curRoleEl)curRoleEl.textContent=meta.cat;
+    const specsEl=$('#arsenalSpecs');if(specsEl)specsEl.innerHTML=renderUnitSpecs(cfg.nat,role);
+    loadArsenalModel(cfg.nat,role);
+  }
+}
 function showStart(){
   if(G)G.paused=true;
   const m=MAPS[cfg.map],na=NATIONS[cfg.nat];
@@ -3519,7 +4013,7 @@ function showStart(){
   <h3>1 · Chiến trường</h3><div class="grid">${mapCards}</div>
   <div class="desc"><b>${m.name}.</b> ${m.desc}</div>
   <h3>2 · Quốc gia của bạn</h3><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr))">${natCards}</div>
-  <div class="desc"><b>${na.name}.</b> ${na.trait}<br><small style="color:var(--muted)">Biên chế: ${roster}. Đòn chiến lược: ${na.power}.</small></div>
+  ${arsenalHTML(cfg.nat)}
   <h3>3 · Đối thủ</h3>
   <div class="choices">${[1,2,3].map(n=>`<button class="choice${cfg.n===n?' on':''}" data-k="n" data-v="${n}">${n} đối thủ</button>`).join('')}</div>
   <div class="choices" style="margin-top:8px">${slots}</div>
@@ -3532,8 +4026,15 @@ function showStart(){
   <details><summary>Cách chơi</summary>${HELP}</details>
   <p style="margin-top:14px;font-size:12px;color:var(--muted)">Đây là trò chơi giả tưởng. Tên vũ khí là tên thật, còn chỉ số được cân chỉnh cho dễ chơi chứ không phản ánh tính năng thực tế.</p>`);
   document.querySelectorAll('#card canvas[data-map]').forEach(c=>drawPreview(c,MAPS[c.dataset.map]));
+  initArsenalViewer($('#arsenalCanvas'));
   const card=$('#card');
   card.onclick=e=>{
+    const rb=e.target.closest('[data-role]');
+    if(rb){selectArsenalUnit(rb.dataset.role);return;}
+    const rst=e.target.closest('#a3dReset');
+    if(rst){a3dYaw=0.65;a3dPitch=0.38;a3dTargetDist=a3dDefDist;return;}
+    const spn=e.target.closest('#a3dSpin');
+    if(spn){a3dAutoSpin=!a3dAutoSpin;spn.classList.toggle('on',a3dAutoSpin);return;}
     const gb=e.target.closest('[data-g]');
     if(gb){const k=gb.dataset.g,v=gb.dataset.v;
       if(k==='mode'){gfx.mode=v;gfx.ceiling=LADDER.length-1;gfx.rung=LADDER.findIndex(([t,s])=>t===(v==='auto'?gfx.detected:v)&&s===1);[gfx.tier,gfx.scale]=LADDER[gfx.rung];applyGfx();}
