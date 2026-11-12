@@ -62,7 +62,9 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-
 #objBox span{color:#9fe0a8}
 #terrTip{position:absolute;right:8px;bottom:8px;z-index:3;pointer-events:none;background:var(--hud);color:var(--hudink);border-radius:6px;padding:5px 10px;font-size:12px;max-width:min(420px,60%);display:none;border-left:3px solid #6fd07b}
 #modeHint{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--hud);color:var(--hudink);padding:6px 14px;border-radius:999px;font-size:12.5px;display:none;z-index:4;pointer-events:none;border:1px solid #f0c24e}
-#cmdBar{position:absolute;left:8px;bottom:8px;z-index:3;display:flex;gap:5px;flex-wrap:wrap;max-width:calc(100% - 16px);align-items:flex-end}
+#cmdBar{position:absolute;left:8px;bottom:8px;z-index:3;display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto;max-width:calc(100% - 16px);align-items:flex-end;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,0px)}
+#cmdBar::-webkit-scrollbar{display:none}
+.mobile-only{display:none!important}
 .cb{display:flex;align-items:center;gap:6px;border:1px solid rgba(240,194,78,.35);background:var(--hud);color:var(--hudink);border-radius:9px;padding:7px 10px;font-size:12.5px;font-weight:600;cursor:pointer;min-height:36px}
 .cb:hover{border-color:#f0c24e}
 .cb.on{background:#a8201a;border-color:#f0c24e;color:#fff}
@@ -140,9 +142,11 @@ details{margin-top:14px}
 summary{cursor:pointer;font-weight:700;font-size:14px}
 .help{font-size:13.5px;color:var(--muted);line-height:1.6;padding-left:18px;margin:6px 0 0}
 .help b{color:var(--ink)}
-@media (max-width:760px){
+@media (max-width:760px), (max-height:520px){
+  .mobile-only{display:flex!important}
   #main{flex-direction:column}
-  #panel{width:auto;height:178px;flex-direction:row;border-left:none;border-top:2px solid var(--lacquer);padding:6px;gap:6px;overflow:hidden}
+  #panel{width:auto;height:178px;flex-direction:row;border-left:none;border-top:2px solid var(--lacquer);padding:6px;gap:6px;overflow:hidden;transition:height .25s ease,opacity .25s ease}
+  #panel.collapsed{height:0!important;min-height:0!important;padding:0!important;border:none!important;overflow:hidden!important;pointer-events:none!important;opacity:0}
   #miniWrap{flex:none;justify-content:center}
   #mapName{display:none}
   #mini{width:auto;max-width:112px;max-height:160px}
@@ -150,9 +154,11 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
   #items{display:flex;overflow-x:auto;gap:6px;padding-bottom:2px}
   .item{flex:none;width:84px;min-height:74px}
   #itemInfo,#selInfo,#sellBtn{display:none!important}
-  .cb{padding:7px 9px}.cb .lb,.cb kbd{display:none}
+  .cb{padding:8px 10px;min-height:40px;flex:none;touch-action:manipulation}.cb .lb,.cb kbd{display:none}
   #powerBtn .lb{display:inline}
   .brand span{display:none}
+  .stat{padding:3px 7px;font-size:11.5px}
+  .tb{padding:5px 7px}
 }
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
@@ -189,6 +195,8 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
       <div id="cmdBar">
         <button class="cb pw" id="powerBtn" title="Đòn tên lửa chiến lược"><div class="fill"></div><span id="powerTxt">🚀</span></button>
         <button class="cb" id="amoveBtn" title="Tiến công: đi tới và tự giao chiến">⚔ <span class="lb">Tiến công</span> <kbd>A</kbd></button>
+        <button class="cb" id="patrolBtn" title="Đi tuần: tuần tra qua lại giữa các điểm">🔄 <span class="lb">Đi tuần</span> <kbd>T</kbd></button>
+        <button class="cb" id="queueBtn" title="Nối lệnh: di chuyển theo thứ tự các điểm">⛓ <span class="lb">Nối lệnh</span> <kbd>Shift</kbd></button>
         <button class="cb" id="stopBtn" title="Dừng">✋ <span class="lb">Dừng</span> <kbd>S</kbd></button>
         <button class="cb" id="allBtn" title="Chọn toàn quân">👥 <span class="lb">Toàn quân</span> <kbd>Q</kbd></button>
         <button class="cb" id="boxBtn" title="Kéo để chọn vùng (màn hình cảm ứng)">⬚ <span class="lb">Chọn vùng</span></button>
@@ -196,6 +204,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px}
         <button class="cb" id="homeBtn" title="Về căn cứ">⌂ <span class="lb">Căn cứ</span></button>
         <button class="cb" id="rotLBtn" title="Xoay góc nhìn (Z)">⟲</button>
         <button class="cb" id="rotRBtn" title="Xoay góc nhìn (X)">⟳</button>
+        <button class="cb mobile-only" id="panelToggleBtn" title="Đóng/mở bảng sản xuất">🏭 <span class="lb">Sản xuất</span></button>
         <button class="cb pw" id="hasteBtn" style="display:none"><div class="fill"></div><span></span></button>
         <button class="cb pw" id="stakeBtn" style="display:none"><div class="fill"></div><span></span></button>
       </div>
@@ -265,44 +274,105 @@ const MAPS={
       ['Kon Tum','Pleiku','Buôn Ma Thuột','Bảo Lộc','TP. Hồ Chí Minh'],['Quy Nhơn','Pleiku'],['Nha Trang','Buôn Ma Thuột'],['Phan Rang','Đà Lạt','Bảo Lộc'],['TP. Hồ Chí Minh','Tây Ninh'],['TP. Hồ Chí Minh','Vũng Tàu'],['Cần Thơ','Long Xuyên','Rạch Giá'],['Quảng Ngãi','Kon Tum']],
     starts:['Hà Nội','TP. Hồ Chí Minh','Đà Nẵng','Buôn Ma Thuột'],labels:[['BIỂN ĐÔNG',112.6,13.6,120],['Vịnh Bắc Bộ',107.3,19.3,48],['Vịnh Thái Lan',102.9,9.4,48],['QĐ. HOÀNG SA (VIỆT NAM)',112.0,17.35,50],['QĐ. TRƯỜNG SA (VIỆT NAM)',113.2,12.1,50]]},
   angiang:{name:'An Giang',tag:'Rất lớn · 32 điểm',desc:'Miền Tây mùa nước nổi: sông Tiền, sông Hậu và Vàm Nao chia chiến trường thành các cù lao, muốn qua phải giữ cầu Cồn Tiên, Vàm Cống và các bến phà. Quốc lộ 91 là trục tiến quân chính. Thất Sơn (núi Cấm, núi Dài, Cô Tô) dốc, xe chỉ lên được theo đường, bộ binh giữ cao điểm Ô Tà Sóc, Tức Dụp có lợi thế lớn. Dọc biên có kênh Vĩnh Tế và các cửa khẩu Tịnh Biên, Khánh Bình, Vĩnh Xương.',
-    box:[104.72,105.62,10.15,11.0],ppd:7000,ks:2.19,rs:1.35,kx:.983,theme:'delta',base:'land',paddy:1500,khLat:99,
-    areas:[{poly:[[105.068,10.926],[105.09,10.931],[105.097,10.905],[105.074,10.897]],t:0}],
-    rivers:[{w:72,pts:[[105.105,11.0],[105.115,10.86],[105.133,10.712],[105.2,10.6],[105.3,10.5],[105.46,10.4],[105.52,10.28],[105.62,10.17]]},
-      {w:78,pts:[[105.17,11.0],[105.2,10.9],[105.255,10.8],[105.33,10.72],[105.37,10.6],[105.47,10.565],[105.62,10.52]]},
-      {w:54,pts:[[105.37,10.6],[105.335,10.535],[105.3,10.5]]},
-      {w:27,pts:[[105.108,10.716],[105.06,10.685],[104.955,10.605],[104.86,10.545],[104.72,10.47]]},
-      {w:50,pts:[[105.045,10.95],[105.06,10.86],[105.08,10.78],[105.108,10.722],[105.13,10.711]]},
-      {w:0,pts:[[105.44,10.385],[105.26,10.285],[105.08,10.15]]},{w:0,pts:[[105.3,10.5],[105.1,10.4],[104.9,10.33]]},{w:0,pts:[[105.2,10.6],[105.0,10.47]]},{w:0,pts:[[105.33,10.72],[105.12,10.78]]}],
-    hills:[{at:[104.985,10.5],km:3.1,m:710},{at:[104.94,10.445],km:1.5,len:3.8,rot:-20,m:580},{at:[104.995,10.365],km:2.3,m:614},{at:[105.077,10.681],km:.9,m:284},{at:[105.002,10.612],km:.9,m:266},
-      {at:[104.972,10.562],km:1.1,m:265},{at:[105.018,10.628],km:.7,m:146},{at:[104.905,10.497],km:.75,m:145},{at:[104.915,10.48],km:.5,m:54},{at:[105.268,10.258],km:.7,m:85},{at:[105.158,10.238],km:1,m:221},{at:[104.99,10.555],km:.9,m:261}],
-    bridges:[[105.106,10.724,'Cầu Cồn Tiên'],[105.136,10.7,'Cầu Châu Đốc'],[105.5,10.31,'Cầu Vàm Cống'],[105.25,10.81,'Phà Tân Châu'],[105.345,10.555,'Phà Thuận Giang'],[105.25,10.55,'Phà Năng Gù'],[105.44,10.415,'Phà An Hòa'],[104.955,10.605,'Cầu Tịnh Biên'],[105.06,10.685,'Cầu Vĩnh Tế'],[104.8,10.51,'Cầu Lạc Quới'],[105.52,10.545,'Phà Cao Lãnh'],[105.19,10.93,'Phà Vĩnh Xương']],
-    cities:[['Long Xuyên',105.425,10.375,1],['Châu Đốc',105.116,10.705,1,{lm:'floating'}],['Núi Sam',105.087,10.687,0,{lm:'mieuba'}],['Tân Châu',105.235,10.80,1],['An Phú',105.093,10.815],
-      ['Phú Tân',105.28,10.67],['Chợ Mới',105.41,10.54,1],['Châu Phú',105.21,10.555],['Châu Thành',105.36,10.44],['Tịnh Biên',104.955,10.588,0,{lm:'gate'}],
-      ['Núi Cấm',104.985,10.505,0,{lm:'buddha'}],['Tri Tôn',105.0,10.415,1,{lm:'wat'}],['Ba Chúc',104.9,10.485],['Núi Sập',105.252,10.274],['Óc Eo',105.146,10.258,0,{lm:'oceo'}],['Búng Bình Thiên',105.098,10.885],
-      ['Trà Sư',105.06,10.585],['Hồng Ngự',105.34,10.81],['Lấp Vò',105.54,10.36],['Thoại Sơn',105.33,10.3],
-      ['Cồn Tiên',105.117,10.732],['Cửa khẩu Vĩnh Xương',105.162,10.93,0,{lm:'gate'}],['Cửa khẩu Khánh Bình',105.088,10.945,0,{lm:'gate'}],['Vĩnh Hội Đông',105.045,10.8,0,{lm:'gate'}],['Vàm Nao',105.322,10.568],
-      ['Vàm Cống',105.482,10.318],['Cảng Mỹ Thới',105.452,10.345,0,{lm:'port'}],['Nhà Bàng',105.008,10.636],['Tức Dụp',104.984,10.388,0,{lm:'bunker'}],['Ô Tà Sóc',104.94,10.445,0,{lm:'bunker'}],['Chợ Vàm',105.308,10.702],['Mỹ Luông',105.49,10.535]],
-    groves:[{at:[105.06,10.585],r:120,n:300,kind:1}],
-    roads:[['Vàm Cống','Cảng Mỹ Thới','Long Xuyên','Châu Thành','Châu Phú',[105.15,10.66],'Châu Đốc'],['Châu Đốc',[105.128,10.688],[105.1,10.668],[105.07,10.664],'Nhà Bàng','Tịnh Biên'],['Châu Đốc','Núi Sam',[105.064,10.676],[105.07,10.664]],['Châu Đốc',[105.07,10.698],[104.99,10.64],'Tịnh Biên'],['Nhà Bàng','Núi Cấm','Tri Tôn'],['Tịnh Biên','Ba Chúc','Ô Tà Sóc','Tri Tôn'],
-      ['Tri Tôn','Tức Dụp','Óc Eo','Núi Sập','Thoại Sơn','Long Xuyên'],['Châu Đốc',[105.108,10.72],'Cồn Tiên','An Phú','Cửa khẩu Khánh Bình'],['An Phú','Búng Bình Thiên'],['Tân Châu','Cửa khẩu Vĩnh Xương'],['Tân Châu','Chợ Vàm','Phú Tân','Vàm Nao'],
-      ['Chợ Mới','Mỹ Luông'],['Châu Đốc','Trà Sư','Nhà Bàng'],[[105.064,10.676],[105.058,10.69],'Vĩnh Hội Đông'],['Lấp Vò','Vàm Cống'],['Tân Châu','Hồng Ngự']],
-    borders:[[[104.72,10.495],[104.86,10.565],[104.95,10.625],[105.03,10.69],[105.05,10.8],[105.03,10.9],[105.1,10.95],[105.2,10.93],[105.33,10.88],[105.45,10.95],[105.62,10.98]]],
+    box:[104.72,105.62,10.15,11.0],ppd:7000,ks:2.19,rs:1.35,kx:.983,theme:'delta',base:'land',paddy:1500,khLat:99,ver:2,
+    areas:[{poly:[[105.075,10.915],[105.105,10.920],[105.100,10.880],[105.070,10.875]],t:0}],
+    rivers:[
+      {w:74,pts:[[105.147,11.0],[105.135,10.93],[105.122,10.86],[105.128,10.78],[105.135,10.712],[105.155,10.66],[105.200,10.60],[105.250,10.55],[105.315,10.48],[105.380,10.42],[105.435,10.385],[105.460,10.35],[105.500,10.30],[105.54,10.24],[105.62,10.17]]},
+      {w:80,pts:[[105.207,11.0],[105.232,10.92],[105.250,10.83],[105.278,10.77],[105.320,10.72],[105.355,10.66],[105.380,10.61],[105.420,10.565],[105.480,10.52],[105.55,10.48],[105.62,10.44]]},
+      {w:54,pts:[[105.380,10.61],[105.340,10.565],[105.315,10.530]]},
+      {w:26,pts:[[105.115,10.715],[105.060,10.690],[104.980,10.640],[104.955,10.610],[104.860,10.545],[104.760,10.490],[104.72,10.455]]},
+      {w:46,pts:[[105.030,10.95],[105.045,10.88],[105.065,10.80],[105.095,10.74],[105.115,10.720],[105.135,10.712]]},
+      {w:0,pts:[[105.435,10.380],[105.310,10.305],[105.255,10.265],[105.08,10.15]]},
+      {w:0,pts:[[105.360,10.445],[105.260,10.380],[105.150,10.320],[104.90,10.26]]},
+      {w:0,pts:[[105.000,10.415],[104.88,10.35],[104.72,10.28]]},
+      {w:0,pts:[[105.210,10.570],[105.080,10.480],[104.95,10.40]]},
+      {w:0,pts:[[105.240,10.800],[105.185,10.880],[105.14,10.92]]},
+      {w:0,pts:[[105.450,10.540],[105.480,10.480],[105.52,10.42]]}
+    ],
+    ridges:[
+      {pts:[[105.015,10.58],[104.995,10.54],[104.985,10.495],[104.97,10.46],[104.94,10.435]],w:480,h:68},
+      {pts:[[104.925,10.51],[104.945,10.46],[104.965,10.415],[104.995,10.370]],w:440,h:64},
+      {pts:[[104.915,10.505],[104.895,10.485],[104.91,10.45]],w:320,h:48},
+      {pts:[[105.250,10.27],[105.265,10.26],[105.28,10.25]],w:240,h:40}
+    ],
+    hills:[
+      {at:[104.985,10.495],km:8.5,len:12.5,rot:15,m:750},
+      {at:[104.940,10.450],km:5.5,len:11.0,rot:-22,m:620},
+      {at:[104.995,10.370],km:6.8,len:8.8,rot:32,m:640},
+      {at:[105.078,10.680],km:2.8,len:3.6,rot:40,m:280},
+      {at:[105.002,10.605],km:2.4,m:265},
+      {at:[104.972,10.562],km:2.2,m:240},
+      {at:[105.018,10.628],km:1.8,m:180},
+      {at:[104.905,10.495],km:3.2,len:4.5,rot:12,m:320},
+      {at:[104.915,10.505],km:1.5,m:110},
+      {at:[105.260,10.265],km:2.2,len:3.2,rot:-30,m:140},
+      {at:[105.150,10.245],km:2.5,m:240},
+      {at:[104.990,10.555],km:2.0,m:270}
+    ],
+    bridges:[
+      [105.106,10.724,'Cầu Cồn Tiên'],
+      [105.135,10.706,'Cầu Châu Đốc'],
+      [105.500,10.310,'Cầu Vàm Cống'],
+      [105.250,10.805,'Phà Tân Châu'],
+      [105.340,10.565,'Phà Thuận Giang'],
+      [105.250,10.550,'Phà Năng Gù'],
+      [105.440,10.380,'Phà An Hòa'],
+      [104.955,10.610,'Cầu Tịnh Biên'],
+      [105.060,10.690,'Cầu Vĩnh Tế'],
+      [104.800,10.510,'Cầu Lạc Quới'],
+      [105.520,10.490,'Phà Cao Lãnh'],
+      [105.210,10.920,'Phà Vĩnh Xương']
+    ],
+    cities:[
+      ['Long Xuyên',105.435,10.380,1],['Châu Đốc',105.120,10.705,1,{lm:'basa'}],['Núi Sam',105.080,10.680,0,{lm:'mieuba'}],['Tân Châu',105.240,10.800,1],['An Phú',105.088,10.825,1,{lm:'anphu'}],
+      ['Phú Tân',105.280,10.665],['Chợ Mới',105.450,10.540,1],['Châu Phú',105.210,10.570],['Châu Thành',105.360,10.445],['Tịnh Biên',104.955,10.590,0,{lm:'gate'}],
+      ['Núi Cấm',104.985,10.495,0,{lm:'buddha'}],['Tri Tôn',105.000,10.415,1,{lm:'wat'}],['Ba Chúc',104.905,10.485],['Núi Sập',105.255,10.265],['Óc Eo',105.148,10.250,0,{lm:'oceo'}],['Búng Bình Thiên',105.095,10.885],
+      ['Trà Sư',105.045,10.585],['Hồng Ngự',105.320,10.800],['Lấp Vò',105.535,10.360],['Thoại Sơn',105.310,10.305],
+      ['Cầu Cồn Tiên',105.106,10.724,0,{lm:'contien'}],['Cửa khẩu Vĩnh Xương',105.185,10.925,0,{lm:'gate'}],['Cửa khẩu Khánh Bình',105.082,10.945,0,{lm:'gate'}],['Vĩnh Hội Đông',105.045,10.810,0,{lm:'gate'}],['Vàm Nao',105.335,10.555],
+      ['Vàm Cống',105.495,10.315],['Cảng Mỹ Thới',105.452,10.345,0,{lm:'port'}],['Nhà Bàng',105.010,10.635],['Tức Dụp',104.985,10.380,0,{lm:'bunker'}],['Ô Tà Sóc',104.945,10.445,0,{lm:'bunker'}],['Chợ Vàm',105.305,10.705],['Mỹ Luông',105.495,10.510]
+    ],
+    groves:[{at:[105.045,10.585],r:120,n:300,kind:1}],
+    roads:[
+      ['Vàm Cống','Cảng Mỹ Thới','Long Xuyên','Châu Thành','Châu Phú',[105.155,10.66],'Châu Đốc'],
+      ['Châu Đốc',[105.10,10.69],'Núi Sam',[105.05,10.66],'Nhà Bàng','Tịnh Biên'],
+      ['Châu Đốc','Núi Sam'],
+      ['Châu Đốc',[105.07,10.698],[104.99,10.64],'Tịnh Biên'],
+      ['Nhà Bàng',[105.025,10.56],[105.045,10.50],[105.035,10.45],'Tri Tôn'],
+      [[105.045,10.50],[105.015,10.495],'Núi Cấm'],
+      ['Tịnh Biên','Ba Chúc',[104.925,10.45],[104.965,10.42],'Tri Tôn'],
+      [[104.925,10.45],'Ô Tà Sóc'],
+      ['Tri Tôn','Tức Dụp','Óc Eo','Núi Sập','Thoại Sơn','Long Xuyên'],
+      ['Tri Tôn',[105.18,10.43],'Châu Thành'],
+      ['Châu Đốc',[105.112,10.718],'Cầu Cồn Tiên','An Phú','Cửa khẩu Khánh Bình'],
+      ['An Phú','Búng Bình Thiên'],
+      ['Châu Đốc',[105.135,10.706],'Tân Châu'],
+      ['Tân Châu','Cửa khẩu Vĩnh Xương'],
+      ['Tân Châu','Chợ Vàm','Phú Tân','Vàm Nao'],
+      ['Vàm Nao','Chợ Mới'],
+      ['Chợ Mới','Mỹ Luông'],
+      ['Long Xuyên','Chợ Mới'],
+      ['Châu Đốc','Trà Sư','Nhà Bàng'],
+      [[105.064,10.676],[105.058,10.69],'Vĩnh Hội Đông'],
+      ['Lấp Vò','Vàm Cống'],
+      ['Tân Châu','Hồng Ngự']
+    ],
+    borders:[[[104.72,10.455],[104.78,10.49],[104.86,10.55],[104.95,10.615],[105.02,10.67],[105.045,10.80],[105.035,10.90],[105.075,10.95],[105.12,10.94],[105.185,10.93],[105.28,10.89],[105.42,10.94],[105.62,10.98]]],
     starts:['Long Xuyên','Tân Châu','Tri Tôn','Chợ Mới'],labels:[['CAMPUCHIA',104.88,10.85,56],['Đồng Tháp',105.5,10.75,44],['Kiên Giang',104.85,10.25,44]]},
   khag:{name:'Campuchia – An Giang',tag:'Vừa · 18 điểm',desc:'Vùng biên Takeo – An Giang: kênh Vĩnh Tế chạy dọc đường biên, phía bắc là đồng thốt nốt, chùa Khmer, Angkor Borei với Phnom Da và đền Phnom Chisor; phía nam là Thất Sơn, Tịnh Biên và Châu Đốc.',
-    box:[104.58,105.26,10.33,11.23],ppd:6600,ks:2,rs:1.3,kx:.983,theme:'delta',base:'land',paddy:1300,khLat:10.66,
+    box:[104.58,105.26,10.33,11.23],ppd:6600,ks:2,rs:1.3,kx:.983,theme:'delta',base:'land',paddy:1300,khLat:10.66,ver:2,
     areas:[{poly:[[104.83,10.935],[104.93,10.945],[104.955,10.9],[104.9,10.865],[104.82,10.885]],t:0}],
-    rivers:[{w:72,pts:[[105.14,11.23],[105.122,11.05],[105.115,10.86],[105.133,10.712],[105.19,10.6],[105.26,10.5]]},
-      {w:28,pts:[[105.108,10.716],[105.06,10.685],[104.955,10.605],[104.86,10.545],[104.76,10.49],[104.58,10.42]]},
-      {w:52,pts:[[104.8,10.975],[104.9,10.985],[104.975,10.975],[105.03,10.9],[105.06,10.8],[105.106,10.724],[105.13,10.711]]},
+    rivers:[{w:74,pts:[[105.14,11.23],[105.122,11.05],[105.128,10.78],[105.135,10.712],[105.155,10.66],[105.200,10.60],[105.250,10.55],[105.26,10.5]]},
+      {w:26,pts:[[105.115,10.715],[105.060,10.690],[104.980,10.640],[104.955,10.610],[104.860,10.545],[104.760,10.490],[104.58,10.42]]},
+      {w:52,pts:[[104.8,10.975],[104.9,10.985],[104.975,10.975],[105.03,10.9],[105.06,10.8],[105.106,10.724],[105.135,10.712]]},
       {w:0,pts:[[104.8,10.975],[104.7,11.1],[104.62,11.2]]},{w:0,pts:[[104.86,10.545],[104.8,10.7],[104.8,10.975]]}],
-    hills:[{at:[104.985,10.5],km:3.1,m:710},{at:[104.94,10.445],km:1.5,len:3.8,rot:-20,m:580},{at:[104.995,10.37],km:2.2,m:614},{at:[105.077,10.681],km:.9,m:284},{at:[105.002,10.612],km:.9,m:266},{at:[104.972,10.562],km:1.1,m:265},
-      {at:[105.018,10.628],km:.7,m:146},{at:[104.905,10.497],km:.75,m:145},{at:[104.862,10.672],km:1.3,m:313},{at:[104.99,10.957],km:.6,m:100},{at:[104.822,11.19],km:.8,m:133},{at:[104.99,10.555],km:.9,m:261}],
-    bridges:[[104.955,10.605,'Cầu Tịnh Biên – Phnom Den'],[104.76,10.49,'Cầu Vĩnh Gia'],[105.06,10.685,'Cầu Vĩnh Tế'],[105.1,10.732,'Cầu Cồn Tiên'],[105.136,10.7,'Cầu Châu Đốc'],[104.975,10.975,'Cầu Angkor Borei'],[105.05,10.83,'Cầu Borei Cholsar'],[105.12,11.0,'Phà Prey Kabbas']],
+    hills:[{at:[104.985,10.495],km:3.2,m:710},{at:[104.940,10.450],km:1.6,len:4.2,rot:-20,m:580},{at:[104.995,10.37],km:2.3,m:614},{at:[105.078,10.680],km:1.0,m:228},{at:[105.002,10.605],km:.9,m:225},{at:[104.972,10.562],km:1.1,m:265},
+      {at:[105.018,10.628],km:.7,m:146},{at:[104.905,10.495],km:.8,m:145},{at:[104.862,10.672],km:1.3,m:313},{at:[104.99,10.957],km:.6,m:100},{at:[104.822,11.19],km:.8,m:133},{at:[104.99,10.555],km:.9,m:261}],
+    bridges:[[104.955,10.610,'Cầu Tịnh Biên – Phnom Den'],[104.76,10.49,'Cầu Vĩnh Gia'],[105.060,10.690,'Cầu Vĩnh Tế'],[105.106,10.724,'Cầu Cồn Tiên'],[105.135,10.706,'Cầu Châu Đốc'],[104.975,10.975,'Cầu Angkor Borei'],[105.05,10.83,'Cầu Borei Cholsar'],[105.12,11.0,'Phà Prey Kabbas']],
     cities:[['Takeo',104.79,10.995,1,{style:'kh',lm:'wat'}],['Angkor Borei',104.975,10.998,0,{style:'kh',lm:'prang'}],['Phnom Chisor',104.835,11.178,0,{style:'kh',lm:'prang2'}],['Kirivong',104.885,10.705,0,{style:'kh'}],
       ['Phnom Den',104.93,10.64,0,{style:'kh',lm:'gate'}],['Koh Andet',104.93,10.82,0,{style:'kh'}],['Borei Cholsar',105.015,10.855,0,{style:'kh'}],['Prey Kabbas',105.0,11.1,1,{style:'kh',lm:'wat'}],['Tram Kak',104.64,11.08,0,{style:'kh'}],
-      ['Châu Đốc',105.116,10.705,1,{lm:'floating'}],['Núi Sam',105.087,10.687,0,{lm:'mieuba'}],['Tịnh Biên',104.955,10.588],['Núi Cấm',104.985,10.505,0,{lm:'buddha'}],['Tri Tôn',105.0,10.415,1,{lm:'wat'}],
-      ['Ba Chúc',104.9,10.485],['Vĩnh Gia',104.75,10.455],['An Phú',105.093,10.815],['Châu Phú',105.18,10.56]],
-    roads:[['Takeo','Kirivong','Phnom Den','Tịnh Biên','Núi Cấm','Tri Tôn'],['Takeo','Angkor Borei'],['Châu Đốc',[105.128,10.688],[105.1,10.668],[105.07,10.664],[104.99,10.62],'Tịnh Biên'],['Châu Đốc','Núi Sam'],['Châu Đốc',[105.1,10.728],'An Phú'],['Takeo','Tram Kak'],['Takeo','Phnom Chisor'],['Tri Tôn','Ba Chúc','Vĩnh Gia']],
+      ['Châu Đốc',105.120,10.705,1,{lm:'basa'}],['Núi Sam',105.080,10.680,0,{lm:'mieuba'}],['Tịnh Biên',104.955,10.590],['Núi Cấm',104.985,10.495,0,{lm:'buddha'}],['Tri Tôn',105.000,10.415,1,{lm:'wat'}],
+      ['Ba Chúc',104.905,10.485],['Vĩnh Gia',104.76,10.465],['An Phú',105.088,10.825,0,{lm:'anphu'}],['Cầu Cồn Tiên',105.106,10.724,0,{lm:'contien'}],['Châu Phú',105.21,10.57]],
+    roads:[['Takeo','Kirivong','Phnom Den','Tịnh Biên','Núi Cấm','Tri Tôn'],['Takeo','Angkor Borei'],['Châu Đốc',[105.10,10.69],'Núi Sam',[105.05,10.66],[105.01,10.635],'Tịnh Biên'],['Châu Đốc','Núi Sam'],['Châu Đốc',[105.108,10.72],'Cầu Cồn Tiên','An Phú'],['Takeo','Tram Kak'],['Takeo','Phnom Chisor'],['Tri Tôn','Ba Chúc','Vĩnh Gia']],
     borders:[[[104.58,10.445],[104.76,10.508],[104.86,10.565],[104.95,10.625],[105.03,10.69],[105.05,10.8],[105.03,10.9],[105.1,10.95],[105.26,10.93]]],
     starts:['Takeo','Tri Tôn','Châu Đốc','Prey Kabbas'],labels:[['CAMPUCHIA',104.72,10.86,64],['VIỆT NAM',104.8,10.38,60]]},
   hcm:{name:'TP. Hồ Chí Minh',tag:'Vừa · 19 điểm',desc:'Chiến trường đô thị: sông Sài Gòn uốn quanh Thủ Thiêm, sông Đồng Nai và Nhà Bè đổ ra biển. Giữ các cầu Sài Gòn, Ba Son, Phú Mỹ, sân bay Tân Sơn Nhất, cảng Cát Lái, Quận 1 với Bitexco và Bình Thạnh với Landmark 81.',
@@ -420,7 +490,7 @@ function forestRule(x,y,h){const th=MAP.theme,dn=vnoise(x/200+7,y/200+3),lat=LAT
   return h>14||dn>.55;}
 function buildAttrs(){
   tRoad=new Uint8Array(N);tFor=new Uint8Array(N);tSteep=new Uint8Array(N);tSlope=new Float32Array(N);cInf=new Float32Array(N).fill(1);cVeh=new Float32Array(N).fill(1);
-  const c=document.createElement('canvas');c.width=GW;c.height=GH;const g=c.getContext('2d');g.strokeStyle='#fff';g.lineWidth=1.8;g.lineCap='round';g.lineJoin='round';
+  const c=document.createElement('canvas');c.width=GW;c.height=GH;const g=c.getContext('2d');g.strokeStyle='#fff';g.lineWidth=3.2;g.lineCap='round';g.lineJoin='round';
   const cp=n=>{if(Array.isArray(n))return P(n[0],n[1]);const q=CITY_DEF.find(d=>d[0]===n);return q?P(q[1],q[2]):null;};ROADS=[];
   const viaBridge=pts=>{const out=[pts[0]];for(let q=0;q<pts.length-1;q++){const a=pts[q],b=pts[q+1],L=hyp(b[0]-a[0],b[1]-a[1]),n=Math.max(2,Math.round(L/12));let w0=-1,w1=-1;
       for(let k=0;k<=n;k++){const ci=cellAt(a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n);if(ci>=0&&terr[ci]===0){if(w0<0)w0=k;w1=k;}}
@@ -528,52 +598,54 @@ const ROLES={
   arty:{...LV,cat:'veh',cost:750,time:13,hp:170,spd:.55,rng:235,dmg:60,cd:150,air:false,ground:true,sight:245,wpn:'arty',splash:42,tip:'Pháo tự hành: bắn rất xa, sát thương lan, yếu khi bị áp sát.'},
   mlrs:{...LV,cat:'veh',cost:900,time:15,hp:160,spd:.6,rng:285,dmg:30,cd:240,air:false,ground:true,sight:250,wpn:'arty',splash:38,burst:6,spread:44,tip:'Pháo phản lực: bắn cả loạt phủ một vùng rộng.'},
   aa:{...LV,cat:'veh',cost:600,time:10,hp:230,spd:.85,rng:165,dmg:16,cd:16,air:true,ground:false,sight:210,wpn:'flak',tip:'Phòng không cơ động: chỉ bắn mục tiêu trên không, rất mạnh.'},
+  scout:{cat:'air',cost:350,time:7,hp:80,spd:1.8,rng:0,dmg:0,cd:999,cls:'air',armor:'air',from:'airfield',air:false,ground:false,r:5,sight:320,wpn:'mg',tip:'Drone trinh sát: không có vũ khí, nhưng tầm nhìn cực xa, bay nhanh, rẻ tiền. Hỗ trợ chỉ thị mục tiêu cho pháo binh.'},
+  ucav:{cat:'air',cost:500,time:9,hp:90,spd:1.5,rng:160,dmg:22,cd:90,cls:'air',armor:'air',from:'airfield',air:false,ground:true,r:7,sight:250,wpn:'guided',splash:20,tip:'Drone tấn công: tên lửa dẫn đường diệt xe tăng và pháo hiệu quả. Yếu trước phòng không.'},
   heli:{cat:'air',cost:850,time:13,hp:220,spd:1.6,rng:105,dmg:15,cd:22,cls:'air',armor:'air',from:'airfield',air:false,ground:true,r:10,sight:200,wpn:'mg2',tip:'Trực thăng vũ trang: bay qua sông núi, săn xe và pháo.'},
   jet:{cat:'air',cost:950,time:14,hp:180,spd:2.6,rng:125,dmg:26,cd:40,cls:'air',armor:'air',from:'airfield',air:true,ground:true,r:10,sight:230,wpn:'aam',tip:'Tiêm kích: rất nhanh, giành ưu thế trên không.'},
   ship:{cat:'air',cost:1000,time:15,hp:560,spd:.95,rng:175,dmg:38,cd:70,cls:'sea',armor:'ship',from:'shipyard',air:true,ground:true,r:13,sight:225,wpn:'shell',turret:true,tip:'Tàu chiến: pháo hạm tầm xa, bắn được cả máy bay. Chạy trên sông và biển.'}
 };
 const NATIONS={
   vn:{name:'Việt Nam',camo:['#5f7a3a','#42592b','#8fa860'],inf:{u:'#56713a',h:'#4a6436',p:'#3d4a2a',hat:'pith'},jet:'#8f9fa8',hull:'#8f979c',power:'Pháo phản lực EXTRA',
-    trait:'Bộ binh rẻ và bền, có Đặc công đánh bộc phá và hệ thống địa đạo để chuyển quân.',
+    trait:'Bộ binh rẻ và bền, có Đặc công đánh bộc phá, hệ thống địa đạo và drone BXL Kamikaze giá rẻ.',
     st:{tank:'round',drums:1,ifv:'bmp',arty:'spg',mlrs:'truck',aa:'shilka',heli:'transport',jet:'flanker',ship:{L:.92,mast:'lat',tubes:1}},
     u:{inf:{n:'Bộ binh STV-380',cost:85,hp:82},at:{n:'Tổ B-41'},aainf:{n:'Tổ tên lửa Igla'},eng:{n:'Công binh'},sap:{n:'Đặc công'},ifv:{n:'BMP-1',cost:380,dmg:11,cd:16,rng:86},mbt:{n:'T-90S'},arty:{n:'2S3 Akatsiya'},
-      mlrs:{n:'BM-21 Grad',burst:8,dmg:26},aa:{n:'ZSU-23-4 Shilka'},heli:{n:'Mi-171 vũ trang',hp:280,spd:1.35,dmg:13},jet:{n:'Su-30MK2'},ship:{n:'Hộ vệ hạm Gepard 3.9',hp:500,spd:1.05,cost:950}}},
+      mlrs:{n:'EXTRA (tầm xa)',burst:6,dmg:36,rng:320,cost:950},aa:{n:'ZSU-23-4 Shilka'},scout:{n:'VT-Patrol',cost:300},ucav:{n:'BXL Kamikaze',cost:420,hp:70,dmg:26,spd:1.3},heli:{n:'Mi-171 vũ trang',hp:280,spd:1.35,dmg:13},jet:{n:'Su-30MK2'},ship:{n:'Hộ vệ hạm Gepard 3.9',hp:500,spd:1.05,cost:950}}},
   ru:{name:'Nga',camo:['#586b46','#3b4a31','#7d8d5e'],inf:{u:'#5a6748',h:'#4c5a3e',p:'#3f4a34'},jet:'#7f93a6',hull:'#6f777e',power:'Tên lửa Iskander-M',
-    trait:'Thiết giáp rẻ, pháo binh mạnh, có pháo nhiệt áp TOS-1A và trực thăng hai tầng cánh Ka-52.',
+    trait:'Thiết giáp rẻ, pháo binh mạnh, pháo nhiệt áp TOS-1A, Ka-52 và drone ZALA Lancet diệt pháo tầm xa.',
     st:{tank:'round',drums:1,ifv:'bmp3',arty:'spg',mlrs:'tos',aa:'pantsir',heli:'coax',jet:'flanker',ship:{L:1.05,mast:'pyr'}},
     u:{inf:{n:'Bộ binh Ratnik'},at:{n:'Tổ Kornet',rng:118},aainf:{n:'Tổ Igla-S'},eng:{n:'Công binh'},ifv:{n:'BMP-3',dmg:11},mbt:{n:'T-90M Proryv',cost:560,hp:400},arty:{n:'2S19 Msta-S',dmg:66},
-      mlrs:{n:'TOS-1A Solntsepyok',rng:160,dmg:62,splash:56,burst:4,spread:30,hp:320,cost:950},aa:{n:'Pantsir-S1',rng:182},heli:{n:'Ka-52 Alligator',hp:250,dmg:17},jet:{n:'Su-35S',hp:195},ship:{n:'Khinh hạm Đô đốc Gorshkov'}}},
+      mlrs:{n:'TOS-1A Solntsepyok',rng:160,dmg:62,splash:56,burst:4,spread:30,hp:320,cost:950},aa:{n:'Pantsir-S1',rng:182},scout:{n:'Orlan-10',cost:320},ucav:{n:'ZALA Lancet',rng:180,dmg:24,splash:28},heli:{n:'Ka-52 Alligator',hp:250,dmg:17},jet:{n:'Su-35S',hp:195},ship:{n:'Khinh hạm Đô đốc Gorshkov'}}},
   us:{name:'Hoa Kỳ',camo:['#b3a078','#8a7a58','#d4c49c'],inf:{u:'#a8966e',h:'#9a8a66',p:'#8a7a58'},jet:'#8d949a',hull:'#9aa3ab',power:'Tên lửa Tomahawk',sight:1.15,
-    trait:'Đắt nhưng mạnh: Abrams giáp dày, F-35 và Apache, mọi đơn vị nhìn xa hơn 15%.',
+    trait:'Đắt nhưng mạnh: Abrams giáp dày, F-35, Apache, MQ-9 Reaper trinh sát hỏa lực. Mọi đơn vị nhìn xa hơn 15%.',
     st:{tank:'abrams',ifv:'bradley',arty:'spg',mlrs:'himars',aa:'shorad',heli:'attack',radome:1,jet:'f35',ship:{L:1.22,mast:'pyr',k:'burke'}},
     u:{inf:{n:'Bộ binh M4A1',cost:120,hp:86},at:{n:'Tổ Javelin',cost:260,dmg:32},aainf:{n:'Tổ Stinger'},eng:{n:'Công binh'},ifv:{n:'M2 Bradley',cost:460,hp:255},mbt:{n:'M1A2 Abrams',cost:720,hp:460,dmg:34,spd:.78},arty:{n:'M109A7 Paladin'},
-      mlrs:{n:'M142 HIMARS',rng:320,cost:1000,spd:.9},aa:{n:'M-SHORAD Stryker',spd:1.05},heli:{n:'AH-64E Apache',dmg:18,cost:900},jet:{n:'F-35A Lightning II',cost:1100,hp:200,dmg:30,sight:300},ship:{n:'Khu trục hạm Arleigh Burke',cost:1200,hp:680,dmg:42}}},
+      mlrs:{n:'M142 HIMARS',rng:320,cost:1000,spd:.9},aa:{n:'M-SHORAD Stryker',spd:1.05},scout:{n:'MQ-1C Gray Eagle',cost:420,sight:360},ucav:{n:'MQ-9 Reaper',cost:600,hp:120,dmg:24},heli:{n:'AH-64E Apache',dmg:18,cost:900},jet:{n:'F-35A Lightning II',cost:1100,hp:200,dmg:30,sight:300},ship:{n:'Khu trục hạm Arleigh Burke',cost:1200,hp:680,dmg:42}}},
   cn:{name:'Trung Quốc',camo:['#66785c','#47583f','#8ea07e'],inf:{u:'#5c7064',h:'#4f6256',p:'#465648'},jet:'#9aa2a8',hull:'#a3abb1',power:'Tên lửa DF-15',time:.85,
-    trait:'Sản xuất nhanh hơn 15%, có pháo phản lực tầm xa PHL-03.',
+    trait:'Sản xuất nhanh hơn 15%, pháo phản lực PHL-03 tầm xa và drone Wing Loong-2 phóng loạt đạn.',
     st:{tank:'wedge',ifv:'bmp3',arty:'spg',mlrs:'truck12',aa:'pgz',heli:'attack',jet:'flanker',ship:{L:1.06,mast:'pyr'}},
-    u:{inf:{n:'Bộ binh QBZ-191'},at:{n:'Tổ HJ-12'},aainf:{n:'Tổ QW-2'},eng:{n:'Công binh'},ifv:{n:'ZBD-04A'},mbt:{n:'Type 99A',hp:390},arty:{n:'PLZ-05'},mlrs:{n:'PHL-03',rng:300},aa:{n:'PGZ-09'},heli:{n:'Z-10'},jet:{n:'J-16'},ship:{n:'Khinh hạm Type 054A'}}},
+    u:{inf:{n:'Bộ binh QBZ-191'},at:{n:'Tổ HJ-12'},aainf:{n:'Tổ QW-2'},eng:{n:'Công binh'},ifv:{n:'ZBD-04A'},mbt:{n:'Type 99A',hp:390},arty:{n:'PLZ-05'},mlrs:{n:'PHL-03',rng:300},aa:{n:'PGZ-09'},scout:{n:'Wing Loong-1',cost:330},ucav:{n:'Wing Loong-2',burst:2,dmg:16,spread:20},heli:{n:'Z-10'},jet:{n:'J-16'},ship:{n:'Khinh hạm Type 054A'}}},
   fr:{name:'Pháp',camo:['#6d6b50','#504b3a','#8c8669'],inf:{u:'#66684e',h:'#585a44',p:'#4c4a3a'},jet:'#8e959b',hull:'#98a0a6',power:'Tên lửa SCALP-EG',
-    trait:'Cơ động bánh lốp: VBCI và pháo CAESAR chạy nhanh, Leclerc là xe tăng nhanh nhất.',
+    trait:'Cơ động bánh lốp: VBCI và pháo CAESAR chạy nhanh, Leclerc là xe tăng nhanh nhất, drone tàng hình nEUROn siêu tốc.',
     st:{tank:'leclerc',ifv:'wheeled',arty:'truckgun',mlrs:'m270',aa:'crotale',heli:'attack',jet:'delta',ship:{L:1.1,mast:'pyr'}},
-    u:{inf:{n:'Bộ binh HK416F'},at:{n:'Tổ Akeron MP',rng:114},aainf:{n:'Tổ Mistral'},eng:{n:'Công binh'},ifv:{n:'VBCI',spd:1.3},mbt:{n:'Leclerc',cost:660,hp:400,spd:.96},arty:{n:'CAESAR',spd:.92,rng:250,hp:140},mlrs:{n:'LRU'},aa:{n:'Crotale NG',rng:176},heli:{n:'Tigre HAD',spd:1.78},jet:{n:'Rafale',hp:190},ship:{n:'Khinh hạm FREMM'}}},
+    u:{inf:{n:'Bộ binh HK416F'},at:{n:'Tổ Akeron MP',rng:114},aainf:{n:'Tổ Mistral'},eng:{n:'Công binh'},ifv:{n:'VBCI',spd:1.3},mbt:{n:'Leclerc',cost:660,hp:400,spd:.96},arty:{n:'CAESAR',spd:.92,rng:250,hp:140},mlrs:{n:'LRU'},aa:{n:'Crotale NG',rng:176},scout:{n:'Patroller'},ucav:{n:'nEUROn',spd:2.0,rng:145,cost:520},heli:{n:'Tigre HAD',spd:1.78},jet:{n:'Rafale',hp:190},ship:{n:'Khinh hạm FREMM'}}},
   th:{name:'Thái Lan',camo:['#5a6e48','#3f5034','#84966c'],inf:{u:'#55683f',h:'#475838',p:'#3c4a30'},jet:'#8b949c',hull:'#9aa2a8',power:'Rocket dẫn đường DTI-1G',
-    trait:'Quân đội cân đối, nhiều xe bánh lốp cơ động: BTR-3E1, pháo ATMOS, tiêm kích Gripen giá mềm.',
+    trait:'Quân đội cân đối, nhiều xe bánh lốp cơ động: BTR-3E1, pháo ATMOS, tiêm kích Gripen giá mềm và drone KB-5E tầm xa.',
     st:{tank:'wedge',ifv:'wheeled',arty:'truckgun',mlrs:'truck12',aa:'crotale',heli:'attack',jet:'delta',ship:{L:1,mast:'pyr'}},
-    u:{inf:{n:'Bộ binh TAR-21'},at:{n:'Tổ Carl Gustaf',rng:100,cost:200},aainf:{n:'Tổ Starstreak',rng:146},eng:{n:'Công binh'},ifv:{n:'BTR-3E1',spd:1.25,hp:205},mbt:{n:'VT-4',cost:620,hp:385},arty:{n:'ATMOS 2000',spd:.9,hp:145,rng:240},
-      mlrs:{n:'DTI-1',rng:300,burst:4,dmg:40,splash:44},aa:{n:'VL MICA',rng:178},heli:{n:'AH-1F Cobra',cost:800,hp:200},jet:{n:'JAS 39 Gripen',cost:880,hp:170},ship:{n:'Khinh hạm Bhumibol Adulyadej'}}},
+    u:{inf:{n:'Bộ binh TAR-21'},at:{n:'Tổ Carl Gustaf',rng:100,cost:200},aainf:{n:'Tổ Starstreak',rng:146},eng:{n:'Công binh'},sap:{n:'Đặc công',spd:.95},ifv:{n:'BTR-3E1',spd:1.25,hp:205},mbt:{n:'VT-4',cost:620,hp:385},arty:{n:'ATMOS 2000',spd:.9,hp:145,rng:240},
+      mlrs:{n:'DTI-1',rng:300,burst:4,dmg:40,splash:44},aa:{n:'VL MICA',rng:178},scout:{n:'Hermes 450',cost:330},ucav:{n:'KB-5E',cost:460,rng:170,dmg:20},heli:{n:'AH-1F Cobra',cost:800,hp:200},jet:{n:'JAS 39 Gripen',cost:880,hp:170},ship:{n:'Khinh hạm Bhumibol Adulyadej'}}},
   my:{name:'Malaysia',camo:['#5d6b3f','#44502e','#8a9662'],inf:{u:'#586a3c',h:'#4a5a34',p:'#3f4a2c'},jet:'#7f8f9c',hull:'#8f989e',power:'Không kích Su-30MKM',
-    trait:'Xe tăng PT-91M rẻ, xe AV8 Gempita cơ động, pháo phản lực ASTROS II và tiêm kích Su-30MKM mạnh.',
+    trait:'Xe tăng PT-91M rẻ, xe AV8 Gempita cơ động, pháo phản lực ASTROS II, Su-30MKM và drone ANKA-S trinh sát.',
     st:{tank:'round',ifv:'wheeled',arty:'truckgun',mlrs:'himars',aa:'crotale',heli:'attack',jet:'flanker',ship:{L:.95,mast:'lat',tubes:1}},
     u:{inf:{n:'Bộ binh M4'},at:{n:'Tổ Metis-M'},aainf:{n:'Tổ Igla'},eng:{n:'Công binh'},ifv:{n:'AV8 Gempita',spd:1.2,hp:230,cost:440},mbt:{n:'PT-91M Pendekar',cost:570,hp:370},arty:{n:'Pháo G5 kéo xe',spd:.8,hp:130,rng:245,cost:700},
-      mlrs:{n:'ASTROS II',rng:295},aa:{n:'Jernas',rng:160},heli:{n:'MD 530G',cost:650,hp:150,spd:1.8,dmg:11,scale:.82},jet:{n:'Su-30MKM',hp:190,cost:980},ship:{n:'Khinh hạm Lekiu',hp:520,cost:960}}},
+      mlrs:{n:'ASTROS II',rng:295},aa:{n:'Jernas',rng:160},scout:{n:'ANKA-S',sight:340,spd:1.6},ucav:{n:'CW-25 Armed',rng:150,dmg:20},heli:{n:'MD 530G',cost:650,hp:150,spd:1.8,dmg:11,scale:.82},jet:{n:'Su-30MKM',hp:190,cost:980},ship:{n:'Khinh hạm Lekiu',hp:520,cost:960}}},
   kh:{name:'Campuchia',camo:['#66703f','#4a542e','#929c66'],inf:{u:'#5f6a3c',h:'#505a34',p:'#434c2c'},jet:'#8a9488',hull:'#8a9296',power:'Pháo phản lực PHL-03',
-    trait:'Quân đội giá rẻ và đông: bộ binh, T-55 và BMP-1 rẻ hơn hẳn, bù lại không quân và hải quân yếu.',
+    trait:'Quân đội giá rẻ và đông: T-55, BMP-1 và drone trinh sát/tấn công dòng CH nhập khẩu giá rẻ.',
     st:{tank:'round',drums:1,ifv:'bmp',arty:'truckgun',mlrs:'truck',aa:'crotale',heli:'transport',jet:'delta',ship:{L:.7,mast:'lat'}},
     u:{inf:{n:'Bộ binh Type 56',cost:80,hp:72},at:{n:'Tổ RPG-7',cost:180,rng:96},aainf:{n:'Tổ FN-6',cost:180},eng:{n:'Công binh',cost:260},ifv:{n:'BMP-1',cost:350,dmg:11,cd:16,rng:86,hp:205},mbt:{n:'T-55AM2',cost:470,hp:320,dmg:27,rng:92},
-      arty:{n:'SH-1',spd:.85,hp:140,cost:680},mlrs:{n:'RM-70',burst:8,dmg:26,cost:820},aa:{n:'KS-1C',rng:170,cost:560},heli:{n:'Mi-17 vũ trang',hp:260,spd:1.35,dmg:12,cost:760},
+      arty:{n:'SH-1',spd:.85,hp:140,cost:680},mlrs:{n:'RM-70',burst:8,dmg:26,cost:820},aa:{n:'KS-1C',rng:170,cost:560},scout:{n:'CH-3',cost:280,hp:65,sight:280},ucav:{n:'CH-4',cost:400,hp:75,dmg:18,rng:140},heli:{n:'Mi-17 vũ trang',hp:260,spd:1.35,dmg:12,cost:760},
       jet:{n:'L-39 Albatros',cost:700,hp:130,dmg:18,spd:2.1,scale:.82},ship:{n:'Tàu tuần tra Stenka',cost:650,hp:330,dmg:24,rng:140,spd:1.15}}}
 };
-const NAT_ORDER=['vn','th','my','kh','ru','us','cn','fr'],RORDER=['inf','at','aainf','eng','sap','ifv','mbt','arty','mlrs','aa','heli','jet','ship'];
+const NAT_ORDER=['vn','th','my','kh','ru','us','cn','fr'],RORDER=['inf','at','aainf','eng','sap','ifv','mbt','arty','mlrs','aa','scout','ucav','heli','jet','ship'];
 const UT={lander:{name:'Tàu đổ bộ',role:'lander',model:'lander',cost:0,time:0,hp:420,spd:.8,rng:0,dmg:0,cd:999,cls:'sea',armor:'ship',from:'shipyard',air:false,ground:false,r:14,sight:120,wpn:'mg',nat:'vn'}};
 for(const k of NAT_ORDER){const NA=NATIONS[k];for(const r in NA.u){const m=NA.u[r],d={...ROLES[r],...m,name:m.n,role:r,model:r,nat:k};delete d.n;if(NA.time)d.time=+(d.time*NA.time).toFixed(1);if(NA.sight)d.sight=Math.round(d.sight*NA.sight);UT[k+'_'+r]=d;}}
 for(const k in UT){const d=UT[k];d.mv=d.cls==='land'&&d.armor==='veh'?'veh':d.cls;}
@@ -583,7 +655,7 @@ const BT={
   barracks:{name:'Doanh trại',cost:400,time:7,hp:850,size:2,req:'hq',tip:'Huấn luyện bộ binh. Mở khóa Xưởng cơ giới, Lô cốt và Xưởng đóng tàu.'},
   factory:{name:'Xưởng cơ giới',cost:1000,time:12,hp:1300,size:3,req:'barracks',tip:'Sản xuất xe tăng, xe bọc thép, pháo và phòng không. Mở khóa Sân bay.'},
   tower:{name:'Lô cốt phòng thủ',cost:650,time:8,hp:750,size:2,req:'barracks',rng:165,dmg:22,cd:42,air:true,ground:true,wpn:'tower',tip:'Pháo phòng thủ cố định, bắn cả mục tiêu mặt đất lẫn trên không.'},
-  airfield:{name:'Sân bay',cost:1200,time:14,hp:1100,size:3,req:'factory',tip:'Xuất kích trực thăng và tiêm kích.'},
+  airfield:{name:'Sân bay',cost:1200,time:14,hp:1100,size:3,req:'factory',tip:'Xuất kích drone, trực thăng và tiêm kích.'},
   shipyard:{name:'Xưởng đóng tàu',cost:1000,time:12,hp:1200,size:2,req:'barracks',coast:true,tip:'Phải đặt sát sông hoặc biển. Đóng tàu chiến.'},
   tunnel:{name:'Cửa địa đạo',cost:450,time:7,hp:700,size:2,req:'barracks',tip:'Xây từ 2 cửa: chọn quân bộ rồi chạm vào một cửa để chui hầm tới đó.'}
 };
@@ -593,6 +665,7 @@ const DM={
   arty:{inf:1.1,veh:.9,air:0,ship:.9,bld:1.5}, tower:{inf:1.1,veh:1,air:1.2,ship:.9,bld:1},
   flak:{inf:0,veh:0,air:2.2,ship:0,bld:0}, aam:{inf:.4,veh:.6,air:2,ship:.6,bld:.4}, sam:{inf:0,veh:0,air:2.4,ship:0,bld:0},
   auto:{inf:1.3,veh:.75,air:.9,ship:.4,bld:.4}, satchel:{inf:1,veh:1.3,air:0,ship:.6,bld:3.2},
+  guided:{inf:.5,veh:1.8,air:0,ship:1.2,bld:1},
   stomp:{inf:1.6,veh:.9,air:0,ship:.3,bld:1.3}, bolt:{inf:1.2,veh:1.1,air:1.3,ship:1,bld:.8}
 };
 const CATS=['barracks','factory','airfield','shipyard','temple'];
@@ -614,6 +687,8 @@ const ICON={
   rocket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6l-9 9-6-6zM5 19l3-3M9 21l-1-2M3 15l2 1"/></svg>',
   tank:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="6" rx="3"/><path d="M7 13v-3h8v3M15 11h7"/></svg>',
   arty:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="14" width="14" height="5" rx="2.5"/><path d="M8 14l3-4h3M12 11l10-6"/></svg>',
+  scout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14l-7-3 7-5 7 5z"/><path d="M5 11v4l7 4 7-4v-4"/><circle cx="12" cy="6" r="1.5"/></svg>',
+  ucav:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14l-8-3 8-6 8 6z"/><path d="M4 11v3l8 5 8-5v-3"/><path d="M12 5V2M10 20l2-2 2 2"/></svg>',
   heli:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M12 5v4M15 13h6l1-3M8 17l-2 3h10l-2-3"/><ellipse cx="10" cy="13" rx="5" ry="4"/></svg>',
   ship:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16h20l-3 4H5zM6 16v-4h12v4M10 12V8h4v4M12 8V5"/></svg>',
   temple:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 20v-6h12v6M3 14l9-5 9 5M8 9l4-4 4 4"/></svg>',
@@ -848,23 +923,64 @@ function processPaths(){
   }
 }
 function offsets(n){const o=[[0,0]];let ring=1;while(o.length<n){const m=ring*6;for(let k=0;k<m&&o.length<n;k++){const a=k/m*TAU;o.push([Math.cos(a)*ring,Math.sin(a)*ring]);}ring++;}return o;}
-function cmdMove(list,x,y,amove){
+function cmdMove(list,x,y,amove,isQueue){
   list=list.filter(u=>!u.dead);if(!list.length)return;
   list.sort((a,b)=>hyp(a.x-x,a.y-y)-hyp(b.x-x,b.y-y));
   const off=offsets(list.length);
   list.forEach((u,k)=>{const sp=u.d.r>8?28:18;const tx=x+off[k][0]*sp,ty=y+off[k][1]*sp;
-    u.order={k:amove?'amove':'move',x:tx,y:ty,n:0};u.tgt=null;u.fail=0;requestPath(u,tx,ty);});
+    const ord={k:amove?'amove':'move',x:tx,y:ty,n:0};
+    if(isQueue&&(u.order||u.path||(u.queue&&u.queue.length))){u.queue=u.queue||[];u.queue.push(ord);}
+    else{u.queue=[];u.order=ord;u.tgt=null;u.fail=0;requestPath(u,tx,ty);}});
   G.fx.push({k:'ring',x,y,t:24,T:24,c:amove?'#ff6a4d':'#7CFC9A'});
+  sfx(amove?'cmd_attack':'cmd_move');
 }
-function cmdAttack(list,t){
+function cmdAttack(list,t,isQueue){
   list=list.filter(u=>!u.dead);
   for(const u of list){
-    if(canHit(u.d,t)){u.order={k:'atk',t};u.tgt=t;u.fail=0;u.path=null;u.repT=0;}
-    else{u.order={k:'move',x:t.x,y:t.y,n:0};u.tgt=null;requestPath(u,t.x,t.y);}
+    const ord=canHit(u.d,t)?{k:'atk',t}:{k:'move',x:t.x,y:t.y,n:0};
+    if(isQueue&&(u.order||u.path||(u.queue&&u.queue.length))){u.queue=u.queue||[];u.queue.push(ord);}
+    else{
+      u.queue=[];u.order=ord;
+      if(ord.k==='atk'){u.tgt=t;u.fail=0;u.path=null;u.repT=0;}
+      else{u.tgt=null;requestPath(u,t.x,t.y);}
+    }
   }
   G.fx.push({k:'ring',x:t.x,y:t.y,t:24,T:24,c:'#ff4d4d'});
+  sfx('cmd_attack');
 }
-function cmdStop(list){for(const u of list){u.order=null;u.path=null;u.tgt=null;u.pathReq=null;}}
+function cmdPatrol(list,x,y,isQueue){
+  list=list.filter(u=>!u.dead);if(!list.length)return;
+  list.sort((a,b)=>hyp(a.x-x,a.y-y)-hyp(b.x-x,b.y-y));
+  const off=offsets(list.length);
+  list.forEach((u,k)=>{const sp=u.d.r>8?28:18;const tx=x+off[k][0]*sp,ty=y+off[k][1]*sp;
+    const ord={k:'patrol',pts:[{x:u.x,y:u.y},{x:tx,y:ty}],idx:1,dir:1,n:0};
+    if(isQueue&&(u.order||u.path||(u.queue&&u.queue.length))){u.queue=u.queue||[];u.queue.push(ord);}
+    else{u.queue=[];u.order=ord;u.tgt=null;u.fail=0;requestPath(u,tx,ty);}});
+  G.fx.push({k:'ring',x,y,t:24,T:24,c:'#38bdf8'});
+  sfx('cmd_move');
+  toast('Đã đặt lệnh đi tuần');
+}
+function cmdStop(list){for(const u of list){u.order=null;u.path=null;u.tgt=null;u.pathReq=null;u.queue=[];}}
+function nextOrder(u){
+  u.path=null;u.pathReq=null;
+  if(u.queue&&u.queue.length>0){
+    const next=u.queue.shift();
+    u.order=next;
+    if(next.k==='move'||next.k==='amove'){
+      next.n=0;u.tgt=null;u.fail=0;
+      requestPath(u,next.x,next.y);
+    }else if(next.k==='atk'){
+      if(!next.t||next.t.dead){return nextOrder(u);}
+      u.tgt=next.t;u.fail=0;u.repT=0;
+    }else if(next.k==='patrol'){
+      u.tgt=null;u.fail=0;
+      requestPath(u,next.pts[next.idx].x,next.pts[next.idx].y);
+    }
+    return next;
+  }
+  u.order=null;
+  return null;
+}
 
 /* ================= CHIẾN ĐẤU ================= */
 function findTarget(src,d,range){
@@ -875,14 +991,26 @@ function findTarget(src,d,range){
     if(src.team===1&&!seen1(e))continue;
     if(src.ign&&src.ign[e.id]>f)continue;
     const dd=hyp(e.x-src.x,e.y-src.y)-e.d.r;if(dd>range)continue;
-    const sc=(dd+70)/Math.max(.3,WM[e.d.armor]);if(sc<bs){bs=sc;best=e;}
+    let sc=(dd+70)/Math.max(.3,WM[e.d.armor]);
+    if(src.team>1){
+      if(G.hero&&e===G.hero)sc*=.55;
+      else if(e.d.role==='arty'||e.d.role==='mlrs')sc*=.65;
+      else if(e.d.role==='eng')sc*=.7;
+      if(e.hp<e.d.hp*.25)sc*=.6;
+    }
+    if(sc<bs){bs=sc;best=e;}
   }
   for(const e of G.blds){
     if(e.team===src.team||e.dead||!canHit(d,e))continue;
     if(src.team===1&&!seen1(e))continue;
     if(src.ign&&src.ign[e.id]>f)continue;
     const dd=hyp(e.x-src.x,e.y-src.y)-e.hw+90;if(dd>range+90)continue;
-    {const sc=(dd+70)/Math.max(.3,WM.bld);if(sc<bs){bs=sc;best=e;}}
+    let sc=(dd+70)/Math.max(.3,WM.bld);
+    if(src.team>1){
+      if(e.type==='hq')sc*=.75;
+      else if(e.type==='tower')sc*=.82;
+    }
+    if(sc<bs){bs=sc;best=e;}
   }
   return best;
 }
@@ -903,10 +1031,15 @@ function fire(src,d,t){
   }else if(w==='arty'){
     G.proj.push({k:'arty',x:mzx,y:mzy,sx:mzx,sy:mzy,tx:t.x+rnd(-(d.spread||8),d.spread||8),ty:t.y+rnd(-(d.spread||8),d.spread||8),t:0,T:70,h:0,dmg,team:src.team,src,w,splash:d.splash});
   }else{
-    G.proj.push({k:w,x:mzx,y:mzy,tg:t,tx:t.x,ty:t.y,spd:w==='rocket'?5:(w==='sam'||w==='aam')?7:8,dmg,team:src.team,src,w,a:ang,z0:z1,z1:z2,ez:z1,d0:Math.max(1,hyp(t.x-mzx,t.y-mzy))});
+    G.proj.push({k:w,x:mzx,y:mzy,tg:t,tx:t.x,ty:t.y,spd:w==='rocket'?5:(w==='sam'||w==='aam')?7:w==='guided'?4.6:8,dmg,team:src.team,src,w,splash:d.splash||0,a:ang,z0:z1,z1:z2,ez:z1,d0:Math.max(1,hyp(t.x-mzx,t.y-mzy))});
   }
   G.fx.push({k:'mz',x:mzx,y:mzy,z:z1,t:4,T:4});
-  if(onScreen(src.x,src.y))sfx('shot');
+  if(onScreen(src.x,src.y)){
+    if(w==='shell'||w==='arty'||w==='satchel')sfx('shot_cannon');
+    else if(w==='rocket'||w==='sam'||w==='aam'||w==='guided')sfx('shot_rocket');
+    else if(w==='mg'||w==='mg2'||w==='auto'||w==='flak')sfx('shot_mg');
+    else sfx('shot');
+  }
 }
 function hurt(e,amt,src){
   if(e.dead||amt<=0)return;
@@ -959,8 +1092,8 @@ function updUnit(u){
   if(u.cd>0)u.cd--;
   if(u.tgt&&(u.tgt.dead||!canHit(d,u.tgt)))u.tgt=null;
   let o=u.order;
-  if(o&&o.k==='atk'){if(o.t.dead){u.order=o=null;u.tgt=null;}else u.tgt=o.t;}
-  if(!u.tgt&&(!o||o.k==='amove')){if(--u.scanT<=0){u.scanT=12+(u.id%6);u.tgt=findTarget(u,d,d.sight);if(u.tgt){u.path=null;u.repT=0;}}}
+  if(o&&o.k==='atk'){if(o.t.dead){u.tgt=null;o=nextOrder(u);}else u.tgt=o.t;}
+  if(!u.tgt&&(!o||o.k==='amove'||o.k==='patrol')){if(--u.scanT<=0){u.scanT=12+(u.id%6);u.tgt=findTarget(u,d,d.sight);if(u.tgt){u.path=null;u.repT=0;}}}
   if(!u.tgt&&!o&&u.lastAtk&&!u.lastAtk.dead&&canHit(d,u.lastAtk)&&hyp(u.x-u.lastAtk.x,u.y-u.lastAtk.y)<d.sight+160){u.tgt=u.lastAtk;u.repT=0;}
   u.lastAtk=null;
   let firing=false;
@@ -977,23 +1110,36 @@ function updUnit(u){
       else{
         if(--u.repT<=0||(!u.path&&!u.pathReq)){
           if(u.path===null&&u.partial&&u.repT<=0&&u.lastChase===t.id){u.fail++;}
-          if(u.fail>3){u.ign[t.id]=G.frame+900;u.tgt=null;u.fail=0;if(o&&o.k==='atk')u.order=o=null;}
+          if(u.fail>3){u.ign[t.id]=G.frame+900;u.tgt=null;u.fail=0;if(o&&o.k==='atk')o=nextOrder(u);}
           else{u.repT=45+(u.id%20);u.lastChase=t.id;requestPath(u,t.x,t.y);}
         }
       }
     }
   }
   if(o&&o.k==='tunnel'){
-    if(o.a.dead||o.b.dead){u.order=o=null;u.path=null;}
+    if(o.a.dead||o.b.dead){o=nextOrder(u);}
     else if(hyp(u.x-o.a.x,u.y-o.a.y)<o.a.hw+34){
       const j=nearestPassable(cellAt(o.b.x+rnd(-40,40),o.b.y+o.b.hw+26+rnd(0,30)),u.d.mv,8);
       G.fx.push({k:'ring',x:u.x,y:u.y,t:20,T:20,c:'#c9a15a'});
       if(j>=0){u.x=cxw(j);u.y=cyw(j);G.fx.push({k:'ring',x:u.x,y:u.y,t:20,T:20,c:'#c9a15a'});}
-      u.path=null;u.pathReq=null;u.order=o=null;
-    }else if(!u.path&&!u.pathReq){o.n=(o.n||0)+1;if(o.n>3)u.order=o=null;else requestPath(u,o.a.x,o.a.y+o.a.hw+12);}
+      o=nextOrder(u);
+    }else if(!u.path&&!u.pathReq){o.n=(o.n||0)+1;if(o.n>3)o=nextOrder(u);else requestPath(u,o.a.x,o.a.y+o.a.hw+12);}
   }
   if(o&&(o.k==='move'||o.k==='amove')&&!u.path&&!u.pathReq&&!(u.tgt&&o.k==='amove')){
-    if(hyp(o.x-u.x,o.y-u.y)<30||o.n>=2)u.order=o=null;else{o.n++;requestPath(u,o.x,o.y);}
+    if(hyp(o.x-u.x,o.y-u.y)<30||o.n>=2)o=nextOrder(u);else{o.n++;requestPath(u,o.x,o.y);}
+  }
+  if(o&&o.k==='patrol'&&!u.path&&!u.pathReq&&!u.tgt){
+    const curPt=o.pts[o.idx];
+    if(hyp(curPt.x-u.x,curPt.y-u.y)<35||(o.n||0)>=2){
+      o.n=0;
+      o.idx+=o.dir;
+      if(o.idx>=o.pts.length){o.dir=-1;o.idx=Math.max(0,o.pts.length-2);}
+      else if(o.idx<0){o.dir=1;o.idx=Math.min(1,o.pts.length-1);}
+      requestPath(u,o.pts[o.idx].x,o.pts[o.idx].y);
+    }else{
+      o.n=(o.n||0)+1;
+      requestPath(u,curPt.x,curPt.y);
+    }
   }
   if(u.path&&!firing)follow(u);
   else if(!firing&&d.turret)u.ta=turn(u.ta,u.a,.08);
@@ -1006,13 +1152,53 @@ function follow(u){
   u.a=turn(u.a,ang,veh?.1:.3);
   let sp=d.spd*(veh?Math.max(.15,Math.cos(angD(u.a,ang))):1);
   if(d.cls==='land'){const ci=cellAt(u.x,u.y);if(ci>=0)sp/=(d.mv==='veh'?cVeh[ci]:cInf[ci]);}
-  if(u.team===1&&G.frame<G.hasteT)sp*=1.6;if(u.slowT>G.frame)sp*=.4;
+  const isHaste=(u.team===1&&G.frame<G.hasteT)||(G.teams[u.team]&&G.frame<(G.teams[u.team].hasteT||0));
+  if(isHaste)sp*=1.6;
+  if(u.slowT>G.frame)sp*=.4;
+  if(u.team>1&&G.ais[u.team]?.op?.ids?.has(u)&&G.ais[u.team].op.tgt){
+    const op=G.ais[u.team].op;
+    if(op.st==='attack'||op.st==='stage'){
+      let minProg=1e9;
+      for(const other of op.ids){
+        if(!other.dead&&other!==u&&(other.d.role==='mbt'||other.d.role==='arty')){
+          const dOther=hyp(other.x-op.tgt.x,other.y-op.tgt.y);
+          if(dOther<minProg)minProg=dOther;
+        }
+      }
+      if(minProg<1e8){
+        const myDist=hyp(u.x-op.tgt.x,u.y-op.tgt.y);
+        if(minProg-myDist>150)sp*=.55;
+      }
+    }
+  }
   if(dl<=sp+.6){u.x=p.x;u.y=p.y;u.pi++;if(u.pi>=u.path.length)u.path=null;return;}
   const nx=u.x+dx/dl*sp,ny=u.y+dy/dl*sp;
   if(d.cls!=='air'&&!pass(cellAt(nx,ny),d.mv)&&pass(cellAt(u.x,u.y),d.mv)){
     if(!u.pathReq){const last=u.path[u.path.length-1];u.path=null;requestPath(u,last.x,last.y);}return;
   }
   u.x=nx;u.y=ny;
+}
+function getMass(u){
+  if(!u||!u.d)return 1;
+  const a=u.d.armor,c=u.d.cls,r=u.d.role||u.type;
+  if(c==='sea'||a==='ship')return 160;
+  if(r==='mbt'||u.type==='mbt')return 65;
+  if(r==='arty'||r==='mlrs'||u.type==='arty'||u.type==='mlrs')return 50;
+  if(a==='veh')return 30;
+  return 1;
+}
+function crushUnit(veh,inf){
+  if(inf.dead)return;
+  hurt(inf,9999,veh);
+  sfx('crush');
+  if(G){if(G.shake===undefined)G.shake=0;G.shake=Math.min(9,G.shake+2.5);}
+  if(inf.team===1){toast(inf.d.name+' bị xe cán bẹp!','bad');}
+  else if(veh.team===1){toast(veh.d.name+' đã cán bẹp '+inf.d.name+' địch!','good');}
+  G.fx.push({k:'crush',x:inf.x,y:inf.y,t:24,T:24});
+  for(let k=0;k<7&&G.parts.length<700;k++){
+    const a=rnd(0,TAU),v=rnd(.2,1.3);
+    G.parts.push({x:inf.x,y:inf.y,z:1,vx:Math.cos(a)*v,vy:Math.sin(a)*v,vz:rnd(.2,.5),t:rnd(25,50),T:50,c:'crush'});
+  }
 }
 function separate(){
   const L=G.units,n=L.length;
@@ -1023,8 +1209,25 @@ function separate(){
       if(Math.abs(dx)>r||Math.abs(dy)>r)continue;
       let dl=hyp(dx,dy);if(dl>=r)continue;
       let nx,ny;if(dl<.01){const ang=rnd(0,TAU);nx=Math.cos(ang);ny=Math.sin(ang);dl=0;}else{nx=dx/dl;ny=dy/dl;}
-      const push=(r-dl)*.25;
-      nudge(a,-nx*push,-ny*push);nudge(b,nx*push,ny*push);
+
+      const aIsVeh = (a.d.cls||'land')==='land'&&a.d.armor==='veh';
+      const bIsVeh = (b.d.cls||'land')==='land'&&b.d.armor==='veh';
+      const aIsInf = (a.d.cls||'land')==='land'&&a.d.armor==='inf';
+      const bIsInf = (b.d.cls||'land')==='land'&&b.d.armor==='inf';
+
+      if(aIsVeh && bIsInf && a.team !== b.team){ crushUnit(a, b); continue; }
+      if(bIsVeh && aIsInf && a.team !== b.team){ crushUnit(b, a); continue; }
+
+      const push=(r-dl)*.35;
+      if(aIsVeh && bIsInf){
+        nudge(b, nx*push, ny*push);
+      } else if(bIsVeh && aIsInf){
+        nudge(a, -nx*push, -ny*push);
+      } else {
+        const ma=getMass(a),mb=getMass(b),totalM=ma+mb;
+        nudge(a, -nx*push*(mb/totalM), -ny*push*(mb/totalM));
+        nudge(b, nx*push*(ma/totalM), ny*push*(ma/totalM));
+      }
     }
   }
 }
@@ -1055,9 +1258,10 @@ function updProj(){
     if(dl<=p.spd){
       p.dead=true;
       if(p.tg&&!p.tg.dead)hurt(p.tg,p.dmg*mult(p.w,p.tg),p.src);
-      G.fx.push({k:'boom',x:p.tx,y:p.ty,z:p.z1,r:p.w==='rocket'?7:5,t:12,T:12});
+      if(p.splash)splash({tx:p.tx,ty:p.ty,splash:p.splash,dmg:p.dmg,w:p.w,team:p.team,src:p.src});
+      G.fx.push({k:'boom',x:p.tx,y:p.ty,z:p.z1,r:p.splash?8:(p.w==='rocket'?7:5),t:12,T:12});
     }else{p.x+=dx/dl*p.spd;p.y+=dy/dl*p.spd;
-      if((p.w==='rocket'||p.w==='sam'||p.w==='aam')&&G.parts.length<700)G.parts.push({x:p.x,y:p.y,z:p.ez,vx:rnd(-.1,.1),vy:rnd(-.1,.1),vz:.08,t:22,T:22,c:'smoke'});}
+      if((p.w==='rocket'||p.w==='sam'||p.w==='aam'||p.w==='guided')&&G.parts.length<700)G.parts.push({x:p.x,y:p.y,z:p.ez,vx:rnd(-.1,.1),vy:rnd(-.1,.1),vz:.08,t:22,T:22,c:'smoke'});}
   }
 }
 function updFx(){
@@ -1097,7 +1301,7 @@ function updCities(){
       else{c.cap-=r;if(c.cap<=0){c.cap=0;c.capT=p;c.owner=0;}}
     }else if(teams===0){if(c.owner){c.capT=c.owner;c.cap=Math.min(100,c.cap+.2);}else c.cap=Math.max(0,c.cap-.05);}
     if(before!==c.owner){
-      if(c.owner===1){toast('Đã chiếm '+c.name+'!','good');sfx('ready');}
+      if(c.owner===1){toast('Đã chiếm '+c.name+'!','good');sfx('capture');}
       else if(before===1)toast('Mất quyền kiểm soát '+c.name+'!','bad');
     }
   }
@@ -1121,6 +1325,8 @@ function spawnUnit(type,team,b){
     G.stats.built++;if(type==='hero')G.hero=u;
     const rx=b.rally?b.rally.x+rnd(-20,20):x+rnd(-30,30),ry=b.rally?b.rally.y+rnd(-20,20):y+rnd(14,40);u.order={k:'move',x:rx,y:ry,n:b.rally?0:1};requestPath(u,rx,ry);
     toast(d.name+' sẵn sàng');
+    const cat=d.from==='barracks'?'inf':d.from==='factory'?'veh':d.from==='airfield'?'air':'ship';
+    sfx('unit_'+cat+'_ready');
   }
   return u;
 }
@@ -1138,7 +1344,7 @@ function updTeam(id){
     }
   }
   if(getHQ(id))T.power=Math.min(T.powerMax,T.power+1);
-  if(id===1&&has(1,'temple')){T.haste=Math.min(T.hasteMax,T.haste+1);T.stake=Math.min(T.stakeMax,T.stake+1);}
+  if(has(id,'temple')||(id>1&&T.nat==='vn')){T.haste=Math.min(T.hasteMax,T.haste+1);T.stake=Math.min(T.stakeMax,T.stake+1);}
 }
 function launchPower(team,x,y){
   const T=G.teams[team];if(T.power<T.powerMax)return;
@@ -1182,14 +1388,16 @@ function ai(t){
   const rf=foes.filter(u=>u.team===rival),nf=Math.max(1,rf.length);let eInf=0,eVeh=0,eAir=0,eSea=0;
   for(const u of rf){const a=u.d.armor;if(a==='inf')eInf++;else if(a==='veh')eVeh++;else if(a==='air')eAir++;else eSea++;}
   const roleN={};for(const u of mine)roleN[u.d.role]=(roleN[u.d.role]||0)+1;const myRole=r=>roleN[r]||0,enemyAA=rf.filter(u=>u.d.air).length;
-  const Wt={inf:1.2+eInf/nf*.5,at:.5+eVeh/nf*2.2,aainf:eAir?(.4+eAir/nf*2.5):.05,ifv:.6+eInf/nf*2,mbt:1.6,arty:mine.length>8?.9:.2,mlrs:mine.length>14?.6:0,aa:eAir>1?(.5+eAir/nf*2):0,
-    heli:enemyAA<3?.9:.25,jet:eAir?1:.2,ship:eSea?1:.5,eng:myRole('eng')<1&&mine.length>10?.5:0,sap:.4};
+  const Wt={inf:1.2+eInf/nf*.5,at:.5+eVeh/nf*2.2,aainf:eAir?(.4+eAir/nf*2.5):.05,ifv:.6+eInf/nf*2,
+    mbt:myRole('mbt')<2?3.2:1.6,arty:mine.length>=6?(myRole('arty')<2?1.8:.6):.2,mlrs:mine.length>12?(myRole('mlrs')<2?1.4:.5):0,aa:eAir>0?(myRole('aa')<2?2.2:1):0,
+    scout:mine.length>=8&&myRole('scout')<1?0.8:.1,ucav:myRole('ucav')<2?1.1:.35,
+    heli:enemyAA<3?.9:.25,jet:eAir?1:.2,ship:eSea?1:.5,eng:myRole('eng')<1&&mine.length>=8?1.2:0,sap:.4};
   if(!smart)for(const k in Wt)Wt[k]=k==='eng'?0:1;
   const reserve=mine.length>=A.waveMin?(A.saving||0):0;
   for(const cat of CATS){
     if(!has(t,cat)||T.pq[cat].length>=2||mine.length>=cap)continue;
     if(cat==='shipyard'&&mine.filter(u=>u.d.cls==='sea').length>=4)continue;
-    if(cat==='airfield'&&mine.filter(u=>u.d.cls==='air').length>=7)continue;
+    if(cat==='airfield'&&mine.filter(u=>u.d.cls==='air').length>=10)continue;
     const opts=RORDER.filter(r=>UT[aiKey(t,r)]&&UT[aiKey(t,r)].from===cat&&Wt[r]>0).map(r=>[r,Wt[r]/(1+myRole(r)*.25)]);if(!opts.length)continue;
     const key=aiKey(t,pickW(opts));if(T.credits-reserve>=UT[key].cost){T.credits-=UT[key].cost;T.pq[cat].push(key);}
   }
@@ -1216,12 +1424,44 @@ function ai(t){
     if(cs.length){const tgt=cs[Math.min(cs.length-1,(Math.random()*2)|0)];const land=free.filter(u=>u.d.cls==='land').sort(byDist(tgt.c)).slice(0,3+(G.diff==='hard'?1:0));
       if(land.length){cmdMoveAI(land,tgt.c.x,tgt.c.y);A.claims[tgt.i]=G.frame+60*70;take(land);}}
   }
-  // --- đột kích hậu phương bằng xe nhanh và trực thăng
+  // --- drone trinh sát bay thăm dò tiền tuyến / căn cứ đối thủ
+  if(smart)for(const u of mine)if(u.d.role==='scout'&&!u.order&&!u.path&&!u.pathReq&&G.frame%180===(u.id%180)){
+    const tg=rival?getHQ(rival):null;if(tg){const rx=tg.x+rnd(-260,260),ry=tg.y+rnd(-260,260);u.order={k:'move',x:rx,y:ry,n:0};requestPath(u,rx,ry);}
+  }
+  // --- đột kích hậu phương bằng xe nhanh, trực thăng và drone tấn công
   if(smart&&G.frame>=(A.nextRaid||60*200)&&rival){
-    const fast=free.filter(u=>u.d.role==='ifv'||u.d.role==='heli'||u.d.role==='sap').slice(0,4);
+    const fast=free.filter(u=>u.d.role==='ifv'||u.d.role==='heli'||u.d.role==='sap'||u.d.role==='ucav').slice(0,4);
     if(fast.length>=2){let tg=null,bd=1e9;for(const b of G.blds){if(b.dead||b.team!==rival||b.type!=='mine')continue;const dd=hyp(b.x-hq.x,b.y-hq.y);if(dd<bd){bd=dd;tg=b;}}
       if(!tg){for(const c of G.cities){if(c.owner!==rival||c.isl)continue;let guard=0;for(const u of foes)if(Math.abs(u.x-c.x)<200&&hyp(u.x-c.x,u.y-c.y)<200)guard++;if(guard<2){const dd=hyp(c.x-hq.x,c.y-hq.y);if(dd<bd){bd=dd;tg=c;}}}}
       if(tg){cmdMoveAI(fast,tg.x,tg.y);take(fast);}A.nextRaid=G.frame+60*(G.diff==='hard'?55:85);}
+  }
+  // --- cắm bãi cọc Bạch Đằng phục kích trên sông
+  if(T.nat==='vn'&&T.stake>=T.stakeMax*.7&&G.frame%180<30){
+    const seaEnemies=foes.filter(e=>e.d.cls==='sea'&&hyp(e.x-hq.x,e.y-hq.y)<1800);
+    if(seaEnemies.length){
+      const se=seaEnemies[0],ci=cellAt(se.x+rnd(-60,60),se.y+rnd(-60,60));
+      if(ci>=0&&terr[ci]===0){
+        G.stakes.push({x:cxw(ci),y:cyw(ci),t:90*60,team:t});
+        T.stake=0;
+        toast(tname(t)+' đã ngầm đóng bãi cọc Bạch Đằng trên sông!','bad');
+      }
+    }
+  }
+  // --- chốt chặn đầu cầu bảo vệ lãnh thổ
+  if(BRIDGES.length&&free.length>=4&&G.frame%300<30&&!A.op){
+    for(const b of BRIDGES){
+      const d1=hyp(b.x1-hq.x,b.y1-hq.y),d2=hyp(b.x2-hq.x,b.y2-hq.y);
+      const myEnd=d1<d2?{x:b.x1,y:b.y1}:{x:b.x2,y:b.y2};
+      if(hyp(myEnd.x-hq.x,myEnd.y-hq.y)<1300&&!A.claims['br_'+b.name]){
+        const guard=free.filter(u=>u.d.cls==='land').slice(0,3);
+        if(guard.length>=2){
+          cmdMoveAI(guard,myEnd.x,myEnd.y);
+          A.claims['br_'+b.name]=G.frame+60*90;
+          take(guard);
+          break;
+        }
+      }
+    }
   }
   // --- chiến dịch chính: tập kết, tấn công, rút lui khi yếu thế
   if(!A.op){
@@ -1248,8 +1488,15 @@ function ai(t){
     const done=()=>{A.op=null;A.nextWave=G.frame+D.wave*60;A.waveMin=Math.min(30,A.waveMin+2);};
     if(sq.length<Math.max(2,op.n0*.3)){for(const u of sq){u.order={k:'move',x:op.sx,y:op.sy,n:0};u.tgt=null;requestPath(u,op.sx,op.sy);}done();}
     else if(op.st==='stage'){let near=0;for(const u of sq)if(hyp(u.x-op.sx,u.y-op.sy)<280)near++;
-      if(near>=sq.length*.7||G.frame-op.t0>60*55){op.st='attack';op.t1=G.frame;cmdMoveAI(sq,op.tgt.x,op.tgt.y);}}
-    else if(op.st==='attack'){
+      if(near>=sq.length*.7||G.frame-op.t0>60*55){
+        op.st='attack';op.t1=G.frame;
+        if(T.haste&&T.haste>=T.hasteMax*.7&&G.frame-(T.lastHaste||0)>60*40){
+          T.haste=0;T.hasteT=G.frame+20*60;T.lastHaste=G.frame;
+          toast('Trinh sát báo: '+tname(t)+' đã phát động Thần tốc tiến quân!','bad');sfx('alert');
+        }
+        cmdMoveAI(sq,op.tgt.x,op.tgt.y);
+      }
+    }else if(op.st==='attack'){
       const tg=op.tgt,gone=tg.kind==='b'?tg.dead:tg.owner===t;
       if(gone){let cx=0,cy=0;for(const u of sq){cx+=u.x;cy+=u.y;}cx/=sq.length;cy/=sq.length;const nx=aiTarget(t,cx,cy,0);
         if(nx&&hyp(nx.x-cx,nx.y-cy)<900&&G.frame-op.t0<60*240){op.tgt=nx;cmdMoveAI(sq,nx.x,nx.y);}else done();}
@@ -1295,7 +1542,30 @@ function ai(t){
   }
 }
 function cmdMoveAI(list,x,y){
-  const off=offsets(list.length);list.forEach((u,k)=>{const back=(u.d.role==='arty'||u.d.role==='mlrs'||u.d.role==='aa')?1.6:1,tx=x+off[k][0]*22*back,ty=y+off[k][1]*22*back;u.order={k:'amove',x:tx,y:ty,n:0};u.tgt=null;u.fail=0;requestPath(u,tx,ty);});
+  if(!list||!list.length)return;
+  const off=offsets(list.length);
+  let avgX=0,avgY=0;for(const u of list){avgX+=u.x;avgY+=u.y;}
+  avgX/=list.length;avgY/=list.length;
+  const dx=x-avgX,dy=y-avgY,dist=hyp(dx,dy);
+  const dirX=dist>0?dx/dist:1,dirY=dist>0?dy/dist:0;
+  list.forEach((u,k)=>{
+    const r=u.d.role;
+    let tx,ty;
+    if(r==='arty'||r==='mlrs'){
+      const standoff=Math.min(dist*.75,270);
+      tx=x-dirX*standoff+off[k][0]*18;
+      ty=y-dirY*standoff+off[k][1]*18;
+    }else if(r==='aa'||r==='aainf'){
+      const standoff=Math.min(dist*.5,180);
+      tx=x-dirX*standoff+off[k][0]*18;
+      ty=y-dirY*standoff+off[k][1]*18;
+    }else{
+      tx=x+off[k][0]*20;
+      ty=y+off[k][1]*20;
+    }
+    u.order={k:'amove',x:tx,y:ty,n:0};u.tgt=null;u.fail=0;
+    requestPath(u,tx,ty);
+  });
 }
 
 /* ================= VÒNG LẶP ================= */
@@ -1340,7 +1610,7 @@ function endGame(win){
 /* ================= NỀN BẢN ĐỒ ================= */
 const THEMES={
   tropic:{g:[98,150,66],gv:[34,24,16],sand:[226,210,166],sw:.93,sk:.2,forest:[52,100,50],fh:12,rock:[140,130,112],rh:56,sea0:[70,160,165],sea1:[24,70,110],wsh:[.27,.70,.72],wdp:[.05,.25,.44],blk:[108,104,90],sky:['#5f9fd0','#a9cde6','#dcebf0'],fog:0xcfe0ea},
-  delta:{g:[104,156,70],gv:[26,20,12],sand:[208,192,142],sw:.9,sk:.14,forest:[52,104,50],fh:10,rock:[128,120,100],rh:125,sea0:[150,176,160],sea1:[70,120,128],wsh:[.56,.70,.62],wdp:[.20,.46,.52],blk:[108,104,90],sky:['#6aa6d2','#b4d3e6','#e6ecdf'],fog:0xd6e2dc},
+  delta:{g:[104,156,70],gv:[26,20,12],sand:[208,192,142],sw:.9,sk:.14,forest:[48,92,44],fh:10,rock:[120,115,102],rh:36,sea0:[150,176,160],sea1:[70,120,128],wsh:[.56,.70,.62],wdp:[.20,.46,.52],blk:[108,104,90],sky:['#6aa6d2','#b4d3e6','#e6ecdf'],fog:0xd6e2dc},
   snow:{g:[228,234,240],gv:[8,8,6],sand:[206,214,224],sw:.9,sk:.14,forest:[176,194,194],fh:9,rock:[168,174,182],rh:34,sea0:[96,128,156],sea1:[40,62,96],wsh:[.40,.54,.66],wdp:[.10,.19,.34],blk:[150,150,150],sky:['#8fa9bf','#c3d0da','#e9eef1'],fog:0xdfe6ea},
   central:{g:[102,150,68],gv:[32,22,14],sand:[242,234,208],sw:.965,sk:.3,forest:[48,96,48],fh:13,rock:[136,126,108],rh:70,sea0:[70,160,165],sea1:[24,70,110],wsh:[.27,.70,.72],wdp:[.05,.25,.44],blk:[104,112,84],sky:['#5f9fd0','#a9cde6','#dcebf0'],fog:0xcfe0ea},
   urban:{g:[116,146,88],gv:[24,18,12],sand:[170,160,120],sw:.9,sk:.12,forest:[60,104,56],fh:14,rock:[130,124,108],rh:64,sea0:[140,170,160],sea1:[66,112,124],wsh:[.52,.68,.62],wdp:[.19,.43,.50],blk:[110,110,104],sky:['#7fa9c8','#bdd2df','#e6e6da'],fog:0xd8dfdc}
@@ -1398,10 +1668,63 @@ function renderBg(){
       const rx=12+Rn()*20,ry=9+Rn()*14,ro=Rn()*3;g.fillStyle='rgba(110,96,60,.7)';g.beginPath();g.ellipse(x,y,rx+3,ry+3,ro,0,TAU);g.fill();g.fillStyle='#79a3ad';g.beginPath();g.ellipse(x,y,rx,ry,ro,0,TAU);g.fill();g.fillStyle='rgba(215,238,242,.35)';g.beginPath();g.ellipse(x-rx*.25,y-ry*.25,rx*.4,ry*.3,ro,0,TAU);g.fill();}}}
   for(const r of MAP.rivers||[]){if(r.w)continue;g.beginPath();r.pts.forEach((q,i)=>{const [x,y]=P(...q);i?g.lineTo(x,y):g.moveTo(x,y);});
     g.strokeStyle=snow?'rgba(90,110,130,.7)':'rgba(110,96,60,.7)';g.lineWidth=18;g.stroke();g.strokeStyle=snow?'#6b8aa6':'#79a3ad';g.lineWidth=12;g.stroke();g.strokeStyle='rgba(215,238,242,.3)';g.lineWidth=2.5;g.stroke();}
-  for(const pts of ROADS){for(const [col,w,dash] of [['rgba(70,58,40,.75)',31],[snow?'#8a8f96':'#74746f',25],['rgba(255,236,150,.9)',1.8,[16,14]]]){g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash||[]);
+  /* ĐỊA HÌNH CHIẾN TRƯỜNG: Vệt đất cháy sém napan, hố bom B-52, chiến hào zíc-zắc */
+  const warZones=(MAP.theme==='delta'||MAP.theme==='tropic')?[
+    {at:[104.985,10.380],r:240,bombRuns:3,trenches:3,burn:1}, // Tức Dụp (Đồi Hai Triệu Đô)
+    {at:[104.945,10.445],r:200,bombRuns:2,trenches:3,burn:1}, // Ô Tà Sóc (Căn cứ lòng núi Dài)
+    {at:[104.905,10.485],r:180,bombRuns:2,trenches:2,burn:1}, // Ba Chúc
+    {at:[105.000,10.425],r:160,bombRuns:2,trenches:2,burn:0}, // Ngã ba Tri Tôn
+    {at:[104.955,10.610],r:140,bombRuns:2,trenches:2,burn:0}, // Tuyến biên phòng Kênh Vĩnh Tế
+    {at:[105.060,10.690],r:130,bombRuns:1,trenches:2,burn:0}  // Cầu Vĩnh Tế
+  ]:[];
+  let wsd=9412;const WRn=()=>{wsd=(wsd*16807)%2147483647;return wsd/2147483647;};
+  for(const wz of warZones){
+    const [wx,wy]=P(wz.at[0],wz.at[1]);
+    if(wz.burn){
+      g.save();
+      const bgr=g.createRadialGradient(wx,wy,wz.r*.15,wx,wy,wz.r);
+      bgr.addColorStop(0,'rgba(36,28,20,.72)');
+      bgr.addColorStop(.45,'rgba(96,58,32,.50)');
+      bgr.addColorStop(.8,'rgba(120,95,50,.25)');
+      bgr.addColorStop(1,'rgba(0,0,0,0)');
+      g.fillStyle=bgr;g.beginPath();g.arc(wx,wy,wz.r,0,TAU);g.fill();
+      g.restore();
+    }
+    for(let run=0;run<wz.bombRuns;run++){
+      const ang=WRn()*TAU,dist=wz.r*(.35+WRn()*.5),cx=wx+Math.cos(ang)*dist,cy=wy+Math.sin(ang)*dist;
+      const bAng=ang+Math.PI/2+(WRn()-.5)*.5,len=60+WRn()*110,count=4+Math.round(WRn()*5);
+      for(let k=0;k<count;k++){
+        const frac=count>1?k/(count-1):0.5;
+        const bx=cx+(frac-.5)*len*Math.cos(bAng)+(WRn()-.5)*12;
+        const by=cy+(frac-.5)*len*Math.sin(bAng)+(WRn()-.5)*12;
+        const br=9+WRn()*14,rot=WRn()*TAU;
+        g.fillStyle='rgba(26,20,15,.68)';g.beginPath();g.ellipse(bx,by,br*1.4,br*1.2,rot,0,TAU);g.fill();
+        g.strokeStyle='rgba(115,75,40,.92)';g.lineWidth=4.2;g.beginPath();g.ellipse(bx,by,br,br*.85,rot,0,TAU);g.stroke();
+        g.fillStyle='#14100c';g.beginPath();g.ellipse(bx,by,br*.7,br*.6,rot,0,TAU);g.fill();
+        g.fillStyle='rgba(65,78,70,.82)';g.beginPath();g.ellipse(bx+WRn()*2-1,by+WRn()*2-1,br*.38,br*.32,rot,0,TAU);g.fill();
+      }
+    }
+    for(let tr=0;tr<wz.trenches;tr++){
+      const tAng=tr*(TAU/wz.trenches)+(WRn()-.5)*.4;
+      let tx=wx+Math.cos(tAng)*(24+WRn()*20),ty=wy+Math.sin(tAng)*(24+WRn()*20);
+      const segments=3+Math.round(WRn()*3),tLen=18+WRn()*12;
+      const tpts=[[tx,ty]];let curAng=tAng+(WRn()<.5?1:-1)*.75;
+      for(let s=0;s<segments;s++){
+        tx+=Math.cos(curAng)*tLen;ty+=Math.sin(curAng)*tLen;tpts.push([tx,ty]);
+        curAng+=(s%2===0?-1:1)*(1.1+WRn()*.4);
+      }
+      g.strokeStyle='rgba(172,148,102,.85)';g.lineWidth=6.8;g.beginPath();
+      tpts.forEach((p,i)=>{i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);});g.stroke();
+      g.strokeStyle='rgba(110,88,52,.75)';g.lineWidth=8;g.setLineDash([2.5,4]);g.beginPath();
+      tpts.forEach((p,i)=>{i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);});g.stroke();g.setLineDash([]);
+      g.strokeStyle='#1b150f';g.lineWidth=2.8;g.beginPath();
+      tpts.forEach((p,i)=>{i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);});g.stroke();
+    }
+  }
+  for(const pts of ROADS){for(const [col,w,dash] of [['rgba(70,58,40,.75)',22],[snow?'#8a8f96':'#74746f',18],['rgba(255,236,150,.9)',1.5,[10,8]]]){g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash||[]);
     for(let q=0;q<pts.length-1;q++){const [x1,y1]=pts[q],[x2,y2]=pts[q+1],n=Math.max(1,Math.round(hyp(x2-x1,y2-y1)/10));let on=false;g.beginPath();
       for(let k=0;k<=n;k++){const x=x1+(x2-x1)*k/n,y=y1+(y2-y1)*k/n,ci=cellAt(x,y),ok=ci>=0&&terr[ci]!==0;if(ok){on?g.lineTo(x,y):g.moveTo(x,y);on=true;}else on=false;}g.stroke();}}}g.setLineDash([]);
-  g.lineCap='butt';for(const b of BRIDGES){g.strokeStyle='rgba(40,40,40,.6)';g.lineWidth=40;g.beginPath();g.moveTo(b.x1,b.y1);g.lineTo(b.x2,b.y2);g.stroke();}g.lineCap='round';
+  g.lineCap='butt';for(const b of BRIDGES){g.strokeStyle='rgba(40,40,40,.6)';g.lineWidth=24;g.beginPath();g.moveTo(b.x1,b.y1);g.lineTo(b.x2,b.y2);g.stroke();}g.lineCap='round';
   g.strokeStyle='rgba(245,232,180,.5)';g.lineWidth=2;for(const o of MAP.outline||[]){tracePoly(g,o,1);g.stroke();}
   g.strokeStyle='rgba(255,220,90,.55)';g.setLineDash([16,12]);g.lineWidth=2.6;
   for(const bd of MAP.borders||[]){g.beginPath();bd.forEach((q,i)=>{const [x,y]=P(...q);i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();}g.setLineDash([]);
@@ -1422,7 +1745,7 @@ function buildHeights(){
   for(let ps=0;ps<2;ps++){for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){let s=0,c=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;s+=a[Y*GW+X];c++;}b[y*GW+x]=s/c;}const t=a;a=b;b=t;}
   LMASK=a;
   const ridges=(MAP.ridges||[]).map(r=>{const sg=[];for(let i=0;i<r.pts.length-1;i++)sg.push([...P(...r.pts[i]),...P(...r.pts[i+1])]);return{sg,w:r.w,h:r.h};});
-  const ks=MAP.ks||1,hills=(MAP.hills||[]).map(q=>{const [x,y]=P(q.at[0],q.at[1]);if(q.m){const r=Math.max(q.km*PY/111,58);return{x,y,r,ln:q.len?q.len*PY/111:r,rot:(q.rot||0)*Math.PI/180,h:5.6*Math.sqrt(q.m),dome:1};}return{x,y,r:q.r*ks,h:q.h};}),rough=MAP.rough||2.2;
+  const ks=MAP.ks||1,hills=(MAP.hills||[]).map(q=>{const [x,y]=P(q.at[0],q.at[1]);if(q.m){const r=Math.max(q.km*PY/111,58);return{x,y,r,ln:q.len?q.len*PY/111:r,rot:(q.rot||0)*Math.PI/180,h:(q.hm||1.42)*3.2*Math.sqrt(q.m),dome:1};}return{x,y,r:q.r*ks,h:q.h};}),rough=MAP.rough||2.2;
   for(let vy=0;vy<=GH;vy++)for(let vx=0;vx<=GW;vx++){
     const x=vx*CELL,y=vy*CELL;let ms=0,mc=0,land=0,vnc=0,fc=0;
     for(const [dx,dy] of [[-1,-1],[0,-1],[-1,0],[0,0]]){const X=vx+dx,Y=vy+dy;if(X<0||Y<0||X>=GW||Y>=GH)continue;const i=Y*GW+X,t=terr[i];ms+=a[i];mc++;if(t===1||t===2)land++;if(t===1)vnc++;if(t===2)fc++;}
@@ -1430,7 +1753,7 @@ function buildHeights(){
     if(land>=2)h=Math.max(h,1.5);
     if(vnc>=2){
       for(const r of ridges){let d=1e9;for(const s of r.sg)d=Math.min(d,segDist(x,y,s));const f=Math.max(0,1-d/(r.w*ks));if(f>0)h+=f*f*(.42*r.h+r.h*vnoise(x/140,y/140))*(.55+.45*vnoise(x/46,y/46));}
-      for(const q of hills){if(q.dome){const dx=x-q.x,dy=y-q.y,c=Math.cos(q.rot),sn=Math.sin(q.rot),u=(dx*c+dy*sn)/q.r,v=(-dx*sn+dy*c)/q.ln,d2=u*u+v*v;if(d2<1)h+=q.h*Math.pow(1-d2,1.15)*(.6+.28*vnoise(x/30+q.x,y/30)+.16*vnoise(x/13,y/13+q.y));}
+      for(const q of hills){if(q.dome){const dx=x-q.x,dy=y-q.y,c=Math.cos(q.rot),sn=Math.sin(q.rot),u=(dx*c+dy*sn)/q.r,v=(-dx*sn+dy*c)/q.ln,d2=u*u+v*v;if(d2<1)h+=q.h*Math.pow(1-d2,1.65)*(.62+.26*vnoise(x/30+q.x,y/30)+.18*vnoise(x/13,y/13+q.y));}
         else{const dd=hyp(x-q.x,y-q.y);if(dd<q.r*2.4)h+=q.h*Math.exp(-(dd*dd)/(q.r*q.r))*(.75+.25*vnoise(x/40,y/40));}}
       h+=rough*vnoise(x/60,y/60);
     }else if(fc>=2)h+=12+42*vnoise(x/180,y/180)*mask;
@@ -1515,7 +1838,7 @@ gl_FragColor=vec4(col*vCol,mix(0.72,0.95,d));
   const outer=new THREE.Mesh(wg,new THREE.MeshBasicMaterial({color:oc}));outer.position.set(TW/2,-1.2,TH/2);scene.add(outer);worldObjs.push(outer);
   const deep=new THREE.Mesh(wg,new THREE.MeshBasicMaterial({color:oc}));deep.position.set(TW/2,-14,TH/2);scene.add(deep);worldObjs.push(deep);
   for(const b of BRIDGES){
-    const span=hyp(b.x2-b.x1,b.y2-b.y1),len=span+26,ang=Math.atan2(b.y2-b.y1,b.x2-b.x1),d=new MBld(),hl=/Hiền Lương/.test(b.name),sus=/treo/.test(b.name),ferry=/^Phà/.test(b.name),HW=17,CON='#b9bec3',ST='#8a8f94';
+    const span=hyp(b.x2-b.x1,b.y2-b.y1),len=span+26,ang=Math.atan2(b.y2-b.y1,b.x2-b.x1),d=new MBld(),hl=/Hiền Lương/.test(b.name),sus=/treo|Vàm Cống/.test(b.name),ct=/Cồn Tiên/.test(b.name),ferry=/^Phà/.test(b.name),HW=10,CON='#b9bec3',ST='#8a8f94';
     if(ferry){
       for(let x=-len/2+8;x<len/2;x+=18)d.box('#4a5560',14,3,HW*2+6,x,-.2,0);d.box('#8a6a3a',len,1,HW*2,0,1.8,0);
       for(let x=-len/2+4;x<len/2;x+=6)d.box('#6f5430',.5,.2,HW*2,x,2.36,0);
@@ -1524,10 +1847,14 @@ gl_FragColor=vec4(col*vCol,mix(0.72,0.95,d));
     }else{
       d.box('#5d5d5a',len,1.6,HW*2-6,0,1.5,0);for(const z of [-HW+1.5,HW-1.5])d.box(CON,len,2.2,3,0,1.6,z);
       for(let x=-len/2+10;x<len/2-8;x+=20)d.box('#f2e39a',9,.12,.9,x,2.36,0);
-      for(const z of [-HW,HW]){for(let x=-len/2+2;x<=len/2;x+=9)d.box(hl?(x<0?'#3f78c2':'#e6c53a'):'#e8ebee',.8,3.6,.8,x,4.4,z);d.box(hl?'#d8dde2':'#e8ebee',len,.7,.7,0,6.2,z);d.box(hl?'#d8dde2':'#e8ebee',len,.5,.5,0,4.6,z);}
+      for(const z of [-HW,HW]){for(let x=-len/2+2;x<=len/2;x+=9)d.box(hl?(x<0?'#3f78c2':'#e6c53a'):ct?'#2563eb':'#e8ebee',.8,3.6,.8,x,4.4,z);d.box(hl?'#d8dde2':ct?'#3b82f6':'#e8ebee',len,.7,.7,0,6.2,z);d.box(hl?'#d8dde2':ct?'#1d4ed8':'#e8ebee',len,.5,.5,0,4.6,z);}
       const np=Math.max(1,Math.round(span/70));for(let k=1;k<=np;k++){const x=-span/2+span*k/(np+1);d.box(ST,6,13,HW*2-8,x,-5.6,0);d.box(CON,8,1.6,HW*2-2,x,.2,0);}
       for(const sx of [-1,1]){d.box('#9a9f9a',12,6,HW*2+6,sx*(len/2+2),-1,0);}
       if(hl){for(const z of [-HW,HW])for(let x=-len/2+6;x<len/2-10;x+=18){const c=x+9<0?'#3f78c2':'#e6c53a';d.box(c,.8,12,.8,x,11,z);d.box(c,19,.8,.8,x+9,16.6,z);d.box(c,20,.7,.7,x+9,11,z,0,0,.58);}}
+      else if(ct){
+        for(const z of [-HW,HW]){d.box('#1e40af',len*.9,1.4,1.4,0,14.6,z);for(let x=-len/2+8;x<=len/2-8;x+=16){d.box('#e2e8f0',1.2,10,1.2,x,9.5,z);d.box('#2563eb',1.6,2,1.6,x,15,z);}}
+        for(const sx of [-1,1]){d.box('#1e3a8a',3,18,HW*2+5,sx*span*.36,10,0);d.box('#e2e8f0',3.6,2.6,HW*2+7,sx*span*.36,19.2,0);d.box('#fbbf24',2.4,1.4,.4,sx*span*.36,19.2,HW+3.5);}
+      }
       else if(sus){for(const sx of [-1,1]){for(const z of [-HW-1,HW+1])d.box('#c0392b',3,48,3,sx*span*.3,22,z);d.box('#c0392b',3,3,HW*2+5,sx*span*.3,45,0);}
         for(const z of [-HW-1,HW+1]){d.box('#3a3a3a',span*.6,.7,.7,0,30,z);for(let k=-4;k<=4;k++)d.box('#3a3a3a',.35,26-Math.abs(k)*1.2,.35,k*span*.07,16,z);d.box('#3a3a3a',span*.24,.7,.7,-span*.41,36,z,0,0,.7);d.box('#3a3a3a',span*.24,.7,.7,span*.41,36,z,0,0,-.7);}}
       else if(span>130){for(const sx of [-1,1]){const tx=sx*span*.2;for(const z of [-HW-1,HW+1]){d.box(CON,3.4,52,3.4,tx,24,z);for(let k=1;k<=5;k++){const dx=k*span*.045+4,hh=44-k*6.5,cl=Math.hypot(dx,hh);for(const dir of [-1,1])d.box('#eef1f3',cl,.35,.35,tx+dir*dx/2,2.4+hh/2+ (44-hh)*0+ 2,z,0,0,dir*-Math.atan2(hh,dx));}}
@@ -1562,31 +1889,77 @@ function buildTrees(){
     else if(k===3){b.cyl('#4a4036',.7,13,0,6.5,0);b.g(NI('ico'),'#3d7a34',3.6,2.6,3.6,0,13.6,0);for(let q=0;q<8;q++){const a=q/8*TAU;b.g(NI('cone8'),'#4c8f3a',.9,3.4,.9,Math.cos(a)*3.2,14+((q%2)*.8),Math.sin(a)*3.2,Math.sin(a)*1.2,0,-Math.cos(a)*1.2);}}
     else if(k===4){b.cyl('#4a3420',.7,3,0,1.5,0);b.g(NI('cone8'),'#25503a',4.4,6.4,4.4,0,5.6,0);b.g(NI('cone8'),'#f2f6f8',3.3,2.2,3.3,0,8.2,0);b.g(NI('cone8'),'#2c5c42',3.2,5,3.2,0,9,0);b.g(NI('cone8'),'#f2f6f8',2.2,1.8,2.2,0,11.4,0);b.g(NI('cone8'),'#346a4a',2,4.4,2,0,12.4,0);b.g(NI('cone8'),'#f7fafc',1.1,1.8,1.1,0,14.2,0);}
     else if(k===5){b.cyl('#eeeeea',.55,8,0,4,0);for(const y of [2,4.4,6.4])b.cyl('#3a3a3a',.6,.4,0,y,0);b.g(NI('ico'),'#c9b24e',3,2.6,3,0,9.2,0);b.g(NI('ico'),'#d8c865',2.2,2,2.2,1.2,11,.6);b.g(NI('ico'),'#f2f6f8',1.8,.8,1.8,-.3,11.9,-.4);}
-    else if(k===6){b.box('#e9e0cc',7,4.4,6,0,2.2,0);b.box('#5a4632',1.3,2.4,.3,0,1.2,3.05);b.g(NI('cone4'),'#b5523b',5.6,2.6,5.6,0,5.7,0,0,Math.PI/4,0);}
-    else if(k===7){b.box('#f4f1e8',4.6,10,8,0,5,0);for(const y of [3.4,6.6])b.box('#3a5a78',4.7,1.5,6.4,0,y+.6,.9);b.box('#c0392b',5,.5,2,0,3,4.6);b.box('#3a2a1a',2.4,2.6,.3,0,1.3,4.05);b.box('#b9b2a4',4.9,.5,8.3,0,10.2,0);b.cyl('#8fa3b0',.9,1.4,-1,11.2,-2);}
-    else{b.box('#d8d2c2',8.4,3.2,6,0,1.6,0);b.box('#8fa3b0',9,.4,3.6,0,3.9,1.7,.28,0,0);b.box('#8fa3b0',9,.4,3.6,0,3.9,-1.7,-.28,0,0);b.box('#3a2a1a',2.6,2.2,.3,1,1.1,3.05);b.box('#c9a23a',3,1.2,.3,-2.4,2.2,3.1);}
+    else if(k===6){b.box('#e9e0cc',12,5.2,8,0,2.6,0);b.box('#5a4632',1.8,3.2,.4,0,1.6,4.05);b.g(NI('cone4'),'#b5523b',10,3.2,7.6,0,6.8,0,0,Math.PI/4,0);}
+    else if(k===7){b.box('#f4f1e8',8,13,11,0,6.5,0);for(const y of [4.4,8.8])b.box('#3a5a78',8.2,2.2,8.6,0,y+.6,1.2);b.box('#c0392b',7.5,.6,2.6,0,4,6.2);b.box('#3a2a1a',3.2,3.6,.4,0,1.8,5.55);b.box('#b9b2a4',8.4,.6,11.4,0,13.3,0);b.cyl('#8fa3b0',1.2,1.8,-1.5,14.6,-3);}
+    else if(k===8){b.box('#d8d2c2',14,4.4,8.5,0,2.2,0);b.box('#8fa3b0',14.8,.5,5.2,0,5.3,2.4,.28,0,0);b.box('#8fa3b0',14.8,.5,5.2,0,5.3,-2.4,-.28,0,0);b.box('#3a2a1a',3.6,3,.4,1.4,1.5,4.3);b.box('#c9a23a',4.2,1.6,.4,-3.2,3,4.35);}
+    else if(k===9){
+      b.box('#5a5c58',11,5.2,9,0,2.6,0);b.box('#464844',12.4,1.4,10.4,0,5.4,0);
+      b.box('#141414',6.2,1.2,1.2,0,3.2,4.4);b.cz('#222222',.45,4.2,0,3.2,5.5);
+      b.box('#b89e68',14.5,2.4,2.2,0,1.2,6.2);b.box('#a88e58',13.0,2.2,2.0,0,3.2,6.0);
+      for(const x of [-6,-2,2,6])b.box('#6a5438',.8,4.0,.8,x,2.0,6.6);
+    }
+    else if(k===10){
+      b.box('#2a231e',14,3.2,8.5,0,2.0,0,0,0,.08);b.box('#1a1614',14.6,2.6,2.4,0,1.3,-4.2);
+      b.box('#3c271c',12.0,1.8,2.6,2,1.0,4.8,0,.25,0);b.box('#241e1a',7.5,2.6,6.5,-1,4.4,0,.12,.35,0);
+      b.cz('#181412',.6,8.5,3.5,4.2,1.2,.35,.4,0);b.cyl('#38281e',1.4,2.8,-6,1.4,1.5,.8,.3,.4);
+    }
+    else if(k===11){
+      b.cyl('#1c1714',.75,7.5,0,3.7,0,.08,0,-.06);b.cyl('#2a201a',.45,4.0,.8,6.8,.4,.4,0,.5);
+      b.cyl('#181412',.4,3.4,-.7,5.8,-.5,-.35,0,-.45);b.box('#100e0c',1.8,.6,1.8,0,.3,0);
+    }
+    else{
+      b.box('#363534',.6,5.4,.6,0,2.2,0,.6,0,.6);b.box('#3a3836',.6,5.4,.6,0,2.2,0,-.6,0,.6);
+      b.box('#2e2c2a',.6,5.4,.6,0,2.2,0,0,0,-.75);b.box('#5a4836',.9,.9,.9,0,2.2,0);
+    }
     return b.build(.75);};
-  const sets=[[],[],[],[],[],[],[],[],[]];let seed=12345;const R=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+  const sets=[[],[],[],[],[],[],[],[],[],[],[],[],[]];let seed=12345;const R=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
   const cs=CITY_DEF.map(([n,lon,lat])=>P(lon,lat));
   const nearCity=(x,y,d)=>{for(const c of cs)if(Math.abs(c[0]-x)<d&&hyp(c[0]-x,c[1]-y)<d)return true;return false;};
-  const put=(k,x,y,sc)=>{const i=cellAt(x,y);if(i<0||terr[i]!==1)return false;const h=heightAt(x,y);if(h<1.4)return false;sets[k].push({x,y,h,s:sc,sh:.82+R()*.36,ry:R()*TAU,off:false});return true;};
+  const put=(k,x,y,sc)=>{const i=cellAt(x,y);if(i<0||terr[i]!==1||(tSlope&&tSlope[i]>0.40))return false;const h=heightAt(x,y);if(h<1.4)return false;sets[k].push({x,y,h,s:sc,sh:.82+R()*.36,ry:R()*TAU,off:false});return true;};
   const ks=MAP.ks||1,fc=[],oc=[];for(let i=0;i<N;i++){if(terr[i]!==1||tRoad[i])continue;(tFor[i]?fc:oc).push(i);}
-  const scat=(cells,n,sMin)=>{for(let k=0;k<n&&cells.length;k++){const i=cells[(R()*cells.length)|0],x=(i%GW+R())*CELL,y=(((i/GW)|0)+R())*CELL,h=heightAt(x,y);if(h<1.6||nearCity(x,y,88))continue;
+  const scat=(cells,n,sMin)=>{for(let k=0;k<n&&cells.length;k++){const i=cells[(R()*cells.length)|0];if(tSlope&&tSlope[i]>0.40)continue;const x=(i%GW+R())*CELL,y=(((i/GW)|0)+R())*CELL,h=heightAt(x,y);if(h<1.6||nearCity(x,y,88))continue;
     sets[treeType(x,y,h,R)].push({x,y,h,s:sMin+R()*.75,sh:.82+R()*.36,ry:R()*TAU,off:false});}};
   scat(fc,Math.min(17000,Math.round(fc.length*1.5)),.75);scat(oc,Math.min(2600,Math.round(oc.length*.03)),.7);
   if(MAP.theme!=='snow'||true){
     const TINT=[[1,1,1],[1,.93,.8],[.86,.95,1],[1,.86,.84],[.9,1,.88],[1,.97,.7],[.82,.86,.95]],cdef=CITY_DEF.map(q=>({p:P(q[1],q[2]),mj:!!q[3]}));
-    const house=(k,x,y,ry,sc)=>{const i=cellAt(x,y);if(i<0||terr[i]!==1||tSlope[i]>.5||tRoad[i])return;for(const br of BRIDGES)if(segDist(x,y,[br.x1,br.y1,br.x2,br.y2])<52)return;const h=heightAt(x,y);if(h<1.4)return;const t=TINT[(R()*TINT.length)|0];sets[k].push({x,y,h,s:sc,sh:.9+R()*.2,ry,cr:t[0],cg:t[1],cb:t[2],off:false});};
+    const house=(k,x,y,ry,sc)=>{const i=cellAt(x,y);if(i<0||terr[i]!==1||(tSlope&&tSlope[i]>.35)||tRoad[i])return;for(const br of BRIDGES)if(segDist(x,y,[br.x1,br.y1,br.x2,br.y2])<52)return;const h=heightAt(x,y);if(h<1.4)return;const t=TINT[(R()*TINT.length)|0];sets[k].push({x,y,h,s:sc,sh:.9+R()*.2,ry,cr:t[0],cg:t[1],cb:t[2],off:false});};
     const town=(x,y)=>{let best=0;for(const c of cdef){const d=hyp(c.p[0]-x,c.p[1]-y),r=c.mj?520:260;if(d<r)best=Math.max(best,1-d/r);}return best;};
     const ru=MAP.theme==='snow';let cnt=0;
     for(const pts of ROADS)for(let q=0;q<pts.length-1&&cnt<7500;q++){const [x1,y1]=pts[q],[x2,y2]=pts[q+1],L=hyp(x2-x1,y2-y1),ang=Math.atan2(y2-y1,x2-x1),nx=-Math.sin(ang),ny=Math.cos(ang);
       for(let d=20;d<L-10;d+=22){const x=x1+(x2-x1)*d/L,y=y1+(y2-y1)*d/L;if(nearCity(x,y,66))continue;const tw=town(x,y),dens=.34+tw*.62;
-        for(const sd of [-1,1]){if(R()<dens){house(tw>.3&&R()<.6&&!ru?7:R()<.3?8:6,x+nx*sd*(30+R()*6),y+ny*sd*(30+R()*6),-ang+(sd>0?0:Math.PI),.85+R()*.3);cnt++;}
-          if(tw>.25&&R()<tw){house(R()<.4&&!ru?7:6,x+nx*sd*(52+R()*10),y+ny*sd*(52+R()*10),-ang+(R()<.5?0:Math.PI/2),.8+R()*.3);cnt++;}}}}
+        for(const sd of [-1,1]){if(R()<dens){house(tw>.3&&R()<.6&&!ru?7:R()<.3?8:6,x+nx*sd*(16+R()*4),y+ny*sd*(16+R()*4),-ang+(sd>0?0:Math.PI),1.05+R()*.25);cnt++;}
+          if(tw>.25&&R()<tw){house(R()<.4&&!ru?7:6,x+nx*sd*(34+R()*8),y+ny*sd*(34+R()*8),-ang+(R()<.5?0:Math.PI/2),.95+R()*.3);cnt++;}}}}
     for(const c of cdef){const n=c.mj?520:110,rad=c.mj?300:150;for(let k=0;k<n;k++){const a=R()*TAU,r=70+Math.pow(R(),1.4)*(rad-70),x=c.p[0]+Math.cos(a)*r,y=c.p[1]+Math.sin(a)*r;
-      house(c.mj&&R()<.5&&!ru?7:R()<.2?8:6,Math.round(x/22)*22+R()*3,Math.round(y/22)*22+R()*3,(R()<.5?0:Math.PI/2),.8+R()*.35);}}
+      house(c.mj&&R()<.5&&!ru?7:R()<.2?8:6,Math.round(x/22)*22+R()*3,Math.round(y/22)*22+R()*3,(R()<.5?0:Math.PI/2),.95+R()*.35);}}
   }
   for(const sp of MAP.sprawl||[]){const [cx,cy]=P(sp.at[0],sp.at[1]);for(let k=0;k<sp.n*ks*ks;k++){const a=R()*TAU,r=Math.pow(R(),.7)*sp.r*ks,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(nearCity(x,y,70))continue;put(6,x,y,.8+R()*.9);}}
+  /* Rải vật thể 3D Chiến trường: Boong-ke, Xác xe tăng, Cây cháy, Chông sắt */
+  const warObj=(k,x,y,ry,sc=1)=>{
+    const i=cellAt(x,y);if(i<0||terr[i]!==1||(tSlope&&tSlope[i]>0.55))return;
+    for(const br of BRIDGES)if(segDist(x,y,[br.x1,br.y1,br.x2,br.y2])<38)return;
+    const h=heightAt(x,y);if(h<1.4)return;
+    sets[k].push({x,y,h,s:sc,sh:.85+R()*.25,ry,off:false});
+  };
+  const warHotspots=[
+    {at:[104.985,10.380],nb:4,nt:3,ntr:38,nh:5}, // Tức Dụp (Đồi Hai Triệu Đô)
+    {at:[104.945,10.445],nb:3,nt:2,ntr:32,nh:4}, // Ô Tà Sóc (Căn cứ cách mạng Núi Dài)
+    {at:[104.905,10.485],nb:3,nt:2,ntr:28,nh:4}, // Ba Chúc
+    {at:[105.000,10.425],nb:3,nt:2,ntr:22,nh:5}, // Tri Tôn giao lộ
+    {at:[104.955,10.590],nb:3,nt:2,ntr:18,nh:5}, // Cửa khẩu Tịnh Biên
+    {at:[105.185,10.925],nb:2,nt:1,ntr:10,nh:4}, // Cửa khẩu Vĩnh Xương
+    {at:[105.082,10.945],nb:2,nt:1,ntr:10,nh:4}  // Cửa khẩu Khánh Bình
+  ];
+  for(const sp of warHotspots){
+    const [cx,cy]=P(sp.at[0],sp.at[1]);
+    for(let i=0;i<sp.nb;i++){const a=R()*TAU,r=28+R()*70;warObj(9,cx+Math.cos(a)*r,cy+Math.sin(a)*r,a+Math.PI,1.05+R()*.25);}
+    for(let i=0;i<sp.nt;i++){const a=R()*TAU,r=36+R()*90;warObj(10,cx+Math.cos(a)*r,cy+Math.sin(a)*r,R()*TAU,1.0+R()*.2);}
+    for(let i=0;i<sp.ntr;i++){const a=R()*TAU,r=22+R()*130;warObj(11,cx+Math.cos(a)*r,cy+Math.sin(a)*r,R()*TAU,.8+R()*.45);}
+    for(let i=0;i<sp.nh;i++){const a=R()*TAU,r=22+R()*55;warObj(12,cx+Math.cos(a)*r,cy+Math.sin(a)*r,R()*TAU,.95+R()*.25);}
+  }
+  for(let i=0;i<fc.length&&sets[11].length<280;i++){
+    const ci=fc[i],x=(ci%GW+R())*CELL,y=(((ci/GW)|0)+R())*CELL,h=heightAt(x,y);
+    if(h>26&&R()<.45)warObj(11,x,y,R()*TAU,.8+R()*.4);
+  }
   treeSets=sets.map((items,k)=>{const mesh=new THREE.InstancedMesh(mk(k),new THREE.MeshLambertMaterial({vertexColors:true}),Math.max(1,items.length));mesh.count=items.length;mesh.castShadow=true;mesh.frustumCulled=false;scene.add(mesh);return{mesh,items};});
   _tc=new THREE.Color();resetTrees();
 }
@@ -1793,6 +2166,38 @@ function makeUnitObj(u){
           b.g(NI('wing'),JC,1.3,1,1.02,2,-.3,0);b.g(NI('wing'),JC,1.3,1,-1.02,2,-.3,0);b.g(NI('wing'),JC,.3,1,.34,7.4,.5,0);b.g(NI('wing'),JC,.3,1,-.34,7.4,.5,0);b.box(JC,5.6,5.6,.4,-7,3,0,0,0,.5);for(const z of [-10.6,10.6])b.cx('#eee',.35,5.5,-6,-.2,z);}
         b.box(TM,3,3,.45,st==='flanker'?-9.4:st==='f35'?-7.6:-8.4,st==='flanker'?4.4:st==='f35'?3.8:4.8,0);for(const z of [-5,5])b.box(TM,2.6,.12,2.6,-4.6,.34,z);});
       const ex=st==='flanker'?[[-11.8,-.6,1.9],[-11.8,-.6,-1.9]]:st==='f35'?[[-8.9,0,0]]:[[-10.5,-.2,1.1],[-10.5,-.2,-1.1]];for(const [x,y,z] of ex)glow(B,GEO.sph,0xffb347,1,1,1,x,y,z);break;}
+    case 'scout':{
+      const JC=NA.jet||'#8f9fa8';
+      M('',b=>{
+        b.cx(JC,1.1,10,-.5,0,0);
+        b.g(NI('cone'),JC,1.1,3.6,1.1,5.5,0,0,0,0,-Math.PI/2);
+        b.g(NI('wing'),JC,1.3,.6,1.3,0,-.15,0);
+        b.g(NI('wing'),JC,1.3,.6,-1.3,0,-.15,0);
+        for(const z of [-1,1])b.box(JC,2.6,2.6,.3,-5,1.2,z*1.8,z>0?.35:-.35,0,.45);
+        b.sph('#222',.75,.6,.75,3.8,-.8,0);
+        b.cx('#333',.8,.9,-6,0,0);
+        b.box(TM,1.8,1.4,.1,-2,1.2,0);
+      });
+      spin('#p',-6.2,0,0,b=>{b.box('#222',.3,3.6,.2,0,0,0);b.box('#222',3.6,.3,.2,0,0,0);},'x',1.8);
+      break;}
+    case 'ucav':{
+      const JC=NA.jet||'#8f9fa8';
+      M('',b=>{
+        b.cx(JC,1.6,13,-.8,0,0);
+        b.g(NI('cone'),JC,1.6,4.6,1.6,6.8,0,0,0,0,-Math.PI/2);
+        b.g(NI('wing'),JC,1.6,.75,1.6,.2,-.2,0);
+        b.g(NI('wing'),JC,1.6,.75,-1.6,.2,-.2,0);
+        for(const z of [-1,1])b.box(JC,3.4,3.4,.35,-6.8,1.6,z*2.4,z>0?.4:-.4,0,.45);
+        for(const z of [-4.5,4.5]){
+          b.cx('#4a5240',.45,3.6,.2,-1,z);
+          b.g(NI('cone'),'#b33',.45,1,.45,2.4,-1,z,0,0,-Math.PI/2);
+        }
+        b.sph('#222',.95,.8,.95,4.5,-1.1,0);
+        b.cx('#333',1,1,-7.8,0,0);
+        b.box(TM,2.4,1.8,.12,-2.6,1.4,0);
+      });
+      spin('#p',-8.2,0,0,b=>{b.box('#222',.35,4.6,.2,0,0,0);b.box('#222',4.6,.35,.2,0,0,0);},'x',1.8);
+      break;}
     case 'ship':{
       const sh=S.ship,HC=NA.hull,L=sh.L,us=sh.k==='burke';
       M('',b=>{b.g(NI('hull'),HC,L,1,1,0,0,0);b.g(NI('hull'),TM,L*1.012,.14,1.012,0,2.4,0);b.g(NI('hull'),'#6f777e',L*.96,.06,.92,0,3.6,0);
@@ -1927,7 +2332,31 @@ function landmark(d,lm,y,c,R){
     case 'port':for(const z of [-8,6]){for(const x of [-6,6])d.box('#e0b33e',1.2,20,1.2,x,y+10,z);d.box('#e0b33e',26,1.4,1.4,6,y+20.6,z);d.box('#f0f0f0',2.6,2.4,2.4,-2,y+18.6,z);}
       for(let k=0;k<9;k++)d.box(['#b5362b','#2f6fa8','#3f8f5a','#d9a520'][k%4],5,2.4,2.4,-14+(k%3)*5.4,y+1.2+((k/3)|0)*2.5,16);break;
     case 'mieuba':d.box('#f3ead2',14,5,10,0,y+2.5,0);for(let k=0;k<3;k++)d.g(NI('cone4'),'#2f7d5a',(13-k*3.4)*.78,2.6,(13-k*3.4)*.78,0,y+6.3+k*2.6,0,0,Math.PI/4,0);d.cyl(GD,.3,3,0,y+15,0);for(const x of [-5,5])d.cyl('#a8201a',.7,5,x,y+2.5,5.2);break;
-    case 'buddha':d.cyl('#e9d6b0',7,1.6,0,y+.8,0);d.sph(WH,5.4,4.6,4.6,0,y+6,0);d.sph(WH,3.2,3.2,3.2,0,y+12,0);d.sph(WH,3.4,2.4,3,2.4,y+4.4,0);d.sph(WH,.9,.9,.9,0,y+15.4,0);d.box('#f3ead2',7,4,6,-12,y+2,4);d.g(NI('cone4'),'#b5523b',6.4,2.4,6.4,-12,y+5.2,4,0,Math.PI/4,0);break;
+    case 'buddha':
+      // Đại Tượng Phật Di Lặc Núi Cấm khổng lồ (tượng trên đỉnh núi lớn nhất châu Á) & Chùa Vạn Linh
+      // 1. Đài sen đá hoa cương tam cấp khổng lồ
+      d.cyl('#dcd6c8',26,3,0,y+1.5,0);d.cyl('#c8c2b4',22,2.6,0,y+4.2,0);d.cyl('#f3ead2',18,2.2,0,y+6.5,0);
+      for(let a=0;a<12;a++){const ang=a/12*TAU;d.sph('#eab308',3.2,1.8,2.2,Math.cos(ang)*18.5,y+7.2,Math.sin(ang)*18.5,0,-ang,.3);}
+      // 2. Đại Tượng Phật Di Lặc ngồi kiết già từ bi phúc hậu màu trắng ngà uy nghi
+      d.box('#ffffff',32,9,20,0,y+11.5,2);d.sph('#ffffff',13,8.5,9,-8,y+10.5,6);d.sph('#ffffff',13,8.5,9,8,y+10.5,6);
+      d.sph('#ffffff',13.5,11.5,12,0,y+21,2.5);d.sph('#f8fafc',11,8.5,9.5,0,y+28.5,1);
+      // Chuỗi tràng hạt bồ đề quấn cổ
+      for(let a=0;a<10;a++){const ang=a/10*Math.PI+.1;d.sph('#78350f',1.4,1.4,1.4,Math.cos(ang)*8.2,y+27.5-Math.sin(ang)*3.5,Math.sin(ang)*4.5+5.5);}
+      // Tay phải lần hạt bồ đề, tay trái nâng thỏi vàng kim như ý
+      d.cyl('#ffffff',3.2,14,12,y+16,5,0,0,.55);d.sph('#ffffff',3.5,3.5,3.5,16,y+11,8);
+      d.cyl('#ffffff',3.2,14,-12,y+17,5,0,0,-.55);d.sph('#fbbf24',4.5,3.2,3.6,-16,y+21,7);
+      // Đầu Phật Di Lặc hoan hỉ từ bi, tai dài chấm vai, chỏm nhục kế
+      d.sph('#ffffff',7.5,7.8,7.2,0,y+37.5,1.2);
+      for(const sx of [-1,1]){d.box('#ffffff',1.6,7.5,2.2,sx*7.2,y+35.5,1);d.sph('#ffffff',1.8,1.8,1.8,sx*7.2,y+32,1);}
+      d.sph('#ffffff',3.2,2.2,3.2,0,y+44.5,1);d.sph('#dc2626',.7,.7,.4,0,y+39.5,8.2);
+      // 3. Bảo tháp Chùa Vạn Linh 7 tầng ngói đỏ chóp vàng vươn thẳng lên trời xanh
+      d.box('#cbd5e1',20,2,20,-32,y+1,10);
+      for(let k=0;k<7;k++){const w=13-k*1.5,hh=5;d.box('#f8fafc',w,hh,w,-32,y+3+k*5.8+hh/2,10);d.g(NI('cone4'),'#b91c1c',(w+3)*.75,2.2,(w+3)*.75,-32,y+3+(k+1)*5.8,10,0,Math.PI/4,0);}
+      d.cyl('#ffd23f',.6,8,-32,y+47,10);d.sph('#ffd23f',1.8,2.2,1.8,-32,y+51,10);
+      // 4. Hồ Thủy Liêm trên đỉnh núi
+      d.box('#38bdf8',32,.5,20,24,y+1.2,-18);d.box('#94a3b8',34,1.2,22,24,y+.6,-18);
+      for(let x=8;x<=40;x+=8)for(const z of [-30,-6])d.cyl('#cbd5e1',.5,2.6,x,y+2.4,z);
+      break;
     case 'oceo':for(const [x,z,w] of [[0,0,12],[-11,5,7],[9,-8,8]]){d.box('#9a5a3a',w,1.4,w,x,y+.7,z);d.box('#7a4630',w-3,1.2,w-3,x,y+1.8,z);}d.box(ST,2,3,2,0,y+3.4,0);break;
     case 'wat':d.box('#e9d6b0',16,2,11,0,y+1,0);d.box(WH,12,5,7.4,0,y+4.5,0);for(let k=0;k<3;k++){d.box('#c0492b',13-k*3,1,9.4-k*1.6,0,y+8.6+k*2.2,0,.0,0,0);d.box('#d9772b',13-k*3,1.6,5-k*1.2,0,y+9.4+k*2.2,0);}d.g(NI('cone'),GD,.8,6,.8,0,y+17.6,0);
       for(const sx of [-1,1])d.g(NI('cone'),GD,.4,2.4,.4,sx*6.6,y+10.6,0);d.g(NI('cone'),GD,2.6,8,2.6,12,y+5,5);d.cyl('#e9d6b0',3,1.6,12,y+.8,5);break;
@@ -1962,6 +2391,36 @@ function landmark(d,lm,y,c,R){
       for(let k=0;k<4;k++)d.box(['#b5362b','#2f6fa8','#3f8f5a','#d9a520'][k],5,2.4,2.4,-10+(k%2)*5.4,y+1.2+((k/2)|0)*2.5,12);break;
     case 'pepper':for(let r=0;r<4;r++)for(let q=0;q<6;q++){d.cyl('#6b4a22',.3,5,-12+q*4.6,y+2.5,-8+r*5);d.g(NI('cyl'),'#3f8a36',1.1,4,1.1,-12+q*4.6,y+3.4,-8+r*5);}d.box('#e9d6b0',6,4,5,16,y+2,0);d.g(NI('cone4'),'#b5523b',5.4,2.2,5.4,16,y+5,0,0,Math.PI/4,0);break;
     case 'tankmon':d.box('#8b8478',14,5,9,0,y+2.5,0);d.box('#4f6b3a',10,2,5.6,0,y+6,0,0,0,.18);d.cyl('#4f6b3a',2,1.6,-.5,y+7.8,0);d.cx('#3a4a2c',.45,7,3.6,y+8.6,0);d.box('#1c1c1c',10.6,1.2,1,0,y+5.4,3,0,0,.18);d.box('#1c1c1c',10.6,1.2,1,0,y+5.4,-3,0,0,.18);break;
+    case 'basa':
+      d.box('#475569',16,2.4,13,0,y+1.2,0);d.box('#cbd5e1',13,3.8,10,0,y+4.2,0);d.box('#f59e0b',7.5,1.8,.3,0,y+4.2,5.15);
+      d.box('#38bdf8',15,.6,11,0,y+2.5,0);
+      for(let q=0;q<8;q++){const a=q/8*TAU;d.box('#0284c7',3,2.2,1.6,Math.cos(a)*7,y+1.6,Math.sin(a)*5.5,0,-a,.25);}
+      d.g(NI('taper'),'#e2e8f0',3.4,7,2.4,0,y+9.2,.2,-.35,0,0);
+      d.g(NI('taper'),'#f8fafc',3.8,6.2,2.6,0,y+14.5,-.9,-.15,0,0);
+      d.g(NI('cone'),'#e2e8f0',3,3.8,2.2,0,y+18.2,-1.8,.22,0,0);
+      d.box('#334155',1.2,13,1.8,0,y+13.2,-1.6,-.22,0,0);
+      d.box('#94a3b8',.3,3.2,2.4,0,y+17.5,-.6,-.45,0,0);
+      for(const sx of [-1,1]){d.box('#cbd5e1',3.2,.3,1.6,sx*2.6,y+13.8,-.8,0,sx*.4,sx*.25);d.box('#94a3b8',1.8,.2,.2,sx*1.3,y+18,-2.8,0,sx*.5,0);}
+      d.box('#94a3b8',1.4,3.6,1.1,0,y+6.2,.8,-.65,0,0);
+      for(const sx of [-1,1])d.box('#e2e8f0',2,4.4,.4,sx*1.6,y+4.8,1.6,-.85,sx*.3,0);
+      for(let put=0;put<3;put++){const fx=18+put*10,fz=14-put*6;d.box('#6b5a3a',10,.6,7,fx,.3,fz);d.box(['#3f7fa8','#b5523b','#3f8f5a'][put],7,3.2,5,fx,2.1,fz);d.box('#aab1b6',8,.4,6.2,fx,4,fz,0,0,.1);}
+      break;
+    case 'anphu':
+      d.box('#f1f5f9',36,1.2,26,0,y+.6,0);d.box('#cbd5e1',32,.3,22,0,y+1.3,0);
+      d.box('#94a3b8',13,1.8,10,0,y+2.1,0);d.box('#cbd5e1',9,1.6,7,0,y+3.7,0);
+      d.g(NI('taper'),'#dc2626',3.6,18,2.4,0,y+13.5,0);d.sph('#f59e0b',1.4,1.4,.4,0,y+17,1.3);
+      d.cyl('#f8fafc',.3,26,7,y+14,0);d.box('#dc2626',4.5,3,.2,9.5,y+25,0);star3(d,9.5,y+25,.15,1.6);
+      for(const [px,pz] of [[-14,-9],[14,-9],[-14,9],[14,9]]){d.box('#15803d',6,1.4,3.2,px,y+1.8,pz);d.box('#e11d48',5.6,.6,2.8,px,y+2.6,pz);}
+      for(const [px,pz] of [[-16,0],[16,0],[0,-11],[0,11]]){d.cyl('#475569',.25,8,px,y+4.8,pz);d.sph('#fef08a',.6,.6,.6,px,y+9,pz);}
+      break;
+    case 'contien':
+      // Trạm kiểm soát & Vọng gác Tiền tiêu đầu Cầu Cồn Tiên
+      d.box('#334155',16,1.2,10,0,y+.6,0);
+      d.box('#1e40af',16,1.4,9,0,y+7.8,0);d.box('#3b82f6',16.4,.4,1.2,0,y+8.4,4.4);d.box('#fef08a',10,.8,.2,0,y+7.8,4.6);
+      for(const sx of [-6,6])for(const sz of [-3.5,3.5])d.cyl('#cbd5e1',.6,7.5,sx,y+4.2,sz);
+      d.box('#f1f5f9',4,4.4,4.4,0,y+2.8,-1);d.box('#38bdf8',4.2,1.6,2.6,0,y+3.6,-1);
+      d.cyl('#f8fafc',.25,16,6.5,y+9,0);d.box('#dc2626',3.6,2.4,.2,8.5,y+15,0);star3(d,8.5,y+15,.15,1.2);
+      break;
   }
 }
 function star3(d,x,y,z,r){for(let i=0;i<5;i++){const a=-Math.PI/2+i*TAU/5;d.box('#ffde00',r*1.1,r*.42,.2,x+Math.cos(a)*r*.45,y-Math.sin(a)*r*.45,z+.2,0,0,-a);}}
@@ -1974,7 +2433,7 @@ function makeCityObj(c){
     kh:{tw:['#e6e0d0'],wl:['#8a6a48','#9c7a52','#b08a5c'],rf:['#c0492b','#d05a2e','#a83c22']}}[st==='metro'?'vn':st]||null;
   const pk=a=>a[(R()*a.length)|0];
   d.cyl(st==='ru'?'#d8dde2':'#cfc4ae',8.5,.5,0,gy0+.3,0);
-  const n=metro?22:c.major?15:10,r0=hasLm?(c.lm==='kremlin'||c.lm==='airport'||c.lm==='citadel'||c.lm==='q1'||c.lm==='cablecar'?34:22):10;
+  const n=metro?22:c.major?15:10,r0=hasLm?(c.lm==='buddha'?62:c.lm==='kremlin'||c.lm==='airport'||c.lm==='citadel'||c.lm==='q1'||c.lm==='cablecar'||c.lm==='anphu'?34:22):10;
   for(let k=0;k<n;k++){
     const a=R()*TAU,r=r0+R()*(metro?26:20),x=Math.cos(a)*r,z=Math.sin(a)*r,gy=heightAt(c.x+x,c.y+z);if(gy<.9)continue;
     const ry=R()*.6-.3,tall=metro?R()<.55:c.major&&st!=='kh'?R()<.22:false;
@@ -1993,8 +2452,9 @@ function makeCityObj(c){
   if(c.lm==='floating'){let put=0;for(let k=0;k<40&&put<6;k++){const a=R()*TAU,r=30+R()*70,x=Math.cos(a)*r,z=Math.sin(a)*r,ci=cellAt(c.x+x,c.y+z);if(ci<0||terr[ci]!==0)continue;if(BRIDGES.some(br=>segDist(c.x+x,c.y+z,[br.x1,br.y1,br.x2,br.y2])<70))continue;
       d.box('#6b5a3a',9,.6,6,x,.3,z);d.box(['#3f7fa8','#b5523b','#3f8f5a','#d9a520'][put%4],6,3,4.4,x,2.1,z);d.box('#aab1b6',7,.4,5.4,x,3.8,z,0,0,.12);d.box('#5a3d1e',5,.8,1.4,x+7,.5,z+2);put++;}}
   else if(c.lm)landmark(d,c.lm,gy0,c,R);
+  if(c.lm==='buddha')clearTreesAt(c.x,c.y,95);
   const m=new THREE.Mesh(d.build(.8),unitMat);m.castShadow=true;g.add(m);m.add(new THREE.Mesh(m.geometry,outlineMat));
-  const far=hasLm&&c.lm!=='floating',px=far?-(r0+4):metro?-11:-7,pz=far?r0+4:metro?11:7,tall=c.lm==='hienluong';
+  const far=hasLm&&c.lm!=='floating'&&c.lm!=='basa',px=far?-(r0+4):metro?-11:-7,pz=far?r0+4:metro?11:7,tall=c.lm==='hienluong';
   if(!tall)part(g,GEO.cyl,0xdddddd,.5,30,.5,px,gy0+15,pz,false);
   const flag=new THREE.Mesh(GEO.flag,flagMats[0]);flag.position.set(tall?6.4:px+6,gy0+(tall?39:26),tall?.4:pz);flag.castShadow=true;g.add(flag);
   const zone=new THREE.Mesh(new THREE.RingGeometry(67,70.5,72),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.45,depthTest:false,side:THREE.DoubleSide}));
@@ -2009,9 +2469,16 @@ function clampCam(){cam.tx=clamp(cam.tx,0,W);cam.ty=clamp(cam.ty,0,H);cam.dist=c
 function centerOn(x,y){cam.tx=x;cam.ty=y;clampCam();}
 function updateCamera(){
   if(!camera)return;
+  let sx=0,sy=0;
+  if(G&&G.shake>0){
+    sx=(Math.random()*2-1)*G.shake;
+    sy=(Math.random()*2-1)*G.shake;
+    G.shake*=.85;
+    if(G.shake<.08)G.shake=0;
+  }
   const k=clamp((cam.dist-150)/3000,0,1),pitch=.62+.55*k,hd=cam.dist*Math.cos(pitch),h=cam.dist*Math.sin(pitch);
   const gy=groundY(cam.tx,cam.ty)*.6;
-  camera.position.set(cam.tx+Math.sin(cam.yaw)*hd,gy+h,cam.ty+Math.cos(cam.yaw)*hd);camera.lookAt(cam.tx,gy,cam.ty);camera.updateMatrixWorld();
+  camera.position.set(cam.tx+sx+Math.sin(cam.yaw)*hd,gy+h+sy,cam.ty+sy+Math.cos(cam.yaw)*hd);camera.lookAt(cam.tx+sx,gy,cam.ty+sy);camera.updateMatrixWorld();
   scene.fog.near=cam.dist*1.3;scene.fog.far=cam.dist*3.6+600;
   sun.position.set(cam.tx-420,gy+720,cam.ty+260);sun.target.position.set(cam.tx,gy,cam.ty);sun.target.updateMatrixWorld();
   const ext=Math.round(clamp(cam.dist*1.15,260,1500)),sc=sun.shadow.camera;
@@ -2076,9 +2543,10 @@ function render3D(){
     }
     // hiệu ứng có hình khối
     for(const f of G.fx){
-      if(f.obj||!(f.k==='boom'||f.k==='ring'||f.k==='bolt'))continue;
+      if(f.obj||!(f.k==='boom'||f.k==='ring'||f.k==='bolt'||f.k==='crush'))continue;
       if(f.k==='boom'){f.obj=new THREE.Mesh(GEO.sph,new THREE.MeshBasicMaterial({color:0xffa53a,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));}
       else if(f.k==='ring'){f.obj=new THREE.Mesh(GEO.ring,new THREE.MeshBasicMaterial({color:f.c,transparent:true,depthTest:false,side:THREE.DoubleSide}));f.obj.rotation.x=-Math.PI/2;f.obj.renderOrder=6;}
+      else if(f.k==='crush'){f.obj=new THREE.Mesh(GEO.ring,new THREE.MeshBasicMaterial({color:0x8b0000,transparent:true,depthTest:false,side:THREE.DoubleSide}));f.obj.rotation.x=-Math.PI/2;f.obj.renderOrder=6;}
       else{const pts=f.pts.map((p,i)=>new THREE.Vector3(p[0],i===f.pts.length-1?groundY(p[0],p[1]):groundY(p[0],p[1])+(1-i/(f.pts.length-1))*420,p[1]));
         f.obj=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:f.c,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));}
       scene.add(f.obj);liveFx.push(f);
@@ -2089,6 +2557,7 @@ function render3D(){
       if(f.t<=0){scene.remove(f.obj);f.obj.material.dispose();if(f.k==='bolt')f.obj.geometry.dispose();f.obj=null;continue;}
       if(f.k==='boom'){const r=f.r*(1.4-k*.6);f.obj.scale.setScalar(r);f.obj.position.set(f.x,fxHeight(f)+r*.3,f.y);f.obj.material.opacity=k*.85;f.obj.material.color.setRGB(1,.45+.4*k,.15*k);}
       else if(f.k==='ring'){f.obj.scale.setScalar(6+(1-k)*16);f.obj.position.set(f.x,groundY(f.x,f.y)+1.5,f.y);f.obj.material.opacity=k;}
+      else if(f.k==='crush'){f.obj.scale.setScalar(4+(1-k)*8);f.obj.position.set(f.x,groundY(f.x,f.y)+1.2,f.y);f.obj.material.opacity=k*.9;}
       else f.obj.material.opacity=k;
     }
     liveFx=liveFx.filter(f=>f.obj);
@@ -2110,7 +2579,7 @@ function render3D(){
       if(p.k==='mz'){pa[i]=p.x;pa[i+1]=groundY(p.x,p.y)+(p.z||6);pa[i+2]=p.y;ca[i]=1;ca[i+1]=.85;ca[i+2]=.4;return true;}
       if(p.c==='heal'){const f=p.t/p.T;pa[i]=p.x;pa[i+1]=groundY(p.x,p.y)+(p.z||0);pa[i+2]=p.y;ca[i]=.2*f;ca[i+1]=f;ca[i+2]=.35*f;return true;}
       if(p.c!=='fire')return false;const f=p.t/p.T;pa[i]=p.x;pa[i+1]=groundY(p.x,p.y)+(p.z||0);pa[i+2]=p.y;ca[i]=f;ca[i+1]=(.35+.5*f)*f;ca[i+2]=.12*f;return true;});
-    fillPoints(smokeP,G.parts,(p,pa,ca,i)=>{if(p.c==='fire'||p.c==='heal')return false;const f=p.t/p.T;pa[i]=p.x;pa[i+1]=groundY(p.x,p.y)+(p.z||0);pa[i+2]=p.y;if(p.c==='dust'){ca[i]=.66;ca[i+1]=.56;ca[i+2]=.38;}else if(p.c==='foam'){ca[i]=.92;ca[i+1]=.96;ca[i+2]=1;}else{const v=.22+.4*(1-f);ca[i]=v;ca[i+1]=v;ca[i+2]=v;}return true;});
+    fillPoints(smokeP,G.parts,(p,pa,ca,i)=>{if(p.c==='fire'||p.c==='heal')return false;const f=p.t/p.T;pa[i]=p.x;pa[i+1]=groundY(p.x,p.y)+(p.z||0);pa[i+2]=p.y;if(p.c==='dust'){ca[i]=.66;ca[i+1]=.56;ca[i+2]=.38;}else if(p.c==='foam'){ca[i]=.92;ca[i+1]=.96;ca[i+2]=1;}else if(p.c==='crush'){ca[i]=.75;ca[i+1]=.12;ca[i+2]=.12;}else{const v=.22+.4*(1-f);ca[i]=v;ca[i+1]=v;ca[i+2]=v;}return true;});
     fillPoints(bulletP,G.proj,(p,pa,ca,i)=>{pa[i]=p.x;pa[i+1]=groundY(p.x,p.y)+(p.k==='arty'?p.h+8:(p.ez||6));pa[i+2]=p.y;
       if(p.k==='rocket'){ca[i]=1;ca[i+1]=.55;ca[i+2]=.2;}else{ca[i]=1;ca[i+1]=.92;ca[i+2]=.55;}return true;});
     const ta=tracer.geometry.attributes.position.array,tc=tracer.geometry.attributes.color.array;let n=0;
@@ -2131,14 +2600,122 @@ function hudCircle(x,y,r,col,dash){
   hx.stroke();hx.setLineDash([]);
 }
 function hudBar(x,y,w,f){hx.fillStyle='rgba(0,0,0,.6)';hx.fillRect(x-w/2-1,y-1,w+2,5);hx.fillStyle=f>.6?'#6fd07b':f>.3?'#ffd23f':'#ff4d4d';hx.fillRect(x-w/2,y,w*Math.max(0,f),3);}
+function drawUnitPaths(){
+  if(!G||!G.sel||!G.sel.size)return;
+  const dashOffset=-G.frame*.85;
+  for(const u of G.sel){
+    if(u.dead||u.team!==1)continue;
+    const o=u.order;
+    const hasPath=u.path&&u.pi<u.path.length;
+    const hasQueue=u.queue&&u.queue.length>0;
+    if(!hasPath&&!hasQueue&&(!o||(o.k!=='move'&&o.k!=='amove'&&o.k!=='atk'&&o.k!=='tunnel'&&o.k!=='patrol')))continue;
+    const isAir=u.d&&u.d.cls==='air',altOff=isAir?ALT:2.5;
+
+    let curCol='#7CFC9A',isAtk=false,isPatrol=false;
+    if(o&&(o.k==='amove'||o.k==='atk')){curCol='#ff6a4d';isAtk=true;}
+    else if(o&&o.k==='patrol'){curCol='#38bdf8';isPatrol=true;}
+    else if(o&&o.k==='tunnel')curCol='#c9a15a';
+
+    const pts=[{x:u.x,y:u.y}];
+    if(hasPath){for(let i=u.pi;i<u.path.length;i++)pts.push(u.path[i]);}
+    let destX=pts[pts.length-1].x,destY=pts[pts.length-1].y;
+    if(o){
+      if(o.k==='atk'&&o.t&&!o.t.dead){destX=o.t.x;destY=o.t.y;pts.push({x:destX,y:destY});}
+      else if(o.k==='patrol'&&o.pts&&o.pts.length){
+        const targetPt=o.pts[o.idx]||o.pts[1]||o.pts[0];
+        destX=targetPt.x;destY=targetPt.y;
+        if(hyp(destX-pts[pts.length-1].x,destY-pts[pts.length-1].y)>8)pts.push({x:destX,y:destY});
+      }
+      else if(o.x!==undefined&&o.y!==undefined){destX=o.x;destY=o.y;if(hyp(destX-pts[pts.length-1].x,destY-pts[pts.length-1].y)>8)pts.push({x:destX,y:destY});}
+    }
+    if(pts.length>=2){
+      hx.save();
+      hx.strokeStyle=curCol;hx.lineWidth=1.9;hx.setLineDash([7,5]);hx.lineDashOffset=dashOffset;hx.lineCap='round';hx.lineJoin='round';
+      hx.beginPath();let started=false;
+      for(let i=0;i<pts.length;i++){
+        const pt=pts[i],z=groundY(pt.x,pt.y)+altOff,sp=proj(pt.x,pt.y,z);
+        if(!sp.ok){started=false;continue;}
+        if(!started){hx.moveTo(sp.x,sp.y);started=true;}else hx.lineTo(sp.x,sp.y);
+      }
+      hx.stroke();hx.restore();
+
+      const destZ=groundY(destX,destY)+altOff,destSp=proj(destX,destY,destZ);
+      if(destSp.ok){
+        hx.save();hx.strokeStyle=curCol;hx.fillStyle=curCol;hx.lineWidth=1.5;
+        if(isPatrol){
+          hx.beginPath();hx.arc(destSp.x,destSp.y,5,0,TAU);hx.stroke();
+          hx.font='700 10px sans-serif';hx.textAlign='center';hx.textBaseline='middle';
+          hx.fillText('🔄',destSp.x,destSp.y-9);
+        }else if(isAtk){
+          hx.beginPath();hx.arc(destSp.x,destSp.y,5.5,0,TAU);hx.stroke();
+          hx.beginPath();
+          hx.moveTo(destSp.x-7,destSp.y);hx.lineTo(destSp.x+7,destSp.y);
+          hx.moveTo(destSp.x,destSp.y-7);hx.lineTo(destSp.x,destSp.y+7);
+          hx.stroke();
+        }else{
+          hx.beginPath();hx.arc(destSp.x,destSp.y,4,0,TAU);hx.stroke();
+          hx.beginPath();hx.arc(destSp.x,destSp.y,1.8,0,TAU);hx.fill();
+        }
+        hx.restore();
+      }
+    }
+
+    if(isPatrol&&o.pts&&o.pts.length>=2){
+      const p0=o.pts[0],p1=o.pts[1];
+      const sp0=proj(p0.x,p0.y,groundY(p0.x,p0.y)+altOff);
+      const sp1=proj(p1.x,p1.y,groundY(p1.x,p1.y)+altOff);
+      if(sp0.ok&&sp1.ok){
+        hx.save();
+        hx.strokeStyle='rgba(56,189,248,.6)';hx.lineWidth=1.4;hx.setLineDash([4,4]);
+        hx.beginPath();hx.moveTo(sp0.x,sp0.y);hx.lineTo(sp1.x,sp1.y);hx.stroke();
+        hx.fillStyle='#38bdf8';hx.beginPath();hx.arc(sp0.x,sp0.y,3,0,TAU);hx.arc(sp1.x,sp1.y,3,0,TAU);hx.fill();
+        hx.restore();
+      }
+    }
+
+    if(hasQueue){
+      let prevX=destX,prevY=destY;
+      u.queue.forEach((q,qi)=>{
+        let qCol='#7CFC9A',tx=prevX,ty=prevY;
+        if(q.k==='amove'||q.k==='atk')qCol='#ff6a4d';
+        else if(q.k==='patrol')qCol='#38bdf8';
+        if(q.k==='atk'&&q.t&&!q.t.dead){tx=q.t.x;ty=q.t.y;}
+        else if(q.k==='patrol'&&q.pts&&q.pts.length){tx=q.pts[1]?q.pts[1].x:q.pts[0].x;ty=q.pts[1]?q.pts[1].y:q.pts[0].y;}
+        else if(q.x!==undefined&&q.y!==undefined){tx=q.x;ty=q.y;}
+
+        const pPrev=proj(prevX,prevY,groundY(prevX,prevY)+altOff);
+        const pCur=proj(tx,ty,groundY(tx,ty)+altOff);
+        if(pPrev.ok&&pCur.ok){
+          hx.save();
+          hx.strokeStyle=qCol;hx.lineWidth=1.6;hx.setLineDash([5,4]);hx.lineDashOffset=dashOffset;
+          hx.beginPath();hx.moveTo(pPrev.x,pPrev.y);hx.lineTo(pCur.x,pCur.y);hx.stroke();
+          hx.restore();
+        }
+        if(pCur.ok){
+          hx.save();
+          hx.fillStyle='rgba(15,23,42,.88)';hx.strokeStyle=qCol;hx.lineWidth=1.5;
+          hx.beginPath();hx.arc(pCur.x,pCur.y,7,0,TAU);hx.fill();hx.stroke();
+          hx.fillStyle='#ffffff';hx.font='700 9px sans-serif';hx.textAlign='center';hx.textBaseline='middle';
+          hx.fillText(String(qi+1),pCur.x,pCur.y+.5);
+          hx.restore();
+        }
+        prevX=tx;prevY=ty;
+      });
+    }
+  }
+}
 function drawHud(){
   hx.setTransform(dpr,0,0,dpr,0,0);hx.clearRect(0,0,vw,vh);
   if(!G||!camera)return;
+  drawUnitPaths();
   if(G.place){for(const b of G.blds)if(!b.dead&&b.team===1)hudCircle(b.x,b.y,230+b.hw,'rgba(255,210,63,.75)',true);
     for(const c of G.cities)if(c.owner===1)hudCircle(c.x,c.y,210,'rgba(255,210,63,.75)',true);
     if(G.ghostOk&&BT[G.place].rng){const s=BT[G.place].size;hudCircle((G.ghostOk.cx+s/2)*CELL,(G.ghostOk.cy+s/2)*CELL,BT[G.place].rng,'rgba(255,255,255,.6)',true);}}
   if(G.powerArm&&G.mg)hudCircle(G.mg.x,G.mg.y,G.powerArm==='stake'?82:115,G.powerArm==='stake'?'#c9a15a':'#ffd23f',true);
   hx.textAlign='center';hx.lineJoin='round';
+  for(const b of BRIDGES){if(cam.dist>3200)continue;const mx=(b.x1+b.x2)/2,my=(b.y1+b.y2)/2,z=groundY(mx,my)+14,p=proj(mx,my,z);if(!p.ok||p.x<-70||p.x>vw+70||p.y<-20||p.y>vh+20)continue;
+    const fs=clamp(pxScale(mx,my,z)*12,9,13);hx.font=`600 ${fs}px "Be Vietnam Pro",system-ui,sans-serif`;
+    hx.lineWidth=3;hx.strokeStyle='rgba(15,23,42,.88)';hx.strokeText('🌉 '+b.name,p.x,p.y);hx.fillStyle='#f1f5f9';hx.fillText('🌉 '+b.name,p.x,p.y);}
   for(const c of G.cities){if(!c.major&&cam.dist>2300)continue;const z=groundY(c.x,c.y)+36;const p=proj(c.x,c.y,z);if(!p.ok||p.x<-80||p.x>vw+80||p.y<-20||p.y>vh+20)continue;
     const fs=clamp(pxScale(c.x,c.y,z)*15,10,19);hx.font=`700 ${fs}px "Be Vietnam Pro",system-ui,sans-serif`;
     hx.lineWidth=4;hx.strokeStyle='rgba(20,12,8,.85)';hx.strokeText(c.name,p.x,p.y);hx.fillStyle=c.owner?TC[c.owner].l:'#fff';hx.fillText(c.name,p.x,p.y);}
@@ -2166,6 +2743,35 @@ function drawMini(){
   for(const c of G.cities){mx.fillStyle=c.owner?TC[c.owner].m:'#f3ead0';mx.fillRect(c.x*s-2,c.y*s-2,4,4);mx.strokeStyle='#000';mx.lineWidth=.6;mx.strokeRect(c.x*s-2,c.y*s-2,4,4);}
   for(const b of G.blds){if(b.dead||(b.team!==1&&!expl[cellAt(b.x,b.y)]))continue;mx.fillStyle=TC[b.team].l;mx.fillRect(b.x*s-2.5,b.y*s-2.5,5,5);mx.fillStyle=TC[b.team].m;mx.fillRect(b.x*s-1.5,b.y*s-1.5,3,3);}
   for(const u of G.units){if(u.dead||(u.team!==1&&!vis[cellAt(u.x,u.y)]))continue;mx.fillStyle=TC[u.team].m;mx.fillRect(u.x*s-1,u.y*s-1,2,2);}
+  if(G.sel&&G.sel.size){
+    for(const u of G.sel){
+      if(u.dead||u.team!==1)continue;
+      const o=u.order,hasPath=u.path&&u.pi<u.path.length,hasQueue=u.queue&&u.queue.length>0;
+      if(!hasPath&&!hasQueue&&(!o||(o.k!=='move'&&o.k!=='amove'&&o.k!=='atk'&&o.k!=='tunnel'&&o.k!=='patrol')))continue;
+      let destX=u.x,destY=u.y;
+      if(o){
+        if(o.k==='atk'&&o.t){destX=o.t.x;destY=o.t.y;}
+        else if(o.k==='patrol'&&o.pts&&o.pts.length){const pt=o.pts[o.idx]||o.pts[1]||o.pts[0];destX=pt.x;destY=pt.y;}
+        else if(o.x!==undefined&&o.y!==undefined){destX=o.x;destY=o.y;}
+      }else if(u.path&&u.path.length){
+        destX=u.path[u.path.length-1].x;destY=u.path[u.path.length-1].y;
+      }
+      const col=o&&(o.k==='amove'||o.k==='atk')?'#ff6a4d':o&&o.k==='patrol'?'#38bdf8':'#7CFC9A';
+      mx.strokeStyle=col;mx.lineWidth=1;mx.beginPath();mx.moveTo(u.x*s,u.y*s);mx.lineTo(destX*s,destY*s);mx.stroke();
+      if(hasQueue){
+        let px=destX,py=destY;
+        for(const q of u.queue){
+          let qx=px,qy=py;
+          if(q.k==='atk'&&q.t){qx=q.t.x;qy=q.t.y;}
+          else if(q.k==='patrol'&&q.pts&&q.pts.length){qx=q.pts[1]?q.pts[1].x:q.pts[0].x;qy=q.pts[1]?q.pts[1].y:q.pts[0].y;}
+          else if(q.x!==undefined&&q.y!==undefined){qx=q.x;qy=q.y;}
+          const qc=q.k==='amove'||q.k==='atk'?'#ff6a4d':q.k==='patrol'?'#38bdf8':'#7CFC9A';
+          mx.strokeStyle=qc;mx.beginPath();mx.moveTo(px*s,py*s);mx.lineTo(qx*s,qy*s);mx.stroke();
+          px=qx;py=qy;
+        }
+      }
+    }
+  }
   for(const f of G.fx)if(f.k==='mmping'){mx.strokeStyle='#ff4d4d';mx.lineWidth=1.5;mx.beginPath();mx.arc(f.x*s,f.y*s,3+(G.frame%30)/3,0,TAU);mx.stroke();}
   for(const st of G.strikes){mx.strokeStyle=st.team===1?'#ffd23f':'#ff4d4d';mx.beginPath();mx.arc(st.x*s,st.y*s,115*s+2,0,TAU);mx.stroke();}
   if(camera){const cs=[[0,0],[vw,0],[vw,vh],[0,vh]].map(([x,y])=>planePoint(x,y));
@@ -2178,7 +2784,7 @@ Object.assign(ICON,{
   sap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="14" r="6"/><path d="M15 9l3-3M18 6l2-3M18 6l3 1"/></svg>',
   ifv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l3-5h12l5 5z"/><circle cx="7" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M9 11V8h5v3M14 9h7"/></svg>',
   mlrs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17h20M5 17v-3h14v3"/><circle cx="7" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/><path d="M7 13l10-7M9 14l10-7M5 12l10-7"/></svg>'});
-const RICON={inf:'inf',at:'rocket',aainf:'aainf',eng:'engineer',sap:'sap',ifv:'ifv',mbt:'tank',arty:'arty',mlrs:'mlrs',aa:'aa',heli:'heli',jet:'jet',ship:'ship'};
+const RICON={inf:'inf',at:'rocket',aainf:'aainf',eng:'engineer',sap:'sap',ifv:'ifv',mbt:'tank',arty:'arty',mlrs:'mlrs',aa:'aa',scout:'scout',ucav:'ucav',heli:'heli',jet:'jet',ship:'ship'};
 const ARM={inf:'bộ binh',veh:'xe bọc thép',air:'máy bay',ship:'tàu',bld:'công trình'};
 const ui={tab:'build',items:{},info:null};
 const iconOf=k=>BT[k]?ICON[k]:ICON[RICON[UT[k].role]];
@@ -2230,12 +2836,15 @@ function itemClick(k){
     if(!has(1,BT[k].req)){toast('Cần có '+BT[BT[k].req].name,'bad');return;}
     if(T.credits<BT[k].cost){toast('Không đủ ngân sách','bad');return;}
     T.credits-=BT[k].cost;T.bq={type:k,t:0,T:BT[k].time*60};
+    sfx('build_start');
   }else{
     const d=UT[k];
     if(!has(1,d.from)){toast('Cần có '+BT[d.from].name,'bad');return;}
     if(T.pq[d.from].length>=8){toast('Hàng chờ đã đầy','bad');return;}
     if(T.credits<d.cost){toast('Không đủ ngân sách','bad');return;}
     T.credits-=d.cost;T.pq[d.from].push(k);
+    const cat=d.from==='barracks'?'inf':d.from==='factory'?'veh':d.from==='airfield'?'air':'ship';
+    sfx('order_'+cat);
   }
   refreshItems();
 }
@@ -2265,7 +2874,10 @@ function refreshTop(){
   {let wl=1e9;for(const k in G.ais)if(!G.ais[k].dead)wl=Math.min(wl,G.ais[k].op?0:(G.ais[k].nextWave-G.frame)/60);$('#wave').textContent=wl>1e8?'–':wl>0?fmtTime(wl):'đang tiến quân';}
   const f=T.power/T.powerMax;$('#powerBtn .fill').style.width=(f*100)+'%';$('#powerBtn').classList.toggle('ready',f>=1);
   $('#powerTxt').innerHTML='🚀 <span class="lb">'+(f>=1?NA.power:Math.floor(f*100)+'%')+'</span>';
-  $('#amoveBtn').classList.toggle('on',G.amove);$('#boxBtn').classList.toggle('on',G.boxMode);$('#powerBtn').classList.toggle('on',!!G.powerArm);
+  $('#amoveBtn').classList.toggle('on',G.amove);
+  const pb=$('#patrolBtn');if(pb)pb.classList.toggle('on',!!G.patrol);
+  const qb=$('#queueBtn');if(qb)qb.classList.toggle('on',!!G.queueMode);
+  $('#boxBtn').classList.toggle('on',G.boxMode);$('#powerBtn').classList.toggle('on',!!G.powerArm);
   $('#pauseBtn').textContent=G.paused?'▶':'⏸';
   const si=$('#selInfo'),sel=[...G.sel].filter(u=>!u.dead);let html,sell='';
   if(sel.length===1){const u=sel[0],d=u.d;html='<strong>'+d.name+(u.rank?' '+(u.rank===2?'★★':'★'):'')+'</strong><div class="hp"><em style="width:'+(u.hp/d.hp*100)+'%"></em></div>Máu '+Math.ceil(u.hp)+'/'+d.hp+' · hạ '+(u.kills||0)+' địch'+(u.rank?' · '+(u.rank===2?'Tinh nhuệ':'Kỳ cựu')+' (+'+u.rank*20+'% hỏa lực)':'')+'<br>Tầm bắn '+d.rng+' · tầm nhìn '+d.sight+(d.cls==='land'?'<br>Đang đứng: '+terrText(cellAt(u.x,u.y)).split(' | ').map(x=>x.split(' · ')[0]).join(', '):'');}
@@ -2290,6 +2902,8 @@ function updHint(){
   if(G.place)hint('Chọn vị trí đặt '+BT[G.place].name+' trong vòng vàng · chuột phải để hủy');
   else if(G.powerArm)hint('Chọn mục tiêu cho '+NATIONS[G.teams[1].nat].power);
   else if(G.amove)hint('Chọn điểm tiến công');
+  else if(G.patrol)hint('Chọn điểm tuần tra (lính sẽ đi tuần và tự bắn địch)');
+  else if(G.queueMode)hint('Chế độ Nối lệnh đang bật (chạm để xếp hàng di chuyển)');
   else hint('');
 }
 /* ================= ĐIỀU KHIỂN ================= */
@@ -2307,7 +2921,7 @@ function pick(sx,sy,touch){
 function selArmy(){return [...G.sel].filter(u=>!u.dead);}
 function tap(sx,sy,right,shift,touch){
   if(!G||G.over)return;
-  if(right){if(G.place||G.powerArm||G.amove){G.place=null;G.powerArm=false;G.amove=false;}else{G.sel.clear();G.selB=null;}updHint();return;}
+  if(right){if(G.place||G.powerArm||G.amove||G.patrol){G.place=null;G.powerArm=false;G.amove=false;G.patrol=false;}else{G.sel.clear();G.selB=null;}updHint();return;}
   const w=groundPoint(sx,sy);if(!w)return;
   if(G.place){
     const s=BT[G.place].size,cx=Math.round(w.x/CELL-s/2),cy=Math.round(w.y/CELL-s/2);
@@ -2320,31 +2934,33 @@ function tap(sx,sy,right,shift,touch){
     G.stakes.push({x:w.x,y:w.y,t:90*60,team:1});G.teams[1].stake=0;G.powerArm=false;toast('Đã đóng bãi cọc. Tàu địch đi qua sẽ bị đánh chìm dần.','good');sfx('ready');updHint();return;}
   if(G.powerArm){launchPower(1,w.x,w.y);G.powerArm=false;updHint();return;}
   const e=pick(sx,sy,touch);const sel=selArmy();
-  if(G.amove&&sel.length){cmdMove(sel,w.x,w.y,true);G.amove=false;updHint();return;}
+  const isQ=shift||!!(G&&G.queueMode);
+  if(G.patrol&&sel.length){cmdPatrol(sel,w.x,w.y,isQ);G.patrol=false;updHint();return;}
+  if(G.amove&&sel.length){cmdMove(sel,w.x,w.y,true,isQ);G.amove=false;updHint();return;}
   if(e&&e.team===1){
     if(e.kind==='u'){
       const now=performance.now();
       if(now-lastTap.t<350&&lastTap.type===e.type)G.sel=new Set(G.units.filter(u=>!u.dead&&u.team===1&&u.type===e.type&&onScreen(u.x,u.y,0)));
       else if(shift){G.sel.has(e)?G.sel.delete(e):G.sel.add(e);}
       else G.sel=new Set([e]);
-      lastTap={t:now,type:e.type};G.selB=null;sfx('click');
+      lastTap={t:now,type:e.type};G.selB=null;sfx('select_unit');
     }else if(sel.length&&e.type==='tunnel'&&G.blds.some(b=>!b.dead&&b.team===1&&b.type==='tunnel'&&b!==e)){
       const tn=G.blds.filter(b=>!b.dead&&b.team===1&&b.type==='tunnel'&&b!==e);let n=0;
       for(const u of sel){if(u.d.cls!=='land')continue;let A=null,bd=1e9;for(const b of tn){const dd=hyp(b.x-u.x,b.y-u.y);if(dd<bd){bd=dd;A=b;}}
         u.order={k:'tunnel',a:A,b:e,n:0};u.tgt=null;requestPath(u,A.x,A.y+A.hw+12);n++;}
       if(n){toast('Hành quân qua địa đạo');G.fx.push({k:'ring',x:e.x,y:e.y,t:30,T:30,c:'#c9a15a'});}
-    }else{if(sel.length)cmdMove(sel,w.x,w.y,false);else G.selB=e;}
+    }else{if(sel.length)cmdMove(sel,w.x,w.y,false,isQ);else G.selB=e;}
     return;
   }
-  if(e&&e.team===2){if(sel.length)cmdAttack(sel,e);else G.selB=e;return;}
-  if(sel.length)cmdMove(sel,w.x,w.y,false);
+  if(e&&e.team!==1){if(sel.length)cmdAttack(sel,e,isQ);else G.selB=e;return;}
+  if(sel.length)cmdMove(sel,w.x,w.y,false,isQ);
   else if(G.selB&&!G.selB.dead&&G.selB.team===1&&CATS.includes(G.selB.type)){G.selB.rally={x:w.x,y:w.y};G.fx.push({k:'ring',x:w.x,y:w.y,t:24,T:24,c:'#ffd23f'});toast('Đã đặt điểm tập kết cho '+G.selB.d.name);}
   else G.selB=null;
 }
 function boxSelect(x1,y1,x2,y2,shift){
   const ax=Math.min(x1,x2),ay=Math.min(y1,y2),bx=Math.max(x1,x2),by=Math.max(y1,y2);
   const list=G.units.filter(u=>{if(u.dead||u.team!==1)return false;const p=proj(u.x,u.y,groundY(u.x,u.y)+(u.d.cls==='air'?ALT:3));return p.ok&&p.x>=ax&&p.x<=bx&&p.y>=ay&&p.y<=by;});
-  if(!shift)G.sel=new Set();list.forEach(u=>G.sel.add(u));if(list.length){G.selB=null;sfx('click');}
+  if(!shift)G.sel=new Set();list.forEach(u=>G.sel.add(u));if(list.length){G.selB=null;sfx('select_unit');}
 }
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('pointerdown',e=>{
@@ -2387,7 +3003,7 @@ let miniDrag=false;
 function miniPos(e){const r=mc.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 mc.addEventListener('contextmenu',e=>e.preventDefault());
 mc.addEventListener('pointerdown',e=>{if(!G)return;const p=miniPos(e);
-  if(e.button===2){const s=selArmy();if(s.length)cmdMove(s,p.x,p.y,false);return;}
+  if(e.button===2){const s=selArmy();if(s.length)cmdMove(s,p.x,p.y,false,e.shiftKey||!!(G&&G.queueMode));return;}
   miniDrag=true;try{mc.setPointerCapture(e.pointerId);}catch(_){}centerOn(p.x,p.y);});
 mc.addEventListener('pointermove',e=>{if(miniDrag){const p=miniPos(e);centerOn(p.x,p.y);}});
 mc.addEventListener('pointerup',()=>miniDrag=false);mc.addEventListener('pointercancel',()=>miniDrag=false);
@@ -2395,8 +3011,9 @@ const keys=new Set();
 window.addEventListener('keydown',e=>{
   if(!G)return;const k=e.key.toLowerCase();keys.add(k);
   if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();
-  if(k==='escape'){G.place=null;G.powerArm=false;G.amove=false;G.sel.clear();updHint();}
-  else if(k==='a'&&!e.ctrlKey&&!e.metaKey){if(selArmy().length){G.amove=!G.amove;updHint();}}
+  if(k==='escape'){G.place=null;G.powerArm=false;G.amove=false;G.patrol=false;G.queueMode=false;G.sel.clear();updHint();}
+  else if(k==='a'&&!e.ctrlKey&&!e.metaKey){if(selArmy().length){G.amove=!G.amove;G.patrol=false;updHint();}}
+  else if(k==='t'&&!e.ctrlKey&&!e.metaKey){if(selArmy().length){G.patrol=!G.patrol;G.amove=false;updHint();}}
   else if(k==='s'&&!e.ctrlKey){cmdStop(selArmy());}
   else if(k==='q'){selectAll();}
   else if(k===' '){const hq=getHQ(1);if(hq)centerOn(hq.x,hq.y);}
@@ -2404,13 +3021,13 @@ window.addEventListener('keydown',e=>{
   else if(k==='r'){cam.yaw=0;}
   else if(/^[1-9]$/.test(k)){
     if(e.ctrlKey||e.metaKey){e.preventDefault();G.groups[k]=selArmy();toast('Đã lưu nhóm '+k);}
-    else if(G.groups[k]&&G.groups[k].length){G.sel=new Set(G.groups[k].filter(u=>!u.dead));const now=performance.now();
+    else if(G.groups[k]&&G.groups[k].length){G.sel=new Set(G.groups[k].filter(u=>!u.dead));sfx('select_unit');const now=performance.now();
       if(G._lg===k&&now-G._lgt<350){const u=G.groups[k][0];if(u)centerOn(u.x,u.y);}G._lg=k;G._lgt=now;}
   }
 });
 window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 window.addEventListener('blur',()=>keys.clear());
-function selectAll(){G.sel=new Set(G.units.filter(u=>!u.dead&&u.team===1));G.selB=null;}
+function selectAll(){G.sel=new Set(G.units.filter(u=>!u.dead&&u.team===1));G.selB=null;sfx('select_unit');}
 function scrollCam(dt){
   if(!G)return;let f=0,r=0;
   if(keys.has('arrowup'))f++;if(keys.has('arrowdown'))f--;if(keys.has('arrowleft'))r--;if(keys.has('arrowright'))r++;
@@ -2424,7 +3041,18 @@ $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b
 $('#powerBtn').onclick=()=>{if(!G)return;const T=G.teams[1];if(T.power<T.powerMax){toast(NATIONS[T.nat].power+' đang nạp ('+Math.floor(T.power/T.powerMax*100)+'%)');return;}G.powerArm=G.powerArm==='fire'?false:'fire';G.place=null;G.amove=false;updHint();};
 $('#hasteBtn').onclick=()=>{if(!G)return;const T=G.teams[1];if(T.haste<T.hasteMax){toast('Thần tốc đang nạp ('+Math.floor(T.haste/T.hasteMax*100)+'%)');return;}T.haste=0;G.hasteT=G.frame+20*60;toast('Thần tốc! Toàn quân hành quân gấp trong 20 giây.','good');sfx('ready');};
 $('#stakeBtn').onclick=()=>{if(!G)return;const T=G.teams[1];if(T.stake<T.stakeMax){toast('Cọc Bạch Đằng đang chuẩn bị ('+Math.floor(T.stake/T.stakeMax*100)+'%)');return;}G.powerArm=G.powerArm==='stake'?false:'stake';G.place=null;G.amove=false;updHint();};
-$('#amoveBtn').onclick=()=>{if(!G)return;if(!selArmy().length){toast('Hãy chọn quân trước');return;}G.amove=!G.amove;updHint();};
+$('#amoveBtn').onclick=()=>{if(!G)return;if(!selArmy().length){toast('Hãy chọn quân trước');return;}G.amove=!G.amove;G.patrol=false;updHint();};
+const patrolBtn=$('#patrolBtn');if(patrolBtn)patrolBtn.onclick=()=>{if(!G)return;if(!selArmy().length){toast('Hãy chọn quân trước');return;}G.patrol=!G.patrol;G.amove=false;updHint();};
+const queueBtn=$('#queueBtn');if(queueBtn)queueBtn.onclick=()=>{if(!G)return;G.queueMode=!G.queueMode;toast(G.queueMode?'Bật chế độ Nối lệnh (Shift)':'Tắt chế độ Nối lệnh');updHint();};
+const pToggle=$('#panelToggleBtn');if(pToggle)pToggle.onclick=()=>{
+  const p=$('#panel');if(!p)return;
+  p.classList.toggle('collapsed');
+  const col=p.classList.contains('collapsed');
+  pToggle.classList.toggle('on',!col);
+  pToggle.innerHTML=col?'🏭 <span class="lb">Hiện xưởng</span>':'🏭 <span class="lb">Ẩn xưởng</span>';
+  toast(col?'Đã thu gọn bảng sản xuất (mở rộng chiến trường)':'Đã mở bảng sản xuất');
+  resize();
+};
 $('#boxBtn').onclick=()=>{if(G){G.boxMode=!G.boxMode;toast(G.boxMode?'Kéo trên bản đồ để chọn vùng':'Kéo để cuộn bản đồ');}};
 $('#allBtn').onclick=()=>{if(G)selectAll();};
 $('#stopBtn').onclick=()=>{if(G)cmdStop(selArmy());};
@@ -2458,14 +3086,112 @@ function music(){
   }catch(e){}
 }
 function sfx(k){
-  if(muted||!AC)return;const now=AC.currentTime;const gap={shot:.07,boom:.12,ready:.25,alert:1.5,strike:.5,click:.05}[k]||.1;
+  if(muted||!AC)return;const now=AC.currentTime;
+  const gap={shot:.06,shot_cannon:.1,shot_rocket:.09,shot_mg:.04,boom:.1,strike:.4,crush:.12,click:.04,select_unit:.05,cmd_move:.07,cmd_attack:.07,order_inf:.1,order_veh:.1,order_air:.1,order_ship:.1,build_start:.1,unit_inf_ready:.3,unit_veh_ready:.3,unit_air_ready:.3,unit_ship_ready:.4,capture:.4,ready:.2,alert:1.2}[k]||.08;
   if(lastS[k]&&now-lastS[k]<gap)return;lastS[k]=now;
   try{
     const g=AC.createGain();g.connect(AC.destination);
-    if(k==='boom'||k==='strike'){const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=k==='strike'?900:500;s.connect(f);f.connect(g);g.gain.setValueAtTime(k==='strike'?.35:.13,now);g.gain.exponentialRampToValueAtTime(.001,now+(k==='strike'?.9:.45));s.start(now);s.stop(now+1);return;}
+    if(k==='boom'||k==='strike'){
+      const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();
+      f.type='lowpass';f.frequency.value=k==='strike'?900:500;s.connect(f);f.connect(g);
+      g.gain.setValueAtTime(k==='strike'?.35:.13,now);g.gain.exponentialRampToValueAtTime(.001,now+(k==='strike'?.9:.45));
+      s.start(now);s.stop(now+1);return;
+    }
+    if(k==='crush'){
+      if(noiseBuf){
+        const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();
+        f.type='bandpass';f.frequency.value=300;f.Q.value=2;s.connect(f);f.connect(g);
+        g.gain.setValueAtTime(.32,now);g.gain.exponentialRampToValueAtTime(.001,now+.28);
+        s.start(now);s.stop(now+.3);
+      }
+      const o=AC.createOscillator(),g2=AC.createGain();o.type='sawtooth';
+      o.frequency.setValueAtTime(140,now);o.frequency.exponentialRampToValueAtTime(32,now+.24);
+      g2.gain.setValueAtTime(.22,now);g2.gain.exponentialRampToValueAtTime(.0001,now+.25);
+      o.connect(g2);g2.connect(AC.destination);o.start(now);o.stop(now+.26);return;
+    }
+    if(k==='shot_cannon'){
+      if(noiseBuf){
+        const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();
+        f.type='lowpass';f.frequency.value=260;s.connect(f);f.connect(g);
+        g.gain.setValueAtTime(.26,now);g.gain.exponentialRampToValueAtTime(.001,now+.32);
+        s.start(now);s.stop(now+.34);
+      }
+      const o=AC.createOscillator(),g2=AC.createGain();o.type='triangle';
+      o.frequency.setValueAtTime(150,now);o.frequency.exponentialRampToValueAtTime(38,now+.2);
+      g2.gain.setValueAtTime(.26,now);g2.gain.exponentialRampToValueAtTime(.0001,now+.24);
+      o.connect(g2);g2.connect(AC.destination);o.start(now);o.stop(now+.25);return;
+    }
+    if(k==='shot_rocket'){
+      if(noiseBuf){
+        const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();
+        f.type='bandpass';f.frequency.setValueAtTime(450,now);f.frequency.exponentialRampToValueAtTime(1400,now+.2);
+        s.connect(f);f.connect(g);
+        g.gain.setValueAtTime(.22,now);g.gain.exponentialRampToValueAtTime(.001,now+.28);
+        s.start(now);s.stop(now+.3);
+      }
+      const o=AC.createOscillator(),g2=AC.createGain();o.type='sawtooth';
+      o.frequency.setValueAtTime(130,now);o.frequency.exponentialRampToValueAtTime(260,now+.16);
+      g2.gain.setValueAtTime(.1,now);g2.gain.exponentialRampToValueAtTime(.0001,now+.22);
+      o.connect(g2);g2.connect(AC.destination);o.start(now);o.stop(now+.24);return;
+    }
+    if(k==='shot_mg'){
+      if(noiseBuf){
+        const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();
+        f.type='bandpass';f.frequency.value=1800;f.Q.value=3;s.connect(f);f.connect(g);
+        g.gain.setValueAtTime(.15,now);g.gain.exponentialRampToValueAtTime(.001,now+.05);
+        s.start(now);s.stop(now+.06);
+      }
+      const o=AC.createOscillator(),g2=AC.createGain();o.type='square';
+      o.frequency.setValueAtTime(450,now);o.frequency.exponentialRampToValueAtTime(110,now+.04);
+      g2.gain.setValueAtTime(.06,now);g2.gain.exponentialRampToValueAtTime(.0001,now+.05);
+      o.connect(g2);g2.connect(AC.destination);o.start(now);o.stop(now+.06);return;
+    }
+    if(k==='unit_veh_ready'){
+      const o=AC.createOscillator(),f=AC.createBiquadFilter();o.type='sawtooth';
+      f.type='lowpass';f.frequency.value=280;o.connect(f);f.connect(g);
+      o.frequency.setValueAtTime(75,now);o.frequency.exponentialRampToValueAtTime(145,now+.12);o.frequency.exponentialRampToValueAtTime(95,now+.32);
+      g.gain.setValueAtTime(.11,now);g.gain.exponentialRampToValueAtTime(.0001,now+.36);
+      o.start(now);o.stop(now+.38);return;
+    }
+    if(k==='unit_air_ready'){
+      if(noiseBuf){
+        const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();
+        f.type='bandpass';f.frequency.setValueAtTime(400,now);f.frequency.exponentialRampToValueAtTime(1600,now+.2);
+        s.connect(f);f.connect(g);
+        g.gain.setValueAtTime(.14,now);g.gain.exponentialRampToValueAtTime(.001,now+.32);
+        s.start(now);s.stop(now+.34);
+      }
+      const o=AC.createOscillator(),g2=AC.createGain();o.type='sine';
+      o.frequency.setValueAtTime(440,now);o.frequency.exponentialRampToValueAtTime(1050,now+.2);
+      g2.gain.setValueAtTime(.06,now);g2.gain.exponentialRampToValueAtTime(.0001,now+.3);
+      o.connect(g2);g2.connect(AC.destination);o.start(now);o.stop(now+.32);return;
+    }
+    if(k==='unit_ship_ready'){
+      const o1=AC.createOscillator(),o2=AC.createOscillator(),f=AC.createBiquadFilter();
+      o1.type='sawtooth';o2.type='sawtooth';o1.frequency.value=110;o2.frequency.value=138.6;
+      f.type='lowpass';f.frequency.value=320;o1.connect(f);o2.connect(f);f.connect(g);
+      g.gain.setValueAtTime(.01,now);g.gain.linearRampToValueAtTime(.13,now+.06);g.gain.exponentialRampToValueAtTime(.0001,now+.45);
+      o1.start(now);o2.start(now);o1.stop(now+.48);o2.stop(now+.48);return;
+    }
+    if(k==='capture'){
+      [523.25,659.25,783.99].forEach((freq,idx)=>{
+        const o=AC.createOscillator(),g2=AC.createGain();o.type='triangle';o.frequency.value=freq;
+        g2.gain.setValueAtTime(.001,now);g2.gain.linearRampToValueAtTime(.05,now+.03);g2.gain.exponentialRampToValueAtTime(.0001,now+.42);
+        o.connect(g2);g2.connect(AC.destination);o.start(now+idx*.02);o.stop(now+.45);
+      });return;
+    }
     const o=AC.createOscillator();o.connect(g);
     if(k==='shot'){o.type='square';o.frequency.setValueAtTime(300,now);o.frequency.exponentialRampToValueAtTime(80,now+.05);g.gain.setValueAtTime(.018,now);g.gain.exponentialRampToValueAtTime(.0001,now+.06);o.start(now);o.stop(now+.07);}
     else if(k==='click'){o.type='sine';o.frequency.setValueAtTime(880,now);g.gain.setValueAtTime(.03,now);g.gain.exponentialRampToValueAtTime(.0001,now+.05);o.start(now);o.stop(now+.06);}
+    else if(k==='select_unit'){o.type='sine';o.frequency.setValueAtTime(1046,now);o.frequency.setValueAtTime(1318,now+.03);g.gain.setValueAtTime(.04,now);g.gain.exponentialRampToValueAtTime(.0001,now+.08);o.start(now);o.stop(now+.09);}
+    else if(k==='cmd_move'){o.type='sine';o.frequency.setValueAtTime(587,now);o.frequency.exponentialRampToValueAtTime(880,now+.07);g.gain.setValueAtTime(.055,now);g.gain.exponentialRampToValueAtTime(.0001,now+.12);o.start(now);o.stop(now+.13);}
+    else if(k==='cmd_attack'){o.type='triangle';o.frequency.setValueAtTime(440,now);o.frequency.setValueAtTime(700,now+.04);g.gain.setValueAtTime(.08,now);g.gain.exponentialRampToValueAtTime(.0001,now+.11);o.start(now);o.stop(now+.12);}
+    else if(k==='order_inf'){o.type='sine';o.frequency.setValueAtTime(659,now);o.frequency.setValueAtTime(880,now+.04);g.gain.setValueAtTime(.06,now);g.gain.exponentialRampToValueAtTime(.0001,now+.12);o.start(now);o.stop(now+.13);}
+    else if(k==='order_veh'){o.type='square';o.frequency.setValueAtTime(220,now);o.frequency.exponentialRampToValueAtTime(330,now+.06);g.gain.setValueAtTime(.04,now);g.gain.exponentialRampToValueAtTime(.0001,now+.12);o.start(now);o.stop(now+.13);}
+    else if(k==='order_air'){o.type='sine';o.frequency.setValueAtTime(1174,now);o.frequency.setValueAtTime(1567,now+.05);g.gain.setValueAtTime(.05,now);g.gain.exponentialRampToValueAtTime(.0001,now+.13);o.start(now);o.stop(now+.14);}
+    else if(k==='order_ship'){o.type='sine';o.frequency.setValueAtTime(440,now);o.frequency.exponentialRampToValueAtTime(554,now+.08);g.gain.setValueAtTime(.06,now);g.gain.exponentialRampToValueAtTime(.0001,now+.18);o.start(now);o.stop(now+.2);}
+    else if(k==='build_start'){o.type='triangle';o.frequency.setValueAtTime(392,now);o.frequency.setValueAtTime(523,now+.06);g.gain.setValueAtTime(.06,now);g.gain.exponentialRampToValueAtTime(.0001,now+.15);o.start(now);o.stop(now+.16);}
+    else if(k==='unit_inf_ready'){o.type='triangle';o.frequency.setValueAtTime(523.25,now);o.frequency.setValueAtTime(659.25,now+.08);o.frequency.setValueAtTime(783.99,now+.16);g.gain.setValueAtTime(.07,now);g.gain.exponentialRampToValueAtTime(.0001,now+.36);o.start(now);o.stop(now+.38);}
     else if(k==='ready'){o.type='triangle';o.frequency.setValueAtTime(523,now);o.frequency.setValueAtTime(784,now+.09);g.gain.setValueAtTime(.06,now);g.gain.exponentialRampToValueAtTime(.0001,now+.25);o.start(now);o.stop(now+.26);}
     else if(k==='alert'){o.type='sawtooth';o.frequency.setValueAtTime(520,now);o.frequency.setValueAtTime(390,now+.15);o.frequency.setValueAtTime(520,now+.3);g.gain.setValueAtTime(.04,now);g.gain.exponentialRampToValueAtTime(.0001,now+.5);o.start(now);o.stop(now+.5);}
   }catch(e){}
@@ -2474,7 +3200,7 @@ function sfx(k){
 /* ================= MÀN HÌNH BẮT ĐẦU ================= */
 const HELP=`<ul class="help">
 <li><b>Chọn quân:</b> chạm hoặc nhấp vào quân ta; kéo chuột trái để chọn vùng; nhấp đúp để chọn mọi đơn vị cùng loại trên màn hình.</li>
-<li><b>Ra lệnh:</b> chạm lên mặt đất để di chuyển, lên quân địch để tấn công. Nút ⚔ (phím A) để tiến công và tự giao chiến dọc đường.</li>
+<li><b>Ra lệnh & Đi tuần:</b> chạm lên mặt đất để di chuyển, lên quân địch để tấn công. Nút ⚔ (phím A) để tiến công. Nút 🔄 (phím T) để đi tuần tra qua lại giữa 2 điểm và tự bắn địch. Giữ phím <b>Shift</b> hoặc bật nút <b>⛓ Nối lệnh</b> để xếp hàng các điểm đến theo thứ tự 1, 2, 3...</li>
 <li><b>Góc nhìn:</b> kéo một ngón (hoặc kéo chuột phải, phím mũi tên, đưa chuột ra mép) để cuộn; chụm hai ngón hoặc lăn chuột để phóng to; xoay hai ngón, kéo chuột giữa, phím Z/X hoặc nút ⟲ ⟳ để xoay; R quay về hướng Bắc.</li>
 <li><b>Kinh tế:</b> Sở chỉ huy +6, mỗi Trạm tiếp tế +7, mỗi điểm chiếm được +4 ngân sách mỗi giây. Đứng gần một điểm không có địch để chiếm.</li>
 <li><b>Xây dựng:</b> chọn công trình, đợi xây xong rồi đặt trong vòng vàng quanh căn cứ hoặc điểm đã chiếm. Xưởng đóng tàu phải sát sông, biển.</li>
@@ -2484,7 +3210,7 @@ const HELP=`<ul class="help">
 <li><b>Sương mù:</b> chỉ thấy địch trong tầm nhìn của quân, công trình và điểm của ta.</li>
 <li><b>Thăng cấp và hồi máu:</b> hạ 3 rồi 8 địch để lên ★ và ★★. Quân hồi máu khi đứng gần điểm của ta; công binh sửa xe và công trình.</li>
 <li><b>Lưu ván:</b> mỗi ván có một ô lưu riêng, tự lưu mỗi 30 giây và khi bạn mở trình đơn hoặc rời trang; nút 💾 để lưu ngay. Màn hình đầu liệt kê mọi ván đã lưu (tối đa 12) để chọn Chơi tiếp hoặc Xóa. Ván lưu nằm trong trình duyệt này, trên máy này.</li>
-<li><b>Phím tắt:</b> Q chọn toàn quân, S dừng, Space về căn cứ, Ctrl+1–9 lưu nhóm, 1–9 gọi nhóm, P tạm dừng. Chuột phải lên nút sản xuất để hủy và hoàn tiền.</li>
+<li><b>Phím tắt & Mobile:</b> Q chọn toàn quân, S dừng, T đi tuần, A tấn công, Space về căn cứ, Ctrl+1–9 lưu nhóm, 1–9 gọi nhóm, P tạm dừng. Trên điện thoại: nút 🏭 cho phép thu gọn/mở rộng bảng sản xuất để quan sát chiến trường toàn màn hình.</li>
 <li><b>Thắng:</b> phá hủy Sở chỉ huy của mọi đối thủ. <b>Thua:</b> mất Sở chỉ huy của ta.</li>
 </ul>`;
 const cfg={map:'quangtri',nat:'vn',n:2,ai:['rand','rand','rand'],start:0,diff:'normal'};
