@@ -235,16 +235,19 @@ const NORTH=[[102.14,22.40],[102.5,22.75],[103.0,22.6],[103.5,22.8],[104.0,22.85
 const COAST=[[107.4,21.2],[106.8,20.8],[106.5,20.3],[106.0,19.9],[105.8,19.3],[105.75,18.8],[106.1,18.3],[106.5,17.8],[107.0,17.0],[107.6,16.5],[108.2,16.05],[108.7,15.4],[108.9,14.8],[109.2,13.8],[109.3,13.0],[109.2,12.25],[109.1,11.6],[108.7,11.1],[108.1,10.85],[107.5,10.5],[107.1,10.35],[106.7,10.1],[106.5,9.6],[106.1,9.3],[105.5,8.95],[105.1,8.6],[104.75,8.65],[104.85,9.3],[104.8,10.0],[104.45,10.4]];
 const WEST=[[105.0,10.9],[105.8,11.0],[106.1,11.4],[106.4,11.8],[107.2,12.2],[107.5,12.8],[107.5,13.6],[107.4,14.4],[107.6,14.9],[107.4,15.5],[107.2,16.0],[106.8,16.4],[106.5,16.9],[106.0,17.5],[105.6,18.0],[105.1,18.6],[104.3,19.1],[104.0,19.4],[104.6,19.7],[104.9,20.2],[104.4,20.4],[104.0,20.9],[103.4,20.75],[103.1,21.0],[102.8,21.5],[102.6,21.8]];
 const VN=[...NORTH,...COAST,...WEST];
-const MAINLAND=[[101.6,23.8],[111.6,23.8],[111.6,21.6],[111.0,21.45],[110.5,20.5],[110.2,20.25],[109.9,20.6],[109.7,21.4],[109.1,21.5],[108.5,21.65],[108.0,21.55],...COAST,[104.0,10.55],[103.6,10.5],[103.2,10.9],[103.0,11.4],[102.9,11.8],[102.5,12.2],[101.6,12.4]];
+const MAINLAND=[[101.6,23.8],[115.2,23.8],[115.2,22.6],[113.6,22.2],[112.4,21.8],[111.6,21.6],[111.0,21.45],[110.5,20.5],[110.2,20.25],[109.9,20.6],[109.7,21.4],[109.1,21.5],[108.5,21.65],[108.0,21.55],...COAST,[104.0,10.55],[103.6,10.5],[103.2,10.9],[103.0,11.4],[102.9,11.8],[102.5,12.2],[101.6,12.4]];
 const HAINAN=[[108.62,19.2],[108.65,18.5],[109.5,18.2],[110.1,18.4],[110.6,18.8],[111.0,19.6],[110.7,20.1],[110.1,20.1],[109.6,20.0],[109.2,19.75],[108.7,19.5]];
 const PHUQUOC=[[103.85,10.42],[104.05,10.43],[104.08,10.2],[104.0,10.02],[103.95,10.05],[103.9,10.25]];
 const CONDAO=[[106.52,8.76],[106.7,8.78],[106.72,8.64],[106.58,8.6]];
+const isle=(lon,lat,r=.085)=>[[lon-r,lat],[lon-r*.5,lat+r*.8],[lon+r*.5,lat+r*.8],[lon+r,lat],[lon+r*.5,lat-r*.8],[lon-r*.5,lat-r*.8]];
+const HOANGSA=[isle(111.61,16.54,.1),isle(112.33,16.83,.1),isle(111.2,15.78,.07),isle(112.73,16.67,.07),isle(111.78,16.45,.06)];
+const TRUONGSA=[isle(111.92,8.64,.1),isle(114.33,11.43,.09),isle(114.37,10.18,.09),isle(114.33,9.89,.08),isle(112.92,7.87,.08),isle(113.7,8.97,.07),isle(114.48,10.38,.06),isle(112.6,8.93,.06),isle(114.37,10.72,.06)];
 const MAPS={
-  vn:{name:'Việt Nam toàn quốc',tag:'Rất lớn · 44 điểm',desc:'Dải đất chữ S dài 1.650 km: dãy Trường Sơn, hai đồng bằng lớn và Biển Đông. Trận đánh dài, nhiều mặt trận, có đổ bộ đường biển.',
-    box:[101.6,111.6,8.0,23.8],ppd:360,kx:.9556,theme:'tropic',base:'sea',landing:true,
-    areas:[{poly:MAINLAND,t:2},{poly:HAINAN,t:2},{poly:VN,t:1},{poly:PHUQUOC,t:1},{poly:CONDAO,t:1}],
+  vn:{name:'Việt Nam toàn quốc',ver:2,tag:'Rất lớn · 49 điểm',desc:'Dải đất chữ S dài 1.650 km: dãy Trường Sơn, hai đồng bằng lớn, Biển Đông với hai quần đảo Hoàng Sa và Trường Sa. Trận đánh dài, nhiều mặt trận, có đổ bộ đường biển; các đảo xa chỉ tới được bằng tàu và máy bay.',
+    box:[101.6,115.2,7.3,23.8],ppd:360,kx:.9556,theme:'tropic',base:'sea',landing:true,
+    areas:[{poly:MAINLAND,t:2},{poly:HAINAN,t:2},{poly:VN,t:1},{poly:PHUQUOC,t:1},{poly:CONDAO,t:1},...HOANGSA.map(p=>({poly:p,t:1})),...TRUONGSA.map(p=>({poly:p,t:1}))],
     rivers:[{w:0,pts:[[103.9,22.5],[104.5,22.0],[105.0,21.4],[105.5,21.2],[105.85,21.05],[106.2,20.6],[106.45,20.3]]},{w:0,pts:[[105.05,10.95],[105.4,10.55],[105.8,10.1],[106.1,9.8],[106.35,9.55]]},{w:0,pts:[[105.3,10.9],[105.7,10.6],[106.1,10.3],[106.6,9.95]]}],
-    ridges:[{pts:[...WEST,...NORTH],w:250,h:95}],hills:[{at:[108.1,13.0],r:330,h:16}],outline:[VN,PHUQUOC,CONDAO],borders:[[...WEST,...NORTH]],
+    ridges:[{pts:[...WEST,...NORTH],w:250,h:95}],hills:[{at:[108.1,13.0],r:330,h:16}],outline:[VN,PHUQUOC,CONDAO,...HOANGSA,...TRUONGSA],borders:[[...WEST,...NORTH]],
     blobs:[{at:[106.2,20.6],r:340,c:'rgba(206,214,110,.42)'},{at:[105.8,10.0],r:520,c:'rgba(212,216,110,.42)'}],paddyAt:[[106.2,20.6,240,260],[105.8,10.0,400,420]],
     cities:[['Hà Nội',105.85,21.03,1,{lm:'hanoi'}],['Hải Phòng',106.68,20.86,1,{lm:'port'}],['Hạ Long',107.0,21.0,1],['Lạng Sơn',106.76,21.85,1],
       ['Lào Cai',103.97,22.48,1],['Điện Biên',103.02,21.39,1],['Thanh Hóa',105.78,19.8,1],['Vinh',105.62,18.67,1],
@@ -255,11 +258,12 @@ const MAPS={
       ['Hòa Bình',105.34,20.81],['Nam Định',106.17,20.42],['Móng Cái',107.88,21.52],['Hà Tĩnh',105.9,18.34],['Đồng Hới',106.6,17.47],
       ['Đông Hà',107.1,16.82],['Tam Kỳ',108.48,15.57],['Kon Tum',108.0,14.35],['Tuy Hòa',109.22,13.09],['Phan Rang',108.95,11.57],
       ['Phan Thiết',108.1,10.95],['Bảo Lộc',107.81,11.55],['Tây Ninh',106.12,11.28],['Mỹ Tho',106.36,10.36],['Long Xuyên',105.44,10.39],
-      ['Rạch Giá',105.1,10.01],['Sóc Trăng',105.97,9.6],['Côn Đảo',106.62,8.69,0,{isl:1}]],
+      ['Rạch Giá',105.1,10.01],['Sóc Trăng',105.97,9.6],['Côn Đảo',106.62,8.69,0,{isl:1}],
+      ['Hoàng Sa',111.61,16.54,0,{isl:1,lm:'hienluong'}],['Phú Lâm',112.33,16.83,0,{isl:1}],['Trường Sa Lớn',111.92,8.64,0,{isl:1,lm:'hienluong'}],['Song Tử Tây',114.33,11.43,0,{isl:1}],['Nam Yết',114.37,10.18,0,{isl:1}]],
     roads:[['Lạng Sơn','Hà Nội','Nam Định','Thanh Hóa','Vinh','Hà Tĩnh','Đồng Hới','Đông Hà','Huế','Đà Nẵng','Tam Kỳ','Quảng Ngãi','Quy Nhơn','Tuy Hòa','Nha Trang','Phan Rang','Phan Thiết','TP. Hồ Chí Minh','Mỹ Tho','Cần Thơ','Sóc Trăng','Cà Mau'],
       ['Hà Nội','Hòa Bình','Sơn La','Điện Biên'],['Hà Nội','Yên Bái','Lào Cai'],['Yên Bái','Hà Giang'],['Hà Nội','Thái Nguyên','Cao Bằng'],['Hà Nội','Hải Phòng','Hạ Long','Móng Cái'],
       ['Kon Tum','Pleiku','Buôn Ma Thuột','Bảo Lộc','TP. Hồ Chí Minh'],['Quy Nhơn','Pleiku'],['Nha Trang','Buôn Ma Thuột'],['Phan Rang','Đà Lạt','Bảo Lộc'],['TP. Hồ Chí Minh','Tây Ninh'],['TP. Hồ Chí Minh','Vũng Tàu'],['Cần Thơ','Long Xuyên','Rạch Giá'],['Quảng Ngãi','Kon Tum']],
-    starts:['Hà Nội','TP. Hồ Chí Minh','Đà Nẵng','Buôn Ma Thuột'],labels:[['BIỂN ĐÔNG',110.2,14.2,120],['Vịnh Bắc Bộ',107.3,19.3,48],['Vịnh Thái Lan',102.9,9.4,48]]},
+    starts:['Hà Nội','TP. Hồ Chí Minh','Đà Nẵng','Buôn Ma Thuột'],labels:[['BIỂN ĐÔNG',112.6,13.6,120],['Vịnh Bắc Bộ',107.3,19.3,48],['Vịnh Thái Lan',102.9,9.4,48],['QĐ. HOÀNG SA (VIỆT NAM)',112.0,17.35,50],['QĐ. TRƯỜNG SA (VIỆT NAM)',113.2,12.1,50]]},
   angiang:{name:'An Giang',tag:'Rất lớn · 32 điểm',desc:'Miền Tây mùa nước nổi: sông Tiền, sông Hậu và Vàm Nao chia chiến trường thành các cù lao, muốn qua phải giữ cầu Cồn Tiên, Vàm Cống và các bến phà. Quốc lộ 91 là trục tiến quân chính. Thất Sơn (núi Cấm, núi Dài, Cô Tô) dốc, xe chỉ lên được theo đường, bộ binh giữ cao điểm Ô Tà Sóc, Tức Dụp có lợi thế lớn. Dọc biên có kênh Vĩnh Tế và các cửa khẩu Tịnh Biên, Khánh Bình, Vĩnh Xương.',
     box:[104.72,105.62,10.15,11.0],ppd:7000,ks:2.19,rs:1.35,kx:.983,theme:'delta',base:'land',paddy:1500,khLat:99,
     areas:[{poly:[[105.068,10.926],[105.09,10.931],[105.097,10.905],[105.074,10.897]],t:0}],
@@ -777,7 +781,7 @@ function packBits(a){const out=new Uint8Array(Math.ceil(a.length/8));for(let i=0
 function unpackBits(str,a){const t=atob(str);for(let i=0;i<a.length;i++)a[i]=(t.charCodeAt(i>>3)>>(i&7))&1;}
 function saveGame(silent){
   if(!G||G.over)return false;
-  const data={v:1,map:MAP.id,diff:G.diff,start:G.start,nats:Object.keys(G.teams).map(t=>G.teams[t].nat),frame:G.frame,oi:G.oi,stats:G.stats,nextId,speed:G.speed,time:Date.now(),
+  const data={v:1,mver:MAP.ver||1,map:MAP.id,diff:G.diff,start:G.start,nats:Object.keys(G.teams).map(t=>G.teams[t].nat),frame:G.frame,oi:G.oi,stats:G.stats,nextId,speed:G.speed,time:Date.now(),
     teams:Object.fromEntries(Object.entries(G.teams).map(([t,T])=>[t,{credits:Math.round(T.credits),bq:T.bq,bready:T.bready,pq:T.pq,pt:T.pt,power:T.power}])),
     ais:Object.fromEntries(Object.entries(G.ais).map(([t,A])=>[t,{nextWave:A.nextWave,waveMin:A.waveMin,nextLand:A.nextLand,dead:A.dead,noYard:!!A.noYard,nextRaid:A.nextRaid||0}])),
     cities:G.cities.map(c=>[c.owner,Math.round(c.cap),c.capT]),
@@ -785,7 +789,7 @@ function saveGame(silent){
     units:G.units.filter(u=>!u.dead).map(u=>[u.type,u.team,Math.round(u.x),Math.round(u.y),Math.round(u.hp),u.kills||0,u.rank||0,+u.a.toFixed(2),u.cargo||0,u.dest?[u.dest.x|0,u.dest.y|0]:0]),
     expl:packBits(expl),cam:[cam.tx|0,cam.ty|0,cam.dist|0,+cam.yaw.toFixed(2)]};
   if(!G.saveId)G.saveId=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  data.id=G.saveId;const body=JSON.stringify(data),meta={id:data.id,map:data.map,nat:data.nats[0],n:data.nats.length-1,diff:data.diff,frame:data.frame,time:data.time,own:G.cities.filter(c=>c.owner===1).length,tot:G.cities.length};
+  data.id=G.saveId;const body=JSON.stringify(data),meta={id:data.id,mver:data.mver,map:data.map,nat:data.nats[0],n:data.nats.length-1,diff:data.diff,frame:data.frame,time:data.time,own:G.cities.filter(c=>c.owner===1).length,tot:G.cities.length};
   let list=saveList().filter(m=>m.id!==data.id);
   for(let tries=0;tries<4;tries++){
     try{localStorage.setItem(SAVE_PRE+data.id,body);list.unshift(meta);while(list.length>SAVE_MAX){const old=list.pop();try{localStorage.removeItem(SAVE_PRE+old.id);}catch(e){}}
@@ -799,11 +803,11 @@ function saveList(){
     const old=localStorage.getItem(SAVE_KEY);
     if(old){const d=JSON.parse(old);localStorage.removeItem(SAVE_KEY);if(d&&d.v===1&&MAPS[d.map]){d.id='v1'+(d.time||0).toString(36);localStorage.setItem(SAVE_PRE+d.id,JSON.stringify(d));
       const l=JSON.parse(localStorage.getItem(SAVE_IDX)||'[]');l.push({id:d.id,map:d.map,nat:d.nats[0],n:d.nats.length-1,diff:d.diff,frame:d.frame,time:d.time||0});localStorage.setItem(SAVE_IDX,JSON.stringify(l));}}
-    const a=JSON.parse(localStorage.getItem(SAVE_IDX)||'[]');return Array.isArray(a)?a.filter(m=>m&&MAPS[m.map]&&NATIONS[m.nat]).sort((x,y)=>y.time-x.time):[];
+    const a=JSON.parse(localStorage.getItem(SAVE_IDX)||'[]');return Array.isArray(a)?a.filter(m=>m&&MAPS[m.map]&&NATIONS[m.nat]&&(m.mver||1)===(MAPS[m.map].ver||1)).sort((x,y)=>y.time-x.time):[];
   }catch(e){return[];}
 }
 function deleteSave(id){try{localStorage.removeItem(SAVE_PRE+id);localStorage.setItem(SAVE_IDX,JSON.stringify(saveList().filter(m=>m.id!==id)));}catch(e){}}
-function readSave(id){try{const t=localStorage.getItem(SAVE_PRE+id);if(!t)return null;const d=JSON.parse(t);return d&&d.v===1&&MAPS[d.map]&&d.nats.every(n=>NATIONS[n])?d:null;}catch(e){return null;}}
+function readSave(id){try{const t=localStorage.getItem(SAVE_PRE+id);if(!t)return null;const d=JSON.parse(t);return d&&d.v===1&&MAPS[d.map]&&(d.mver||1)===(MAPS[d.map].ver||1)&&d.nats.every(n=>NATIONS[n])?d:null;}catch(e){return null;}}
 function loadGame(d){
   if(!MAP||MAP.id!==d.map)loadMap(d.map);
   occ.fill(0);nextId=1;
